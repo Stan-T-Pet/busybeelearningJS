@@ -1,11 +1,10 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import connectDB from "../../../server/config/database";
+import User from "../../../server/models/User";
 import bcrypt from "bcrypt";
-import prisma from "../../../server/prisma"; // Adjust import for your Prisma setup
 
 export default NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -14,21 +13,26 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+        await connectDB();
 
-        if (user && (await bcrypt.compare(credentials.password, user.password))) {
-          return { id: user.id, name: user.name, email: user.email };
+        const user = await User.findOne({ email: credentials.email });
+        if (!user) {
+          throw new Error("No user found with this email.");
         }
-        throw new Error("Invalid email or password");
+
+        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+        if (!isValidPassword) {
+          throw new Error("Invalid password.");
+        }
+
+        return { id: user._id, name: user.name, email: user.email };
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

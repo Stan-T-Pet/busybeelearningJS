@@ -1,18 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
-const Dashboard = () => {
+import Header from "../components/Header";
+
+export default function Dashboard() {
   return (
-    <div>
-      <h1>Welcome to Busy Bee Learning!</h1>
-      <p>Select a course to get started:</p>
-      <div>
-        <Link to="/course/english">English</Link>
-        <Link to="/course/mathematics">Mathematics</Link>
-        <Link to="/course/history">History</Link>
-      </div>
-    </div>
+    <>
+      <Header />
+      <h1>Welcome to the Dashboard!</h1>
+    </>
   );
-};
-
-export default Dashboard;
+}
