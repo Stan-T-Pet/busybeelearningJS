@@ -1,10 +1,13 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import clientPromise from "../../../server/config/mongodb"; // Ensure this connects to MongoDB
 import connectDB from "../../../server/config/database";
 import User from "../../../server/models/User";
 import bcrypt from "bcrypt";
 
 export default NextAuth({
+  adapter: MongoDBAdapter(clientPromise), // Use MongoDB for session storage
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -30,7 +33,7 @@ export default NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "database", // Use MongoDB for session storage
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
@@ -45,4 +48,5 @@ export default NextAuth({
       return session;
     },
   },
+  database: process.env.MONGO_URI, // Ensure this is set in .env
 });
