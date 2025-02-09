@@ -1,13 +1,13 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "../../server/config/mongodb"; // Ensure correct MongoDB connection
-import connectDB from "../../server/config/database";
-import User from "../../server/models/User";
+import clientPromise from "../../../server/config/mongodb";
+import connectDB from "../../../server/config/connectDB";
+import User from "../../../server/models/User";
 import bcrypt from "bcrypt";
 
 export default NextAuth({
-  adapter: MongoDBAdapter(clientPromise), // ✅ Store sessions in MongoDB
+  adapter: MongoDBAdapter(clientPromise), // ✅ Ensure MongoDB Adapter is used for session storage
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -16,6 +16,10 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required.");
+        }
+
         await connectDB();
 
         // Find user by email
@@ -30,12 +34,25 @@ export default NextAuth({
           throw new Error("Invalid credentials.");
         }
 
-        return { id: user._id, name: user.name, email: user.email };
+        return { id: user._id.toString(), name: user.name, email: user.email };
       },
     }),
   ],
   session: {
-    strategy: "database", // ✅ Store session in MongoDB instead of JWT
+    strategy: "database", // ✅ Store sessions in MongoDB instead of JWT
+    maxAge: 30 * 24 * 60 * 60, // 30 days session expiration
+    updateAge: 24 * 60 * 60, // Update session every 24 hours
+  },
+  callbacks: {
+    async session({ session, token }) {
+      session.user.id = token.id; // ✅ Store user ID in session
+      return session;
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: true, // ✅ Enable debugging for more information
+  pages: {
+    signIn: "/login",
+    error: "/error",
+  },
 });

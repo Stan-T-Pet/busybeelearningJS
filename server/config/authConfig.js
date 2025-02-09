@@ -1,11 +1,11 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "../database"; // Ensure correct MongoDB connection
-import User from "../models/User"; // Ensure correct path to your User model
+import clientPromise from "./database"; // ✅ Ensure MongoDB connection
+import User from "../models/User";
 import bcrypt from "bcrypt";
 
 const authConfig = {
-  adapter: MongoDBAdapter(clientPromise), // 🔥 Use MongoDB session storage
+  adapter: MongoDBAdapter(clientPromise), // ✅ Store sessions in MongoDB
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -14,7 +14,9 @@ const authConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await clientPromise; // Connect to MongoDB
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required.");
+        }
 
         // Find user by email
         const user = await User.findOne({ email: credentials.email });
@@ -28,13 +30,17 @@ const authConfig = {
           throw new Error("Invalid credentials.");
         }
 
-        return { id: user._id, name: user.name, email: user.email };
+        return { id: user._id.toString(), name: user.name, email: user.email };
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "database", // 🔥 Use database session storage instead of JWT
+    strategy: "database", // ✅ Store session in MongoDB
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/login",
+    error: "/error",
   },
 };
 

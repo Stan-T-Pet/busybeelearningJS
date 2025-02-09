@@ -11,17 +11,30 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
-    const result = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    if (!email || !password) {
+      setErrorMessage("Email and password are required.");
+      return;
+    }
 
-    if (result.error) {
-      setErrorMessage("Invalid email or password.");
-    } else {
-      router.push("/dashboard");
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+        callbackUrl: "/dashboard", // ✅ Ensures correct redirection after login
+      });
+
+      console.log("Login Response:", res); // ✅ Debugging
+
+      if (res?.error) {
+        setErrorMessage(res.error);
+      } else {
+        router.push(res.url || "/dashboard"); // ✅ Redirect to dashboard
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred while logging in.");
     }
   };
 
@@ -59,7 +72,7 @@ export default function Login() {
         </Button>
       </form>
       <Box mt={2} textAlign="center">
-        <Button variant="text" color="secondary" onClick={() => router.push("/register")}>
+        <Button variant="text" color="primary" onClick={() => router.push("/register")}>
           Don't have an account? Register
         </Button>
       </Box>

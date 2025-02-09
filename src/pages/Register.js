@@ -11,51 +11,37 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
-
   const handleRegister = async (e) => {
     e.preventDefault();
-
+    setErrorMessage("");
+    setSuccessMessage("");
+  
     if (!name || !email || !password) {
       setErrorMessage("All fields are required.");
       return;
     }
-
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setErrorMessage("Please enter a valid email address.");
-      return;
-    }
-
-    if (password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters long.");
-      return;
-    }
-
-    setErrorMessage("");
-    setSuccessMessage("");
-    setIsSubmitting(true);
-
+  
     try {
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
-
+  
       if (response.ok) {
-        setSuccessMessage("Registration successful! Logging you in...");
+        setSuccessMessage("Registration successful! Logging in...");
         
-        // Log the user in after registration
-        const loginResult = await signIn("credentials", {
+        // ✅ Automatically log in the user after registration
+        const res = await signIn("credentials", {
           redirect: false,
           email,
           password,
         });
-
-        if (loginResult?.error) {
-          setErrorMessage("Registration successful, but login failed. Please log in manually.");
-          setTimeout(() => router.push("/login"), 3000);
+  
+        if (res.error) {
+          router.push("/login"); // Redirect to login if auto-login fails
         } else {
-          router.push("/dashboard");
+          router.push("/dashboard"); // Redirect to dashboard on success
         }
       } else {
         const errorData = await response.json();
@@ -67,6 +53,7 @@ export default function Register() {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <Container maxWidth="sm">

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import connectDB from "../../server/config/database"; // ✅ Correct path
-import User from "../../server/models/User"; // ✅ Correct path
+import connectDB from "../../../server/config/connectDB"; 
+import User from "../../../server/models/User"; 
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

@@ -6,7 +6,8 @@ if (!MONGO_URI) {
   throw new Error("MONGO_URI is missing from .env file");
 }
 
-const options = {};
+// ✅ Add recommended options
+const options = { useUnifiedTopology: true, useNewUrlParser: true };
 
 let client;
 let clientPromise;
@@ -22,4 +23,4 @@ if (process.env.NODE_ENV === "development") {
   clientPromise = client.connect();
 }
 
-export default clientPromise;
+export default clientPromise; // ✅ Use this in next-auth.js and anywhere MongoDB is needed
