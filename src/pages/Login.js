@@ -12,20 +12,16 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
 
-      if (result.error) {
-        setErrorMessage("Invalid email or password.");
-      } else {
-        router.push("/dashboard");
-      }
-    } catch (error) {
-      setErrorMessage("An unexpected error occurred.");
+    if (result.error) {
+      setErrorMessage("Invalid email or password.");
+    } else {
+      router.push("/dashboard");
     }
   };
 
@@ -62,6 +58,11 @@ export default function Login() {
           Login
         </Button>
       </form>
+      <Box mt={2} textAlign="center">
+        <Button variant="text" color="secondary" onClick={() => router.push("/register")}>
+          Don't have an account? Register
+        </Button>
+      </Box>
     </Container>
   );
 }

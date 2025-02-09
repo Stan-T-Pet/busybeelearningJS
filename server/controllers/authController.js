@@ -1,32 +1,31 @@
-const bcrypt = require('bcrypt');
-const User = require('../models/User');
+import bcrypt from "bcrypt";
+import connectDB from "../config/database";
+import User from "../models/User";
 
-exports.signup = async (req, res) => {
+export const registerUser = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
   try {
-    const { username, password } = req.body;
+    await connectDB();
+    const { name, email, password } = req.body;
 
-    // Input validation
-    if (!username || !password) {
-      return res.status(400).send('Username and password are required');
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "All fields are required." });
     }
 
-    // Check if the user already exists
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).send('Username already exists');
+      return res.status(400).json({ error: "User already exists." });
     }
 
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({ name, email, password: hashedPassword });
 
-    // Create a new user
-    const newUser = new User({username, password: hashedPassword});
-    await newUser.save();
-
-    res.status(201).send('User created successfully');
+    return res.status(201).json({ message: "User created successfully", userId: newUser._id });
   } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).send('Internal server error');
+    console.error("Registration error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };

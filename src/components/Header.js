@@ -19,13 +19,13 @@ export default function Header() {
 
         {/* Navigation Links */}
         <Box>
-          <Link href="/Dashboard" passHref>
+          <Link href="/dashboard" passHref>
             <Button color="inherit">Dashboard</Button>
           </Link>
-          <Link href="/Login" passHref>
+          <Link href="/login" passHref>
             <Button color="inherit">Login</Button>
           </Link>
-          <Link href="/Register" passHref>
+          <Link href="/register" passHref>
             <Button color="inherit">Register</Button>
           </Link>
         </Box>

@@ -1,13 +1,13 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "../../../server/config/mongodb"; // Ensure this connects to MongoDB
-import connectDB from "../../../server/config/database";
-import User from "../../../server/models/User";
+import clientPromise from "../../server/config/mongodb"; // Ensure correct MongoDB connection
+import connectDB from "../../server/config/database";
+import User from "../../server/models/User";
 import bcrypt from "bcrypt";
 
 export default NextAuth({
-  adapter: MongoDBAdapter(clientPromise), // Use MongoDB for session storage
+  adapter: MongoDBAdapter(clientPromise), // ✅ Store sessions in MongoDB
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -18,14 +18,16 @@ export default NextAuth({
       async authorize(credentials) {
         await connectDB();
 
+        // Find user by email
         const user = await User.findOne({ email: credentials.email });
         if (!user) {
           throw new Error("No user found with this email.");
         }
 
-        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-        if (!isValidPassword) {
-          throw new Error("Invalid password.");
+        // Validate password
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isPasswordValid) {
+          throw new Error("Invalid credentials.");
         }
 
         return { id: user._id, name: user.name, email: user.email };
@@ -33,20 +35,7 @@ export default NextAuth({
     }),
   ],
   session: {
-    strategy: "database", // Use MongoDB for session storage
+    strategy: "database", // ✅ Store session in MongoDB instead of JWT
   },
   secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.id;
-      return session;
-    },
-  },
-  database: process.env.MONGO_URI, // Ensure this is set in .env
 });

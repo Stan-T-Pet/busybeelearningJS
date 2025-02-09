@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import connectDB from "../config/database";
-import User from "../models/User";
+import connectDB from "../../server/config/database"; // ✅ Correct path
+import User from "../../server/models/User"; // ✅ Correct path
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -27,11 +27,17 @@ export default async function handler(req, res) {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const newUser = new User({ name, email, password: hashedPassword });
-    await newUser.save();
+    // Create new user in MongoDB
+    const newUser = await User.create({ name, email, password: hashedPassword });
 
-    return res.status(201).json({ message: "User created successfully." });
+    return res.status(201).json({
+      message: "User created successfully.",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+      },
+    });
   } catch (error) {
     console.error("Error in register handler:", error);
     return res.status(500).json({ error: "Internal Server Error" });
