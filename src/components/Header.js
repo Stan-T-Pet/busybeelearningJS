@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemText, Box } from "@mui/material";
+import { 
+  AppBar, Toolbar, Typography, Button, 
+  IconButton, Drawer, List, ListItem, ListItemText, Box 
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
@@ -13,7 +16,7 @@ export default function Header() {
     setMobileOpen(!mobileOpen);
   };
 
-  // Navigation items based on user roles
+  // Define navigation links based on user roles
   const navLinks = {
     unauthenticated: [
       { label: "Login", href: "/login" },
@@ -24,7 +27,7 @@ export default function Header() {
       { label: "Metrics", href: "/admin/metrics" },
     ],
     parent: [
-      { label: "Profile", href: "/parent/profile" },
+      { label: "Profile", href: "/parent/profile"},
       { label: "Progress", href: "/parent/progress" },
     ],
     child: [
@@ -34,11 +37,11 @@ export default function Header() {
     ],
   };
 
-  // Determine menu items
+  // Determine menu items based on session
   const role = session?.user?.role || "unauthenticated";
   const menuItems = navLinks[role] || [];
 
-  // Drawer for mobile navigation
+  // Mobile Drawer Menu
   const drawer = (
     <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
       <List>
@@ -62,12 +65,19 @@ export default function Header() {
     <AppBar position="static">
       <Toolbar>
         {/* Menu Icon for Mobile */}
-        <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2, display: { md: "none" } }} onClick={handleDrawerToggle}>
+        <IconButton 
+          edge="start" color="inherit" aria-label="menu" 
+          sx={{ mr: 2, display: { md: "none" } }} 
+          onClick={handleDrawerToggle}
+        >
           <MenuIcon />
         </IconButton>
 
         {/* App Title */}
-        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold", color: "white" }}>
+        <Typography 
+          variant="h6" 
+          sx={{ flexGrow: 1, fontWeight: "bold", color: "white" }}
+        >
           <Link href="/" passHref style={{ textDecoration: "none", color: "inherit" }}>
             Busy Bee Learning
           </Link>
@@ -80,10 +90,19 @@ export default function Header() {
               <Button color="inherit">{label}</Button>
             </Link>
           ))}
-          {session && (
+          {session ? (
             <Button color="inherit" onClick={() => signOut()}>
               Logout
             </Button>
+          ) : (
+            <>
+              <Link href="/login" passHref>
+                <Button color="inherit">Login</Button>
+              </Link>
+              <Link href="/register" passHref>
+                <Button color="inherit">Register</Button>
+              </Link>
+            </>
           )}
         </Box>
       </Toolbar>

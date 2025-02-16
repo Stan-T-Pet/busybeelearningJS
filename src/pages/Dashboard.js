@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Typography } from "@mui/material";
+import { Container, Typography, Button, Box } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
@@ -14,6 +14,15 @@ export default function Dashboard() {
         <Typography variant="h5" align="center" mt={5}>
           You must be logged in to access this page.
         </Typography>
+        <Box mt={2} textAlign="center">
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => router.push("/login")}
+          >
+            Login
+          </Button>
+        </Box>
       </Container>
     );
   }
