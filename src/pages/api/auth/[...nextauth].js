@@ -1,13 +1,10 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "../../../server/config/mongodb";
-import connectDB from "../../../server/config/connectDB";
-import User from "../../../server/models/User";
+import connectDB from "../../../../server/config/database";
+import User from "../../../../server/models/User";
 import bcrypt from "bcrypt";
 
 export default NextAuth({
-  adapter: MongoDBAdapter(clientPromise), // ✅ Ensure MongoDB Adapter is used for session storage
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -21,38 +18,50 @@ export default NextAuth({
         }
 
         await connectDB();
-
-        // Find user by email
         const user = await User.findOne({ email: credentials.email });
+
         if (!user) {
           throw new Error("No user found with this email.");
         }
 
-        // Validate password
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid credentials.");
         }
 
-        return { id: user._id.toString(), name: user.name, email: user.email };
+        return { 
+          id: user._id.toString(), 
+          name: user.name, 
+          email: user.email, 
+          role: user.role || "user" // ✅ Ensure role is always available
+        };
       },
     }),
   ],
-  session: {
-    strategy: "database", // ✅ Store sessions in MongoDB instead of JWT
-    maxAge: 30 * 24 * 60 * 60, // 30 days session expiration
-    updateAge: 24 * 60 * 60, // Update session every 24 hours
+  session: { 
+    strategy: "jwt",
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
   },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role || "user"; // ✅ Ensure role is always stored
+      }
+      return token;
+    },
     async session({ session, token }) {
-      session.user.id = token.id; // ✅ Store user ID in session
+      session.user.id = token.sub || token.id; // ✅ Ensure session user ID is always set
+      session.user.role = token.role; 
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // ✅ Enable debugging for more information
+  secret: process.env.NEXTAUTH_SECRET, // ✅ Removed duplicate
   pages: {
     signIn: "/login",
     error: "/error",
   },
+  debug: true,
 });

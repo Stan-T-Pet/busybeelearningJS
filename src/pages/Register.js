@@ -1,108 +1,56 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Typography, Box, Alert } from "@mui/material";
+import { Container, TextField, Button, Typography, Select, MenuItem, Box } from "@mui/material";
 import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
 
 export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "parent" });
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setErrorMessage("");
-    setSuccessMessage("");
-  
-    if (!name || !email || !password) {
+
+    if (!formData.name || !formData.email || !formData.password) {
       setErrorMessage("All fields are required.");
       return;
     }
-  
+
     try {
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
-        setSuccessMessage("Registration successful! Logging in...");
-        
-        // ✅ Automatically log in the user after registration
-        const res = await signIn("credentials", {
-          redirect: false,
-          email,
-          password,
-        });
-  
-        if (res.error) {
-          router.push("/login"); // Redirect to login if auto-login fails
-        } else {
-          router.push("/dashboard"); // Redirect to dashboard on success
-        }
+        router.push("/login");
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || "Failed to register.");
       }
     } catch (error) {
       setErrorMessage("An unexpected error occurred.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
-  
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" align="center" gutterBottom>
-        Register
-      </Typography>
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-      {successMessage && <Alert severity="success">{successMessage}</Alert>}
+      <Typography variant="h4" align="center">Register</Typography>
+      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
       <form onSubmit={handleRegister}>
-        <Box mb={2}>
-          <TextField
-            label="Name"
-            variant="outlined"
-            fullWidth
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Box>
-        <Box mb={2}>
-          <TextField
-            label="Email"
-            type="email"
-            variant="outlined"
-            fullWidth
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Box>
-        <Box mb={2}>
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Box>
-        <Button type="submit" variant="contained" color="primary" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? "Registering..." : "Register"}
-        </Button>
-        <Box mt={2} textAlign="center">
-          <Button variant="text" color="primary" onClick={() => router.push("/login")}>
-            Already have an account? Login
-          </Button>
-        </Box>
+        <TextField name="name" label="Name" fullWidth onChange={handleChange} />
+        <TextField name="email" label="Email" fullWidth onChange={handleChange} />
+        <TextField name="password" label="Password" type="password" fullWidth onChange={handleChange} />
+        <Select name="role" value={formData.role} onChange={handleChange} fullWidth>
+          <MenuItem value="parent">Parent</MenuItem>
+          <MenuItem value="admin">Admin</MenuItem>
+        </Select>
+        <Button type="submit" fullWidth>Register</Button>
       </form>
     </Container>
   );

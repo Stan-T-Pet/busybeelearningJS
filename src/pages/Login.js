@@ -1,3 +1,4 @@
+// pages/login.js
 import React, { useState } from "react";
 import { Container, TextField, Button, Typography, Box, Alert } from "@mui/material";
 import { signIn } from "next-auth/react";
@@ -12,31 +13,27 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage("");
-
+  
     if (!email || !password) {
       setErrorMessage("Email and password are required.");
       return;
     }
-
-    try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-        callbackUrl: "/dashboard", // ✅ Ensures correct redirection after login
-      });
-
-      console.log("Login Response:", res); // ✅ Debugging
-
-      if (res?.error) {
-        setErrorMessage(res.error);
-      } else {
-        router.push(res.url || "/dashboard"); // ✅ Redirect to dashboard
-      }
-    } catch (error) {
-      setErrorMessage("An error occurred while logging in.");
+  
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+  
+    console.log("🔍 Login Response:", res); // ✅ Log the response
+  
+    if (res?.error) {
+      setErrorMessage(res.error);
+    } else {
+      console.log("✅ Login successful, redirecting...");
+      router.push("/dashboard");
     }
-  };
+  };  
 
   return (
     <Container maxWidth="sm">
@@ -46,26 +43,10 @@ export default function Login() {
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
       <form onSubmit={handleLogin}>
         <Box mb={2}>
-          <TextField
-            label="Email"
-            type="email"
-            variant="outlined"
-            fullWidth
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <TextField label="Email" type="email" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} />
         </Box>
         <Box mb={2}>
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <TextField label="Password" type="password" fullWidth required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Box>
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Login
