@@ -36,17 +36,17 @@ export default NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role || "user"; // ✅ Ensure role is always stored
+        token.role = user.role || "user"; //Ensure role is always stored
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.sub || token.id; // ✅ Ensure session user ID is always set
+      session.user.id = token.sub || token.id; //Ensure session user ID is always set
       session.user.role = token.role; 
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET, // ✅ Removed duplicate
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
     error: "/error",
