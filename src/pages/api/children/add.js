@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 
     const newChild = new Child({
       name,
-      parentEmail: session.user.email, // ✅ Save parent email instead of child email
+      parentEmail: session.user.email, //parent email for child
       password: hashedPassword,
       age,
     });
