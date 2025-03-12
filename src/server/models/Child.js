@@ -1,10 +1,27 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const ChildSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  parentEmail: { type: String, required: true }, // ✅ Only store parent email
-  password: { type: String, required: true },
-  age: { type: Number, required: true },
+  fullName: { type: String, required: true },
+  parentEmail: { type: String, required: true },
+  loginEmail: { type: String, unique: true },
+  // other fields...
 });
 
-export default mongoose.models.Child || mongoose.model("Child", ChildSchema);
+// Pre-save hook to auto-generate loginEmail
+ChildSchema.pre('save', function(next) {
+  if (this.isNew) {
+    // Ensure parent's email is present
+    if (!this.parentEmail) {
+      return next(new Error('Parent email is required'));
+    }
+    // Auto-generate loginEmail if not provided
+    if (!this.loginEmail) {
+      let generatedUsername = this.fullName.trim().toLowerCase().replace(/\s+/g, '.');
+      generatedUsername = generatedUsername.replace(/[^a-z0-9.]/g, ''); // remove invalid characters
+      this.loginEmail = `${generatedUsername}@busybeelearning.ie`;
+    }
+  }
+  next();
+});
+
+module.exports = mongoose.models.Child || mongoose.model('Child', ChildSchema);

@@ -1,5 +1,4 @@
-cls
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   AppBar, Toolbar, Typography, Button, 
   IconButton, Drawer, List, ListItem, ListItemText, Box 
@@ -9,8 +8,18 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession(); // ✅ Track session status
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userRole, setUserRole] = useState("unauthenticated");
+
+  // Ensure the role is set correctly when session loads
+  useEffect(() => {
+    if (status === "authenticated") {
+      setUserRole(session?.user?.role || "unauthenticated");
+    } else {
+      setUserRole("unauthenticated");
+    }
+  }, [session, status]);
 
   // Toggle Drawer for Mobile Navigation
   const handleDrawerToggle = () => {
@@ -28,7 +37,7 @@ export default function Header() {
       { label: "Metrics", href: "/admin/metrics" },
     ],
     parent: [
-      { label: "Profile", href: "/parent/profile"},
+      { label: "Profile", href: "/parent/profile" },
       { label: "Progress", href: "/parent/progress" },
     ],
     child: [
@@ -38,11 +47,9 @@ export default function Header() {
     ],
   };
 
-  // Determine menu items based on session
-  const role = session?.user?.role || "unauthenticated";
-  const menuItems = navLinks[role] || [];
+  const menuItems = navLinks[userRole] || [];
 
-  // Mobile Drawer Menu
+  // Drawer for mobile navigation
   const drawer = (
     <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
       <List>
@@ -53,7 +60,7 @@ export default function Header() {
             </ListItem>
           </Link>
         ))}
-        {session && (
+        {status === "authenticated" && (
           <ListItem button onClick={() => signOut()}>
             <ListItemText primary="Logout" />
           </ListItem>
@@ -91,7 +98,7 @@ export default function Header() {
               <Button color="inherit">{label}</Button>
             </Link>
           ))}
-          {session ? (
+          {status === "authenticated" ? (
             <Button color="inherit" onClick={() => signOut()}>
               Logout
             </Button>
