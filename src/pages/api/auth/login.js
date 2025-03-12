@@ -6,6 +6,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Call NextAuth's signIn with credentials. This delegates authentication
+    // to the NextAuth credentials provider, which has been updated to handle both
+    // parent/admin (by checking User) and child logins (by checking loginEmail in Child).
     const response = await signIn("credentials", {
       redirect: false,
       email: req.body.email,
