@@ -28,15 +28,24 @@ export default function ParentProfile() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
-  const [childForm, setChildForm] = useState({ name: "", password: "", age: "" });
+  // Using fullName to match the Child model
+  const [childForm, setChildForm] = useState({ fullName: "", password: "", age: "" });
 
   useEffect(() => {
-    if (!session) return;
+    // Only fetch if session is available.
+    if (!session || !session.user) return;
     const fetchChildren = async () => {
-      const response = await fetch(`/api/children/get?parentEmail=${session.user.email}`);
-      if (!response.ok) return;
-      const data = await response.json();
-      setChildren(data.children || []);
+      try {
+        const response = await fetch(`/api/children/get?parentEmail=${session.user.email}`);
+        if (!response.ok) {
+          console.error("Failed to fetch children");
+          return;
+        }
+        const data = await response.json();
+        setChildren(data.children || []);
+      } catch (err) {
+        console.error("Error fetching children:", err);
+      }
     };
     fetchChildren();
   }, [session]);
@@ -45,11 +54,12 @@ export default function ParentProfile() {
     if (child) {
       setEditMode(true);
       setSelectedChild(child);
-      setChildForm({ name: child.name, password: "", age: child.age });
+      // Set form values from the child; using fullName instead of name.
+      setChildForm({ fullName: child.fullName, password: "", age: child.age });
     } else {
       setEditMode(false);
       setSelectedChild(null);
-      setChildForm({ name: "", password: "", age: "" });
+      setChildForm({ fullName: "", password: "", age: "" });
     }
     setModalOpen(true);
   };
@@ -61,26 +71,39 @@ export default function ParentProfile() {
     const url = editMode ? `/api/children/update/${selectedChild._id}` : "/api/children/add";
     const method = editMode ? "PUT" : "POST";
 
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...childForm,
-        parentEmail: session.user.email, // ✅ Assign parent's email
-      }),
-    });
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: childForm.fullName,
+          password: childForm.password,
+          age: childForm.age,
+          parentEmail: session.user.email, // Use parent's email from the session
+        }),
+      });
 
-    if (response.ok) {
-      setModalOpen(false);
-      router.reload();
+      if (response.ok) {
+        setModalOpen(false);
+        router.reload();
+      } else {
+        console.error("Failed to save child", await response.text());
+      }
+    } catch (error) {
+      console.error("Error saving child:", error);
     }
   };
 
   const handleDeleteChild = async (childId) => {
-    const response = await fetch(`/api/children/delete/${childId}`, { method: "DELETE" });
-
-    if (response.ok) {
-      setChildren(children.filter((child) => child._id !== childId));
+    try {
+      const response = await fetch(`/api/children/delete/${childId}`, { method: "DELETE" });
+      if (response.ok) {
+        setChildren(children.filter((child) => child._id !== childId));
+      } else {
+        console.error("Failed to delete child", await response.text());
+      }
+    } catch (error) {
+      console.error("Error deleting child:", error);
     }
   };
 
@@ -92,8 +115,12 @@ export default function ParentProfile() {
         <Card sx={{ mb: 4 }}>
           <CardContent>
             <Typography variant="h5">Parent Details</Typography>
-            <Typography><b>Name:</b> {session?.user?.name}</Typography>
-            <Typography><b>Email:</b> {session?.user?.email}</Typography>
+            <Typography>
+              <b>Name:</b> {session?.user?.name}
+            </Typography>
+            <Typography>
+              <b>Email:</b> {session?.user?.email}
+            </Typography>
           </CardContent>
         </Card>
 
@@ -101,7 +128,12 @@ export default function ParentProfile() {
         <Card sx={{ mb: 4 }}>
           <CardContent>
             <Typography variant="h5">Your Children</Typography>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenModal()} sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => handleOpenModal()}
+              sx={{ mt: 2 }}
+            >
               Add Child
             </Button>
 
@@ -110,9 +142,9 @@ export default function ParentProfile() {
                 <Grid item xs={12} sm={6} md={4} key={child._id}>
                   <Card>
                     <CardContent>
-                      <Typography variant="h6">{child.name}</Typography>
+                      <Typography variant="h6">{child.fullName}</Typography>
                       <Typography>Age: {child.age}</Typography>
-                      <Typography>Parent Email: {session.user.email}</Typography> 
+                      <Typography>Parent Email: {session.user.email}</Typography>
                       <Box sx={{ mt: 2 }}>
                         <IconButton color="primary" onClick={() => handleOpenModal(child)}>
                           <EditIcon />
@@ -133,9 +165,31 @@ export default function ParentProfile() {
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
           <DialogTitle>{editMode ? "Edit Child" : "Add Child"}</DialogTitle>
           <DialogContent>
-            <TextField name="name" label="Name" fullWidth value={childForm.name} onChange={handleChange} />
-            <TextField name="password" label="Password" type="password" fullWidth value={childForm.password} onChange={handleChange} />
-            <TextField name="age" label="Age" type="number" fullWidth value={childForm.age} onChange={handleChange} />
+            <TextField
+              name="fullName"
+              label="Full Name"
+              fullWidth
+              value={childForm.fullName}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              name="password"
+              label="Password"
+              type="password"
+              fullWidth
+              value={childForm.password}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              name="age"
+              label="Age"
+              type="number"
+              fullWidth
+              value={childForm.age}
+              onChange={handleChange}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setModalOpen(false)}>Cancel</Button>
