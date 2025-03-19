@@ -1,9 +1,8 @@
-// pages/api/children/add.js (for parents)
+// File: src/pages/api/children/add.js
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import connectDB from "../../../server/config/database";
 import { addChild } from "../../../server/services/childService";
-import User from "../../../server/models/User";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,25 +12,26 @@ export default async function handler(req, res) {
   try {
     await connectDB();
     const session = await getServerSession(req, res, authOptions);
-    
+    console.log("Session:", session.user); // Debug output
+
     if (!session || !session.user) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     
-    // Ensure only parents use this endpoint.
-    if (session.user.role !== "parent") {
-      return res.status(403).json({ error: "Only parents can add children here." });
+    // Only allow parents or admins to add children.
+    if (session.user.role !== "parent" && session.user.role !== "admin") {
+      return res.status(403).json({ error: "Only parents or admins can add children here." });
     }
     
-    // Extract data from the request body.
-    const { name, password, age } = req.body;
-    if (!name || !password || !age) {
-      return res.status(400).json({ error: "All fields are required." });
+    // Destructure required fields from the request body.
+    const { fullName, password, age } = req.body;
+    if (!fullName || !password || !age) {
+      return res.status(400).json({ error: "All fields (fullName, password, age) are required." });
     }
     
-    // The parent's email from session is used.
+    // Use the parent's email from the session.
     const newChild = await addChild({
-      fullName: name,
+      fullName,
       password,
       age,
       parentEmail: session.user.email,
