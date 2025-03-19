@@ -50,7 +50,7 @@ export default function ParentProfile() {
     fetchChildren();
   }, [session]);
 
-  const handleOpenModal = (child = null) => {
+  const handleOpenModal = (child = null)  => {
     if (child) {
       setEditMode(true);
       setSelectedChild(child);
@@ -79,7 +79,7 @@ export default function ParentProfile() {
           fullName: childForm.fullName,
           password: childForm.password,
           age: childForm.age,
-          parentEmail: session.user.email, // Use parent's email from the session
+          parentEmail: session.user.email, //Use parent's email from the session
         }),
       });
 

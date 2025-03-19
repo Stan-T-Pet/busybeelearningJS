@@ -1,3 +1,4 @@
+// File: src/pages/api/children/add.js
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import connectDB from "../../../server/config/database";
@@ -11,26 +12,26 @@ export default async function handler(req, res) {
   try {
     await connectDB();
     const session = await getServerSession(req, res, authOptions);
-
-    console.log("Session:", session.user); // Debug: Check the session data
+    console.log("Session:", session.user); // Debug output
 
     if (!session || !session.user) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     
-    // Allow only parents or admins
+    // Only allow parents or admins to add children.
     if (session.user.role !== "parent" && session.user.role !== "admin") {
       return res.status(403).json({ error: "Only parents or admins can add children here." });
     }
     
-    const { name, password, age } = req.body;
-    if (!name || !password || !age) {
-      return res.status(400).json({ error: "All fields are required." });
+    // Destructure required fields from the request body.
+    const { fullName, password, age } = req.body;
+    if (!fullName || !password || !age) {
+      return res.status(400).json({ error: "All fields (fullName, password, age) are required." });
     }
     
-    // Use parent's email from the session.
+    // Use the parent's email from the session.
     const newChild = await addChild({
-      fullName: name,
+      fullName,
       password,
       age,
       parentEmail: session.user.email,

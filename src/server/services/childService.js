@@ -1,38 +1,23 @@
-// server/services/childService.js
+// File: server/services/childService.js
 import Child from "../models/Child";
 import bcrypt from "bcrypt";
 
 export async function addChild({ fullName, password, age, parentEmail }) {
   const hashedPassword = await bcrypt.hash(password, 10);
-  const child = new Child({
+  const newChild = new Child({
     fullName,
     password: hashedPassword,
     age,
     parentEmail,
   });
-  await child.save();
-  return child;
+  return newChild.save();
 }
 
-export async function removeChild({ childId, requesterRole, requesterEmail }) {
-  // If the requester is a parent, ensure the child belongs to them.
-  if (requesterRole === "parent") {
-    const child = await Child.findOne({ _id: childId, parentEmail: requesterEmail });
-    if (!child) {
-      throw new Error("Child not found or unauthorized.");
-    }
-    return await Child.deleteOne({ _id: childId });
-  }
-  // For admin, simply delete the child.
-  if (requesterRole === "admin") {
-    return await Child.deleteOne({ _id: childId });
-  }
-  throw new Error("Unauthorized role.");
-}
-
+// Function to get child details by child ID.
+// Parents can only view their own children, while admins can view any child's details.
 export async function getChildDetails({ childId, requesterRole, requesterEmail }) {
   if (requesterRole === "parent") {
-    // Parents can only view details of their own children.
+    // Ensure that the child belongs to the parent making the request.
     const child = await Child.findOne({ _id: childId, parentEmail: requesterEmail });
     if (!child) {
       throw new Error("Child not found or unauthorized.");
@@ -40,8 +25,23 @@ export async function getChildDetails({ childId, requesterRole, requesterEmail }
     return child;
   }
   if (requesterRole === "admin") {
-    // Admin can view any child.
+    // Admins can view any child's details.
     return await Child.findById(childId);
+  }
+  throw new Error("Unauthorized role.");
+}
+
+// Function to remove a child (for reference)
+export async function removeChild({ childId, requesterRole, requesterEmail }) {
+  if (requesterRole === "parent") {
+    const child = await Child.findOne({ _id: childId, parentEmail: requesterEmail });
+    if (!child) {
+      throw new Error("Child not found or unauthorized.");
+    }
+    return Child.deleteOne({ _id: childId });
+  }
+  if (requesterRole === "admin") {
+    return await Child.deleteOne({ _id: childId });
   }
   throw new Error("Unauthorized role.");
 }

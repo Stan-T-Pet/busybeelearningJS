@@ -1,3 +1,4 @@
+// File: src/pages/api/auth/[...nextauth].js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "../../../server/config/database";
@@ -5,7 +6,7 @@ import { Parent, Admin } from "../../../server/models/User";
 import Child from "../../../server/models/Child";
 import bcrypt from "bcrypt";
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,18 +16,14 @@ export default NextAuth({
       },
       async authorize(credentials) {
         await connectDB();
-
-        // Try to find a user in Parent collection first
         let user = await Parent.findOne({ email: credentials.email });
         let role = user ? "parent" : null;
 
-        // Then check Admin collection if not found
         if (!user) {
           user = await Admin.findOne({ email: credentials.email });
           role = user ? "admin" : null;
         }
 
-        // Finally, check Child collection by loginEmail if still not found
         if (!user) {
           user = await Child.findOne({ loginEmail: credentials.email });
           role = user ? "child" : null;
@@ -34,10 +31,7 @@ export default NextAuth({
 
         if (!user) throw new Error("No user found with this email.");
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) throw new Error("Invalid credentials.");
 
         return {
@@ -76,4 +70,6 @@ export default NextAuth({
     error: "/error",
   },
   debug: true,
-});
+};
+
+export default NextAuth(authOptions);

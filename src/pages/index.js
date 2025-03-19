@@ -11,7 +11,7 @@ export default function Home() {
           Welcome to Busy Bee Learning!
         </Typography>
         <Typography variant="subtitle1" align="center" gutterBottom>
-          Empowering young learners with interactive English, Mathematics, and History courses.
+          Empowering young learners with interactive Courses
         </Typography>
         
         <Grid container spacing={3} sx={{ marginTop: 4 }}>
@@ -20,7 +20,7 @@ export default function Home() {
             <Paper elevation={3} sx={{ padding: 3, textAlign: 'center' }}>
               <Typography variant="h5" gutterBottom>English</Typography>
               <Typography variant="body1" gutterBottom>
-                Improve your grammar, vocabulary, and writing skills.
+              Improve your grammar, vocabulary, and writing skills.
               </Typography>
               <Link href="/courses/english" passHref>
                 <Button variant="contained" color="primary">Start Learning</Button>
