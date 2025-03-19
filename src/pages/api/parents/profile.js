@@ -22,7 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Header from "../../components/Header";
+import Header from "../../../components/Header";
 import { Update } from "@mui/icons-material";
 
 export default function ParentProfile() {
