@@ -45,3 +45,33 @@ export async function removeChild({ childId, requesterRole, requesterEmail }) {
   }
   throw new Error("Unauthorized role.");
 }
+
+
+// New function: updateChild
+export async function updateChild({ childId, fullName, password, age, requesterRole, requesterEmail }) {
+  //Find the child based on role restrictions:
+  let child;
+  if (requesterRole === "parent") {
+    child = await Child.findOne({ _id: childId, parentEmail: requesterEmail });
+    if (!child) {
+      throw new Error("Child not found or unauthorized.");
+    }
+  } else if (requesterRole === "admin") {
+    child = await Child.findById(childId);
+    if (!child) {
+      throw new Error("Child not found.");
+    }
+  } else {
+    throw new Error("Unauthorized role.");
+  }
+
+  //Hash new pass
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  //Update child properties
+  child.fullName = fullName;
+  child.password = hashedPassword;
+  child.age = age;
+  
+  return child.save();
+}
