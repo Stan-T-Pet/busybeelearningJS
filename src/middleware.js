@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  // ✅ Allow authentication and public pages
+  //Allow authentication and public pages
   if (
     pathname.startsWith("/api/auth") || 
     pathname === "/login" || 
@@ -13,7 +13,7 @@ export async function middleware(req) {
     return NextResponse.next();
   }
 
-  // ✅ Get user session token
+  //Get user session token
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   if (!token) {
@@ -21,7 +21,7 @@ export async function middleware(req) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // ✅ Role-Based Access Control (RBAC)
+  //Role-Based Access Control (RBAC)
   const userRole = token.role;
 
   if (pathname.startsWith("/admin") && userRole !== "admin") {
@@ -39,7 +39,7 @@ export async function middleware(req) {
   return NextResponse.next();
 }
 
-// ✅ Apply middleware to protect specific routes
+//Apply middleware to protect specific routes
 export const config = {
   matcher: [
     "/dashboard",
