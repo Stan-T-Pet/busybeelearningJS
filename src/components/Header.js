@@ -1,3 +1,4 @@
+// File: src/components/Header.js
 import React, { useState, useEffect } from "react";
 import {
   AppBar,
@@ -20,7 +21,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userRole, setUserRole] = useState("unauthenticated");
 
-  // Update the user role based on the session
+  // Set the user role from session data.
   useEffect(() => {
     if (status === "authenticated") {
       setUserRole(session?.user?.role || "unauthenticated");
@@ -29,12 +30,12 @@ export default function Header() {
     }
   }, [session, status]);
 
-  // Toggle Drawer for Mobile Navigation
+  // Toggle mobile drawer.
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
   };
 
-  // Define navigation links for different roles
+  // Navigation links by role.
   const navLinks = {
     unauthenticated: [
       { label: "Login", href: "/login" },
@@ -46,24 +47,27 @@ export default function Header() {
       { label: "Metrics", href: "/admin/metrics" },
     ],
     parent: [
+      { label: "Dashboard", href: "/parent/dashboard" },
       { label: "Profile", href: "/parent/profile" },
       { label: "Progress", href: "/parent/progress" },
     ],
     child: [
       { label: "Profile", href: "/child/profile" },
       { label: "Lessons", href: "/child/lessons" },
-      { label: "Quizzes", href: "/child/quizzes" },
+      { label: "Quiz's", href: "/child/quiz" },
+      // Uncomment if you later add a dedicated progress page for children:
+      // { label: "Progress", href: "/child/progress" },
     ],
   };
 
   const menuItems = navLinks[userRole] || [];
 
-  // Mobile Drawer component
+  // Mobile Drawer – renders the menu list.
   const drawer = (
     <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
       <List>
         {menuItems.map(({ label, href }) => (
-          <Link key={label} href={href} passHref>
+          <Link key={label} href={href} passHref legacyBehavior>
             <ListItem button component="a">
               <ListItemText primary={label} />
             </ListItem>
@@ -138,7 +142,7 @@ export default function Header() {
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }} // Better performance on mobile.
+        ModalProps={{ keepMounted: true }} // Improves performance on mobile.
       >
         {drawer}
       </Drawer>

@@ -1,32 +1,42 @@
-import React from "react";
+// File: src/pages/dashboard.js
+import React, { useEffect } from "react";
 import { Container, Typography, Button, Box } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
 
 export default function Dashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (!session) {
+  useEffect(() => {
+    if (status === "loading") return; // Wait for session to load.
+    if (!session) return; // Optionally, you could redirect to login here.
+
+    const role = session.user.role;
+    // Redirect based on the user's role.
+    if (role === "admin") {
+      router.replace("/admin/dashboard");
+    } else if (role === "parent") {
+      router.replace("/parent/dashboard");
+    } else if (role === "child") {
+      router.replace("/child/dashboard");
+    } else {
+      console.error("Unknown role:", role);
+    }
+  }, [session, status, router]);
+
+  if (status === "loading" || !session) {
     return (
       <Container maxWidth="sm">
         <Typography variant="h5" align="center" mt={5}>
-          You must be logged in to access this page.
+          Loading...
         </Typography>
-        <Box mt={2} textAlign="center">
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => router.push("/login")}
-          >
-            Login
-          </Button>
-        </Box>
       </Container>
     );
   }
 
+  // Fallback (should not normally be reached because of the redirect).
   return (
     <>
       <Header />
