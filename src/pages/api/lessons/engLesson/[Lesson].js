@@ -21,75 +21,11 @@ const Lesson = ({ questions }) => {
         }
     };
 
-    const handlePage1 = () => {
-        setPage1(true);
-        setPage2(false);
-        setPage3(false);
-        setPage4(false);
-        setPage5(false);
-        setBetween(false);
-        setQuestionsView(false);
+    const handlePages = () => {
+        
     };
 
-    const handlePage2 = () => {
-        setPage1(false);
-        setPage2(true);
-        setPage3(false);
-        setPage4(false);
-        setPage5(false);
-        setBetween(false);
-        setQuestionsView(false);
-    };
-
-    const handlePage3 = () => {
-        setPage1(false);
-        setPage2(false);
-        setPage3(true);
-        setPage4(false);
-        setPage5(false);
-        setBetween(false);
-        setQuestionsView(false);
-    };
-
-    const handlePage4 = () => {
-        setPage1(false);
-        setPage2(false);
-        setPage3(false);
-        setPage4(true);
-        setPage5(false);
-        setBetween(false);
-        setQuestionsView(false);
-    };
-
-    const handlePage5 = () => {
-        setPage1(false);
-        setPage2(false);
-        setPage3(false);
-        setPage4(false);
-        setPage5(true);
-        setBetween(false);
-        setQuestionsView(false);
-    };
-
-    const handleBetween = () => {
-        setPage1(false);
-        setPage2(false);
-        setPage3(false);
-        setPage4(false);
-        setPage5(false);
-        setBetween(true);
-        setQuestionsView(false);
-    };
-
-    const handleQuestions = () => {
-        setPage1(false);
-        setPage2(false);
-        setPage3(false);
-        setPage4(false);
-        setPage5(false);
-        setBetween(false);
-        setQuestionsView(true);
-    };
+    
 
     return (
         <Box sx={{ flexGrow: 1 }}>
