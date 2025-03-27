@@ -83,7 +83,13 @@ export default function Lessons() {
                             }}
                         >
                             {/* Lesson Buttons */}
-                            <Button variant="contained" color="primary">Lesson 1</Button>
+                            <Button 
+                                variant="contained" 
+                                color="primary" 
+                                onClick={() => { window.location = '/new/src/pages/api/lessons/lesson1.js'; }}
+                            >
+                                Lesson 1
+                            </Button>
                             <Button variant="contained" color="primary">Lesson 2</Button>
                             <Button variant="contained" color="primary">Lesson 3</Button>
                             <Button variant="contained" color="primary">Lesson 4</Button>
