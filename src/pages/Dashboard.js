@@ -36,7 +36,7 @@ export default function Dashboard() {
     );
   }
 
-  // Fallback (should not normally be reached because of the redirect).
+  //Fallback (should not normally be reached because of the redirect).
   return (
     <>
       <Header />
