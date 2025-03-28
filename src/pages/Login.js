@@ -25,12 +25,12 @@ export default function Login() {
       password,
     });
   
-    console.log("🔍 Login Response:", res); // ✅ Log the response
+    console.log("🔍 Login Response:", res); // Log the response
   
     if (res?.error) {
       setErrorMessage(res.error);
     } else {
-      console.log("✅ Login successful, redirecting...");
+      console.log("Login successful, redirecting...");
       router.push("/dashboard");
     }
   };  
