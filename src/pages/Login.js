@@ -1,4 +1,4 @@
-// pages/login.js
+// File: src\pages\login.js
 import React, { useState } from "react";
 import { Container, TextField, Button, Typography, Box, Alert } from "@mui/material";
 import { signIn } from "next-auth/react";

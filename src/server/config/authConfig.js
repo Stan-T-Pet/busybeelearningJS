@@ -1,11 +1,12 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "database"; // ✅ Ensure MongoDB connection
+import clientPromise from "database"; // Ensure MongoDB connection
 import User from "../models/User";
+import Child from "../models/Child";
 import bcrypt from "bcrypt";
 
 const authConfig = {
-  adapter: MongoDBAdapter(clientPromise), // ✅ Ensure MongoDB Adapter is used
+  adapter: MongoDBAdapter(clientPromise), // Use the MongoDB Adapter
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -14,32 +15,42 @@ const authConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await clientPromise; // ✅ Ensure MongoDB connection is established
-
-        const user = await User.findOne({ email: credentials.email });
+        // Ensure MongoDB connection is established
+        await clientPromise;
+        
+        // Try to find a user in the main User collection first (for parents and admins)
+        let user = await User.findOne({ email: credentials.email });
+        let role = user ? user.role : null;
+        
+        // If not found, attempt to find the user in the Child collection using loginEmail
+        if (!user) {
+          user = await Child.findOne({ loginEmail: credentials.email });
+          role = user ? "child" : null;
+        }
+        
         if (!user) {
           throw new Error("No user found with this email.");
         }
-
+        
+        // Validate the provided password
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid credentials.");
         }
-
+        
+        // Return the correct fields based on the user's role
         return {
           id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role, 
+          name: role === "child" ? user.fullName : user.name,
+          email: role === "child" ? user.loginEmail : user.email,
+          role,
         };
       },
     }),
   ],
-  session: {
-    strategy: "JWT", 
-  },
+  session: { strategy: "JWT" },
+  jwt: { secret: process.env.NEXTAUTH_SECRET },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default authConfig;
-

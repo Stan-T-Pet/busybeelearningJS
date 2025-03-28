@@ -1,8 +1,8 @@
 // File: src/pages/api/admin/users/index.js
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
-import connectDB from "../../../../server/config/database";
-import { Admin } from "../../../../server/models/User";
+import connectDB from "../../../server/config/database";
+import User from "../../../server/models/User";
 import bcrypt from "bcrypt";
 
 export default async function handler(req, res) {

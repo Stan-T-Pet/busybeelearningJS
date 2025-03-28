@@ -21,13 +21,13 @@ export default function ParentProgress() {
     if (typeof window !== "undefined" && status === "authenticated") {
       const fetchProgress = async () => {
         try {
-          console.log("Fetching progress for:", session.user.email); // ✅ Debug log
+          console.log("Fetching progress for:", session.user.email);
           
           const response = await fetch(`/api/parents/progress?parentEmail=${session.user.email}`);
           if (!response.ok) throw new Error("Failed to fetch progress data");
           
           const data = await response.json();
-          console.log("Progress Data:", data); // ✅ Debug log
+          console.log("Progress Data:", data);
 
           setProgressData(data.progress || []);
         } catch (error) {
