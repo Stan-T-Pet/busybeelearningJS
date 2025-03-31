@@ -11,6 +11,8 @@ export default async function handler(req, res) {
   
   try {
     await connectDB();
+
+    //Use 'getServerSession' to fetch the session
     const session = await getServerSession(req, res, authOptions);
     console.log("Session:", session.user); // Debug output
 

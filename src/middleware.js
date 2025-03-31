@@ -4,41 +4,41 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  //Allow authentication and public pages
-  if (
-    pathname.startsWith("/api/auth") || 
-    pathname === "/login" || 
-    pathname === "/register"
-  ) {
+  // Allow requests to NextAuth API
+  if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
 
-  //Get user session token
+  // Allow public pages like login and register
+  if (pathname === "/login" || pathname === "/register") {
+    return NextResponse.next();
+  }
+
+  // Get user session
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   if (!token) {
-    // Redirect to login if user is not authenticated
+    // Redirect unauthenticated users to login page
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  //Role-Based Access Control (RBAC)
-  const userRole = token.role;
-
-  if (pathname.startsWith("/admin") && userRole !== "admin") {
-    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  // Role-Based Protection
+  if (pathname.startsWith("/admin") && token.role !== "admin") {
+    return NextResponse.redirect(new URL("/dashboard", req.url)); // Redirect non-admins
   }
 
-  if (pathname.startsWith("/parent") && userRole !== "parent") {
-    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  if (pathname.startsWith("/parent") && token.role !== "parent") {
+    return NextResponse.redirect(new URL("/dashboard", req.url)); // Redirect non-parents
   }
 
-  if (pathname.startsWith("/child") && userRole !== "child") {
-    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  if (pathname.startsWith("/child") && token.role !== "child") {
+    return NextResponse.redirect(new URL("/dashboard", req.url)); // Redirect non-children
   }
 
   return NextResponse.next();
 }
 
+<<<<<<< Updated upstream
 //Apply middleware to protect specific routes
 export const config = {
   matcher: [
@@ -48,3 +48,9 @@ export const config = {
     "/child/:path*",
   ],
 };
+=======
+// Apply middleware to these routes
+export const config = {
+  matcher: ["/dashboard", "/admin/:path*", "/parent/:path*", "/child/:path*"],
+};
+>>>>>>> Stashed changes

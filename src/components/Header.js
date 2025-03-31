@@ -1,16 +1,7 @@
-// File: src/components/Header.js
-import React, { useState, useEffect } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Box,
+import React, { useState } from "react";
+import { 
+  AppBar, Toolbar, Typography, Button, 
+  IconButton, Drawer, List, ListItem, ListItemText, Box 
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";

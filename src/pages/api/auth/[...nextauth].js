@@ -2,7 +2,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "../../../server/config/database";
-import { Parent, Admin } from "../../../server/models/User";
+import User from "../../../server/models/User";
 import Child from "../../../server/models/Child";
 import bcrypt from "bcrypt";
 
@@ -16,29 +16,26 @@ export const authOptions = {
       },
       async authorize(credentials) {
         await connectDB();
-        let user = await Parent.findOne({ email: credentials.email });
-        let role = user ? "parent" : null;
+
+        let user = await User.findOne({ email: credentials.email });
+        let role = user?.role;
 
         if (!user) {
-          user = await Admin.findOne({ email: credentials.email });
-          role = user ? "admin" : null;
-        }
-
-        if (!user) {
-          user = await Child.findOne({ loginEmail: credentials.email });
-          role = user ? "child" : null;
+          user = await Child.findOne({ email: credentials.email }); // find child using their own email
+          role = "child"; // Explicitly assign "child" role
         }
 
         if (!user) throw new Error("No user found with this email.");
 
+        // Verify password
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) throw new Error("Invalid credentials.");
 
         return {
           id: user._id.toString(),
-          name: role === "child" ? user.fullName : user.name,
-          email: role === "child" ? user.loginEmail : user.email,
-          role,
+          name: user.name,
+          email: user.email,
+          role, // Ensure role is passed to session
         };
       },
     }),
@@ -49,18 +46,14 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.role = user.role || "user"; 
       }
       console.log("JWT token:", token);
       return token;
     },
     async session({ session, token }) {
-      session.user = {
-        ...session.user,
-        id: token.id || token.sub,
-        role: token.role,
-      };
-      console.log("Session:", session);
+      session.user.id = token.id || token.sub;
+      session.user.role = token.role;
       return session;
     },
   },

@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import Header from "../../components/Header";
 
 export default function ParentProfile() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [children, setChildren] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,6 +31,14 @@ export default function ParentProfile() {
   // Using fullName to match the Child model.
   const [childForm, setChildForm] = useState({ fullName: "", password: "", age: "" });
 
+  // ✅ Redirect unauthorized users
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.role !== "parent") {
+      router.replace("/unauthorized");
+    }
+  }, [session, status, router]);
+
+  // ✅ Fetch children for logged-in parent
   useEffect(() => {
     // Only fetch if session is available.
     if (!session || !session.user) return;
@@ -50,6 +58,7 @@ export default function ParentProfile() {
     fetchChildren();
   }, [session]);
 
+  // ✅ Open modal for adding/editing
   const handleOpenModal = (child = null) => {
     if (child) {
       setEditMode(true);
@@ -66,6 +75,7 @@ export default function ParentProfile() {
 
   const handleChange = (e) => setChildForm({ ...childForm, [e.target.name]: e.target.value });
 
+  // ✅ Save new child or update existing
   const handleSaveChild = async () => {
     const url = editMode ? `/api/children/update/${selectedChild._id}` : "/api/children/add";
     const method = editMode ? "PUT" : "POST";
@@ -92,6 +102,7 @@ export default function ParentProfile() {
     }
   };
 
+  // ✅ Delete child
   const handleDeleteChild = async (childId) => {
     try {
       const response = await fetch(`/api/children/delete/${childId}`, { method: "DELETE" });
