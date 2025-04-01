@@ -38,7 +38,6 @@ export async function middleware(req) {
   return NextResponse.next();
 }
 
-<<<<<<< Updated upstream
 //Apply middleware to protect specific routes
 export const config = {
   matcher: [
@@ -48,9 +47,3 @@ export const config = {
     "/child/:path*",
   ],
 };
-=======
-// Apply middleware to these routes
-export const config = {
-  matcher: ["/dashboard", "/admin/:path*", "/parent/:path*", "/child/:path*"],
-};
->>>>>>> Stashed changes

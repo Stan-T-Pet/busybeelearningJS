@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 import {
   Container,
   TextField,
@@ -6,96 +8,70 @@ import {
   Typography,
   Box,
   Alert,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from "@mui/material";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(""); // Parent or Child role added 07/03/2025
-  const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter();
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-
-    if (!email || !password || !role) {
-      setErrorMessage("Email, Password, and Role are required.");
-      return;
-    }
-
-    const res = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-      role,
-    });
-    if (res?.error) {
-      setErrorMessage(res.error);
-    } else {
-      console.log("Login successful, redirecting...");
-
-      // Redirect based on user role
-      if (role === "parent") {
-        router.push("/parent/dashboard");
-      } else if (role === "child") {
-        router.push("/child/dashboard");
+    setErrorMsg("");
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+      if (result.error) {
+        setErrorMsg(result.error);
       } else {
-        router.push("/dashboard"); // Default fallback
+        router.push("/dashboard"); // Adjust this route to where you want to redirect after login.
       }
+    } catch (error) {
+      setErrorMsg("An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
     }
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
       <Typography variant="h4" align="center" gutterBottom>
         Login
       </Typography>
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-      <form onSubmit={handleLogin}>
-        <Box mb={2}>
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      {errorMsg && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {errorMsg}
+        </Alert>
+      )}
+      <Box component="form" onSubmit={handleSubmit}>
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <TextField
+          label="Password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <Box sx={{ textAlign: "center", mt: 2 }}>
+          <Button type="submit" variant="contained" color="primary">
+            Login
+          </Button>
         </Box>
-        <Box mb={2}>
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Box>
-        <Box mb={2}>
-          <FormControl fullWidth required>
-            <InputLabel>Select Role</InputLabel>
-            <Select value={role} onChange={(e) => setRole(e.target.value)}>
-              <MenuItem value="parent">Parent</MenuItem>
-              <MenuItem value="child">Child</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Login
-        </Button>
-      </form>
-      <Box mt={2} textAlign="center">
-        <Button variant="text" color="primary" onClick={() => router.push("/register")}>
-          Don't have an account? Register
-        </Button>
       </Box>
     </Container>
   );
