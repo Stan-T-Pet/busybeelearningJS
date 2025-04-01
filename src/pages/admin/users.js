@@ -1,4 +1,5 @@
-// File: src/pages/admin/users.js
+//file: pages/admin/users.js
+
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -23,7 +24,6 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Redirect if not authenticated or not an admin.
   useEffect(() => {
     if (status === "loading") return;
     if (!session || session.user.role !== "admin") {
@@ -31,7 +31,6 @@ export default function AdminUsers() {
     }
   }, [session, status, router]);
 
-  // Fetch users from backend.
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -48,7 +47,8 @@ export default function AdminUsers() {
         setLoading(false);
       }
     }
-    if (session && session.user.role === "admin") {
+
+    if (session?.user?.role === "admin") {
       fetchUsers();
     }
   }, [session]);
@@ -94,11 +94,10 @@ export default function AdminUsers() {
                     <IconButton
                       color="error"
                       onClick={() => {
-                        // Call delete function; implement confirmation if needed.
-                        fetch(`/api/admin/users/delete/${user._id}`, { method: "DELETE" })
+                        fetch(`/api/admin/users/${user._id}`, { method: "DELETE" })
                           .then((res) => {
                             if (res.ok) {
-                              setUsers(users.filter((u) => u._id !== user._id));
+                              setUsers((prev) => prev.filter((u) => u._id !== user._id));
                             } else {
                               console.error("Failed to delete user");
                             }

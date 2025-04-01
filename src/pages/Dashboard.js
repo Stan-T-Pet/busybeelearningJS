@@ -10,11 +10,11 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return; // Wait for session to load.
+    if (status === "loading") return; //Wait for session to load.
     if (!session) return; // Optionally, you could redirect to login here.
 
     const role = session.user.role;
-    // Redirect based on the user's role.
+    //Redirect based on the user's role.
     if (role === "admin") {
       router.replace("/admin/dashboard");
     } else if (role === "parent") {

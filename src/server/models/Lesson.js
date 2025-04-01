@@ -1,13 +1,21 @@
-// File: server/models/Lesson.js
 import mongoose from "mongoose";
 
-const LessonSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String }, // Add other fields as needed
-  // Optionally, you can add fields for order, published date, etc.
-}, {
-  timestamps: true,
-});
+const LessonSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    subject: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-const Lesson = mongoose.models.Lesson || mongoose.model("Lesson", LessonSchema);
-export default Lesson;
+export default mongoose.models.Lesson || mongoose.model("Lesson", LessonSchema);
