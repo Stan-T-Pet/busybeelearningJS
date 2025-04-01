@@ -8,23 +8,26 @@ import Lesson from "../../server/models/Lesson";
 
 // Fetch lessons from MongoDB on every request.
 export async function getServerSideProps(context) {
+  const { subject } = context.query;
+
   try {
     await connectDB();
-    const lessons = await Lesson.find({}).lean();
+    const filter = subject ? { subject } : {};
+    const lessons = await Lesson.find(filter).lean();
     // Serialize Mongoose documents to JSON-friendly objects.
     const lessonsJSON = lessons.map((lesson) => JSON.parse(JSON.stringify(lesson)));
     return {
-      props: { lessons: lessonsJSON },
+      props: { lessons: lessonsJSON, subject: subject || null },
     };
   } catch (error) {
     console.error("Error fetching lessons:", error);
     return {
-      props: { lessons: [] },
+      props: { lessons: [], subject: subject || null },
     };
   }
 }
 
-export default function Lessons({ lessons }) {
+export default function Lessons({ lessons, subject }) {
   return (
     <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
       <Header />
@@ -39,7 +42,7 @@ export default function Lessons({ lessons }) {
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            Select a Lesson to Begin
+            {subject ? `${subject.charAt(0).toUpperCase() + subject.slice(1)} Lessons` : "Select a Lesson to Begin"}
           </Typography>
           <Link href="/child/dashboard" passHref legacyBehavior>
             <Button variant="outlined" color="primary">

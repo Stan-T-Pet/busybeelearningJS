@@ -1,13 +1,14 @@
 // File: src/pages/admin/dashboard.js
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Typography,
-  Button,
-  Box,
-  Grid,
-  Card,
-  CardContent,
+import { 
+  Container, 
+  Typography, 
+  Button, 
+  Box, 
+  Grid, 
+  Card, 
+  CardContent, 
+  useTheme 
 } from "@mui/material";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -17,8 +18,9 @@ export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [metrics, setMetrics] = useState(null);
+  const theme = useTheme();
 
-  // Redirect if user is not authenticated or not an admin.
+  // Redirect if not authenticated or not an admin.
   useEffect(() => {
     if (status === "loading") return;
     if (!session || session.user.role !== "admin") {
@@ -26,7 +28,7 @@ export default function AdminDashboard() {
     }
   }, [session, status, router]);
 
-  // Fetch metrics from API (example endpoint)
+  // Fetch metrics from API.
   useEffect(() => {
     if (session && session.user.role === "admin") {
       async function fetchMetrics() {
@@ -57,47 +59,99 @@ export default function AdminDashboard() {
   return (
     <>
       <Header />
-      <Container maxWidth="lg" sx={{ mt: 4, pb: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+      <Container 
+        maxWidth="xl" 
+        sx={{ 
+          mt: 4, 
+          pb: 4, 
+          background: "linear-gradient(to bottom, #f0f8ff, #e6f7ff)", 
+          borderRadius: 2, 
+          p: 3 
+        }}
+      >
+        <Typography 
+          variant="h3" 
+          align="center" 
+          gutterBottom 
+          sx={{ fontWeight: "bold", color: theme.palette.primary.main }}
+        >
           Admin Dashboard
         </Typography>
-        <Typography variant="body1" align="center" paragraph>
+        <Typography 
+          variant="h5" 
+          align="center" 
+          paragraph 
+          sx={{ color: theme.palette.text.secondary }}
+        >
           Welcome, {session.user.name}!
         </Typography>
 
         {/* Navigation Buttons */}
-        <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Button
-            variant="contained"
-            color="primary"
+        <Box 
+          sx={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            flexWrap: "wrap", 
+            gap: 2, 
+            mb: 4 
+          }}
+        >
+          <Button 
+            variant="contained" 
+            color="primary" 
             onClick={() => router.push("/admin/profile")}
-            sx={{ mr: 2 }}
+            sx={{ textTransform: "none", fontSize: "1rem" }}
           >
             Profile
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
+          <Button 
+            variant="contained" 
+            color="secondary" 
             onClick={() => router.push("/admin/users")}
-            sx={{ mr: 2 }}
+            sx={{ textTransform: "none", fontSize: "1rem" }}
           >
             Manage Users
           </Button>
-          <Button
-            variant="contained"
-            color="info"
+          <Button 
+            variant="contained" 
+            color="info" 
             onClick={() => router.push("/admin/metrics")}
+            sx={{ textTransform: "none", fontSize: "1rem" }}
           >
             Metrics
+          </Button>
+          <Button 
+            variant="contained" 
+            color="success" 
+            onClick={() => router.push("/admin/courses")}
+            sx={{ textTransform: "none", fontSize: "1rem" }}
+          >
+            Courses
+          </Button>
+          <Button 
+            variant="contained" 
+            color="warning" 
+            onClick={() => router.push("/admin/lessons")}
+            sx={{ textTransform: "none", fontSize: "1rem" }}
+          >
+            Lessons
+          </Button>
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={() => router.push("/admin/quizzes")}
+            sx={{ textTransform: "none", fontSize: "1rem" }}
+          >
+            Quizzes
           </Button>
         </Box>
 
         {/* Metrics Overview */}
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           {metrics ? (
             <>
               <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+                <Card sx={{ boxShadow: 4, borderRadius: 3, backgroundColor: "#fff" }}>
                   <CardContent>
                     <Typography variant="h6" align="center">
                       Total Users
@@ -109,7 +163,7 @@ export default function AdminDashboard() {
                 </Card>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+                <Card sx={{ boxShadow: 4, borderRadius: 3, backgroundColor: "#fff" }}>
                   <CardContent>
                     <Typography variant="h6" align="center">
                       Total Parents
@@ -121,7 +175,7 @@ export default function AdminDashboard() {
                 </Card>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+                <Card sx={{ boxShadow: 4, borderRadius: 3, backgroundColor: "#fff" }}>
                   <CardContent>
                     <Typography variant="h6" align="center">
                       Total Children
@@ -132,7 +186,7 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </Grid>
-              {/* Add more cards as needed */}
+              {/* Additional metric cards can be added here */}
             </>
           ) : (
             <Grid item xs={12}>
@@ -144,7 +198,12 @@ export default function AdminDashboard() {
         </Grid>
 
         <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="outlined" color="error" onClick={() => signOut()}>
+          <Button 
+            variant="outlined" 
+            color="error" 
+            onClick={() => signOut()} 
+            sx={{ textTransform: "none" }}
+          >
             Log out
           </Button>
         </Box>

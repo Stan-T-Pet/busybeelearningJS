@@ -3,16 +3,15 @@ import mongoose from "mongoose";
 
 const QuizSchema = new mongoose.Schema(
   {
-    // The type of question: "isTrue", "multipleChoice", or "multipleSteps"
+    // The type of question
     type: {
       type: String,
       required: true,
       enum: ["isTrue", "multipleChoice", "multipleSteps"],
     },
-    // Common field for all questions.
+
     questionText: { type: String, required: true },
 
-    // isTrue-specific: a Boolean answer.
     correctAnswer: {
       type: Boolean,
       required: function () {
@@ -20,8 +19,6 @@ const QuizSchema = new mongoose.Schema(
       },
     },
 
-    // multipleChoice-specific: an array of options.
-    // Each option is an object with text and a flag if it is correct.
     options: {
       type: [
         {
@@ -34,8 +31,6 @@ const QuizSchema = new mongoose.Schema(
       },
     },
 
-    // multipleSteps-specific: an array of steps (could be questions or instructions) 
-    // and an answer for each step.
     steps: {
       type: [
         {
@@ -46,6 +41,13 @@ const QuizSchema = new mongoose.Schema(
       required: function () {
         return this.type === "multipleSteps";
       },
+    },
+
+    // ✅ New field: subject for modular filtering
+    subject: {
+      type: String,
+      enum: ["english", "math", "history", "japanese", "html"],
+      required: true,
     },
   },
   { timestamps: true }
