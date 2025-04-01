@@ -73,3 +73,95 @@ export const authOptions = {
 };
 
 export default NextAuth(authOptions);
+
+/*import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
+import connectDB from "../../../server/config/database";
+import { Parent, Admin, Child } from "../../../server/models/User";
+
+export const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        await connectDB();
+
+        const { email, password } = credentials;
+
+        // Try to find user in each role
+        const parent = await Parent.findOne({ email });
+        if (parent && (await bcrypt.compare(password, parent.password))) {
+          return {
+            id: parent._id.toString(),
+            name: parent.name,
+            email: parent.email,
+            role: "parent",
+          };
+        }
+
+        const admin = await Admin.findOne({ email });
+        if (admin && (await bcrypt.compare(password, admin.password))) {
+          return {
+            id: admin._id.toString(),
+            name: admin.name,
+            email: admin.email,
+            role: "admin",
+          };
+        }
+
+        const child = await Child.findOne({ loginEmail: email }); // loginEmail for children
+        if (child && (await bcrypt.compare(password, child.password))) {
+          return {
+            id: child._id.toString(),
+            name: child.fullName,
+            email: child.loginEmail,
+            role: "child",
+            parentEmail: child.parentEmail,
+            age: child.age,
+          };
+        }
+
+        // If none matched
+        throw new Error("Invalid email or password.");
+      },
+    }),
+  ],
+  pages: {
+    signIn: "/login",
+  },
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.name = user.name;
+        token.email = user.email;
+        token.parentEmail = user.parentEmail || null;
+        token.age = user.age || null;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id;
+      session.user.role = token.role;
+      session.user.name = token.name;
+      session.user.email = token.email;
+      if (token.role === "child") {
+        session.user.parentEmail = token.parentEmail;
+        session.user.age = token.age;
+      }
+      return session;
+    },
+  },
+};
+
+export default NextAuth(authOptions);
+*/

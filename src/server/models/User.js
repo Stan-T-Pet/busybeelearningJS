@@ -1,25 +1,4 @@
 import mongoose from "mongoose";
-
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-const UserSchema = new mongoose.Schema({
-=======
-// ===== Parent Schema stored in the "parents" collection =====
-const ParentSchema = new mongoose.Schema({
->>>>>>> aa85a160e49896ed30ca96e45310100bb2956166
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  // For example, you might store an array of child IDs
-  children: [{ type: mongoose.Schema.Types.ObjectId, ref: "Child" }],
-  role: { type: String, default: "parent" },
-});
-const Parent = mongoose.models.Parent ||
-  mongoose.model("Parent", ParentSchema, "parents");
-
-<<<<<<< HEAD
-export default mongoose.models.User || mongoose.model("User", UserSchema);
-=======
 const { Schema, model, models } = mongoose;
 
 // ===== Parent Schema stored in the "parents" collection =====
@@ -74,19 +53,3 @@ const Admin = models.Admin || model("Admin", AdminSchema, "admins");
 const Child = models.Child || model("Child", ChildSchema, "children");
 
 export { Parent, Admin, Child };
->>>>>>> Stashed changes
-=======
-// ===== Admin Schema stored in the "admins" collection =====
-const AdminSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  // For example, you might store admin-specific permissions
-  permissions: { type: [String], default: [] },
-  role: { type: String, default: "admin" },
-});
-const Admin = mongoose.models.Admin ||
-  mongoose.model("Admin", AdminSchema, "admins");
-
-export { Parent, Admin };
->>>>>>> aa85a160e49896ed30ca96e45310100bb2956166
