@@ -1,43 +1,66 @@
-// src/pages/admin/quiz.js
+// File: src/pages/admin/quizzes.js
+
 import React, { useEffect, useState } from "react";
-import { Container, Typography, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
 
-export default function AdminquizzesPage() {
+export default function AdminQuizzesPage() {
   const [quizzes, setQuizzes] = useState([]);
   const [newQuiz, setNewQuiz] = useState({ title: "", description: "" });
   const [editingId, setEditingId] = useState(null);
-
-  // Load Quizzes
-  const fetchQuizzes = async () => {
-    const res = await axios.get("/api/quizzes");
-    setQuizzes(res.data);
-  };
 
   useEffect(() => {
     fetchQuizzes();
   }, []);
 
-  // Create
+  const fetchQuizzes = async () => {
+    try {
+      const res = await axios.get("/api/admin/quizzes");
+      setQuizzes(res.data.quizzes || []);
+    } catch (err) {
+      console.error("Failed to load quizzes:", err.message);
+    }
+  };
+
   const createQuiz = async () => {
-    await axios.post("/api/quizzes", newQuiz);
-    setNewQuiz({ title: "", description: "" });
-    fetchQuizzes();
+    try {
+      await axios.post("/api/admin/quizzes", newQuiz);
+      setNewQuiz({ title: "", description: "" });
+      fetchQuizzes();
+    } catch (err) {
+      console.error("Quiz creation failed:", err.message);
+    }
   };
 
-  // Update
   const updateQuiz = async (id) => {
-    await axios.put(`/api/quizzes/${id}`, newQuiz);
-    setEditingId(null);
-    setNewQuiz({ title: "", description: "" });
-    fetchQuizzes();
+    try {
+      await axios.put(`/api/admin/quizzes/${id}`, newQuiz);
+      setEditingId(null);
+      setNewQuiz({ title: "", description: "" });
+      fetchQuizzes();
+    } catch (err) {
+      console.error("Quiz update failed:", err.message);
+    }
   };
 
-  // Delete
   const deleteQuiz = async (id) => {
-    await axios.delete(`/api/quizzes/${id}`);
-    fetchQuizzes();
+    try {
+      await axios.delete(`/api/admin/quizzes/${id}`);
+      fetchQuizzes();
+    } catch (err) {
+      console.error("Quiz deletion failed:", err.message);
+    }
   };
 
   return (
@@ -58,7 +81,11 @@ export default function AdminquizzesPage() {
           onChange={(e) => setNewQuiz({ ...newQuiz, description: e.target.value })}
           fullWidth margin="normal"
         />
-        <Button variant="contained" onClick={editingId ? () => updateQuiz(editingId) : createQuiz}>
+        <Button
+          variant="contained"
+          onClick={editingId ? () => updateQuiz(editingId) : createQuiz}
+          disabled={!newQuiz.title}
+        >
           {editingId ? "Update Quiz" : "Add Quiz"}
         </Button>
 
@@ -79,8 +106,12 @@ export default function AdminquizzesPage() {
                   <Button size="small" onClick={() => {
                     setEditingId(quiz._id);
                     setNewQuiz({ title: quiz.title, description: quiz.description });
-                  }}>Edit</Button>
-                  <Button size="small" color="error" onClick={() => deleteQuiz(quiz._id)}>Delete</Button>
+                  }}>
+                    Edit
+                  </Button>
+                  <Button size="small" color="error" onClick={() => deleteQuiz(quiz._id)}>
+                    Delete
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
