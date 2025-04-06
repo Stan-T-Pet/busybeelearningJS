@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 
 const QuizSchema = new mongoose.Schema(
   {
-    // The type of question
     type: {
       type: String,
       required: true,
@@ -43,11 +42,16 @@ const QuizSchema = new mongoose.Schema(
       },
     },
 
-    // ✅ New field: subject for modular filtering
     subject: {
       type: String,
       enum: ["english", "math", "history", "japanese", "html"],
       required: true,
+    },
+
+    // ✅ NEW
+    courseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
     },
   },
   { timestamps: true }

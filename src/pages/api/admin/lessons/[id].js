@@ -1,3 +1,4 @@
+// file: pages\api\admin\lessons\[id].js
 import connectDB from "../../../../server/config/database";
 import Lesson from "../../../../server/models/Lesson";
 import mongoose from "mongoose";

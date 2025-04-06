@@ -30,6 +30,12 @@ const CourseSchema = new mongoose.Schema(
         ref: "Lesson",
       },
     ],
+    quizzes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Quiz",
+      },
+    ],
   },
   { timestamps: true }
 );
