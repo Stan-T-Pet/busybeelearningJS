@@ -7,6 +7,27 @@ export default function Base_Lesson() {
     const nextPage = () => setPage(page + 1);
     const prevPage = () => setPage(page - 1);
 
+    const logProgress = async (action, score = null) => {
+        try {
+            const response = await fetch("/api/progress/[action].js", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    childId: currentChildID, // Replace with actual child ID
+                    contentId: currentLessonID, // Replace with actual lesson ID
+                    contentType: { type: "lesson" }, // Pass in as an object from MongoDB
+                    //FireBase image online thingy
+                }),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to log progress");
+            } // Closing brace for logProgress function
+    } catch (error) {
+        console.error("Error logging progress:", error);
+    }
+    }
    const [questionsView, setQuestionsView] = useState(false);
 
     const handleAnswer = (isCorrect) => {
@@ -199,3 +220,4 @@ const handleLessonInfo = async () => {
             </Box>
         );
     }
+
