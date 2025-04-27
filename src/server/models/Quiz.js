@@ -48,7 +48,7 @@ const QuizSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ NEW
+
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",

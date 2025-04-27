@@ -1,65 +1,66 @@
-// File: src/pages/admin/quizzes.js
-
+// File: src/pages/admin/quizzes/index.js
 import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
   TextField,
   Button,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
+  MenuItem,
+  Grid,
+  Box,
 } from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
 
 export default function AdminQuizzesPage() {
-  const [quizzes, setQuizzes] = useState([]);
-  const [newQuiz, setNewQuiz] = useState({ title: "", description: "" });
-  const [editingId, setEditingId] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [newQuiz, setNewQuiz] = useState({
+    questionText: "",
+    correctAnswer: "",
+    courseId: "",
+    subject: "english",
+    type: "isTrue",
+    options: [{ text: "", isCorrect: false }],
+    steps: [""],
+  });
 
   useEffect(() => {
-    fetchQuizzes();
+    const fetchCourses = async () => {
+      const res = await axios.get("/api/admin/courses");
+      setCourses(res.data.courses || []);
+    };
+    fetchCourses();
   }, []);
 
-  const fetchQuizzes = async () => {
-    try {
-      const res = await axios.get("/api/admin/quizzes");
-      setQuizzes(res.data.quizzes || []);
-    } catch (err) {
-      console.error("Failed to load quizzes:", err.message);
-    }
+  const handleChange = (e) => {
+    setNewQuiz({ ...newQuiz, [e.target.name]: e.target.value });
   };
 
   const createQuiz = async () => {
     try {
-      await axios.post("/api/admin/quizzes", newQuiz);
-      setNewQuiz({ title: "", description: "" });
-      fetchQuizzes();
-    } catch (err) {
-      console.error("Quiz creation failed:", err.message);
-    }
-  };
+      const payload = {
+        type: newQuiz.type,
+        questionText: newQuiz.questionText,
+        subject: newQuiz.subject.toLowerCase(),
+        courseId: newQuiz.courseId,
+      };
 
-  const updateQuiz = async (id) => {
-    try {
-      await axios.put(`/api/admin/quizzes/${id}`, newQuiz);
-      setEditingId(null);
-      setNewQuiz({ title: "", description: "" });
-      fetchQuizzes();
-    } catch (err) {
-      console.error("Quiz update failed:", err.message);
-    }
-  };
+      if (newQuiz.type === "isTrue") {
+        payload.correctAnswer = newQuiz.correctAnswer.toLowerCase() === "true";
+      }
 
-  const deleteQuiz = async (id) => {
-    try {
-      await axios.delete(`/api/admin/quizzes/${id}`);
-      fetchQuizzes();
+      if (newQuiz.type === "multipleChoice") {
+        payload.options = newQuiz.options.filter(opt => opt.text.trim() !== "");
+      }
+
+      if (newQuiz.type === "multipleSteps") {
+        payload.steps = newQuiz.steps.filter(step => step.trim() !== "");
+      }
+
+      await axios.post("/api/admin/quizzes", payload);
+      alert("Quiz created successfully");
     } catch (err) {
-      console.error("Quiz deletion failed:", err.message);
+      alert(err.response?.data?.error || err.message);
     }
   };
 
@@ -67,56 +68,153 @@ export default function AdminQuizzesPage() {
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom>Manage Quizzes</Typography>
+        <Typography variant="h4" gutterBottom align="center">
+          Create Quiz
+        </Typography>
 
-        <TextField
-          label="Title"
-          value={newQuiz.title}
-          onChange={(e) => setNewQuiz({ ...newQuiz, title: e.target.value })}
-          fullWidth margin="normal"
-        />
-        <TextField
-          label="Description"
-          value={newQuiz.description}
-          onChange={(e) => setNewQuiz({ ...newQuiz, description: e.target.value })}
-          fullWidth margin="normal"
-        />
-        <Button
-          variant="contained"
-          onClick={editingId ? () => updateQuiz(editingId) : createQuiz}
-          disabled={!newQuiz.title}
-        >
-          {editingId ? "Update Quiz" : "Add Quiz"}
-        </Button>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              label="Question"
+              name="questionText"
+              value={newQuiz.questionText}
+              onChange={handleChange}
+              fullWidth
+            />
+          </Grid>
 
-        <Table sx={{ mt: 4 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {quizzes.map((quiz) => (
-              <TableRow key={quiz._id}>
-                <TableCell>{quiz.title}</TableCell>
-                <TableCell>{quiz.description}</TableCell>
-                <TableCell>
-                  <Button size="small" onClick={() => {
-                    setEditingId(quiz._id);
-                    setNewQuiz({ title: quiz.title, description: quiz.description });
-                  }}>
-                    Edit
-                  </Button>
-                  <Button size="small" color="error" onClick={() => deleteQuiz(quiz._id)}>
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+          <Grid item xs={12}>
+            <TextField
+              label="Answer"
+              name="correctAnswer"
+              value={newQuiz.correctAnswer}
+              onChange={handleChange}
+              fullWidth
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Subject"
+              name="subject"
+              value={newQuiz.subject}
+              onChange={handleChange}
+              fullWidth
+            >
+              {["english", "math", "history", "japanese", "html"].map((subj) => (
+                <MenuItem key={subj} value={subj}>
+                  {subj.charAt(0).toUpperCase() + subj.slice(1)}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Quiz Type"
+              name="type"
+              value={newQuiz.type}
+              onChange={handleChange}
+              fullWidth
+            >
+              {["isTrue", "multipleChoice", "multipleSteps"].map((t) => (
+                <MenuItem key={t} value={t}>
+                  {t}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {newQuiz.type === "multipleChoice" && (
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Options</Typography>
+              {newQuiz.options.map((opt, index) => (
+                <TextField
+                  key={index}
+                  label={`Option ${index + 1}`}
+                  value={opt.text}
+                  onChange={(e) => {
+                    const updated = [...newQuiz.options];
+                    updated[index].text = e.target.value;
+                    setNewQuiz({ ...newQuiz, options: updated });
+                  }}
+                  fullWidth
+                  margin="dense"
+                />
+              ))}
+              <Button
+                variant="outlined"
+                onClick={() =>
+                  setNewQuiz({
+                    ...newQuiz,
+                    options: [...newQuiz.options, { text: "", isCorrect: false }],
+                  })
+                }
+              >
+                Add Option
+              </Button>
+            </Grid>
+          )}
+
+          {newQuiz.type === "multipleSteps" && (
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Steps</Typography>
+              {newQuiz.steps.map((step, index) => (
+                <TextField
+                  key={index}
+                  label={`Step ${index + 1}`}
+                  value={step}
+                  onChange={(e) => {
+                    const updated = [...newQuiz.steps];
+                    updated[index] = e.target.value;
+                    setNewQuiz({ ...newQuiz, steps: updated });
+                  }}
+                  fullWidth
+                  margin="dense"
+                />
+              ))}
+              <Button
+                variant="outlined"
+                onClick={() =>
+                  setNewQuiz({ ...newQuiz, steps: [...newQuiz.steps, ""] })
+                }
+              >
+                Add Step
+              </Button>
+            </Grid>
+          )}
+
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Course"
+              name="courseId"
+              value={newQuiz.courseId}
+              onChange={handleChange}
+              fullWidth
+            >
+              {courses.map((course) => (
+                <MenuItem key={course._id} value={course._id}>
+                  {course.title}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ textAlign: "center" }}>
+              <Button
+                variant="contained"
+                onClick={createQuiz}
+                disabled={!newQuiz.questionText || !newQuiz.courseId}
+              >
+                Create Quiz
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
     </>
   );
