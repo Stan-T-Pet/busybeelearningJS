@@ -1,6 +1,6 @@
 // File: src/pages/admin/lessons.js
-import React, { useEffect, useState } from "react";
 
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -26,9 +26,18 @@ export default function AdminLessonsPage() {
   });
   const [editingId, setEditingId] = useState(null);
 
+  useEffect(() => {
+    fetchLessons();
+    fetchCourses();
+  }, []);
+
   const fetchLessons = async () => {
-    const res = await axios.get("/api/admin/lessons");
-    setLessons(res.data.lessons);
+    try {
+      const res = await axios.get("/api/admin/lessons");
+      setLessons(res.data.lessons || []);
+    } catch (err) {
+      console.error("Failed to load lessons:", err.message);
+    }
   };
 
   const fetchCourses = async () => {
@@ -36,14 +45,9 @@ export default function AdminLessonsPage() {
       const res = await axios.get("/api/admin/courses");
       setCourses(res.data.courses || []);
     } catch (err) {
-      console.error("Failed to load courses:", err.response?.data?.error || err.message);
+      console.error("Failed to load courses:", err.message);
     }
   };
-
-  useEffect(() => {
-    fetchLessons();
-    fetchCourses();
-  }, []);
 
   const createLesson = async () => {
     try {
@@ -51,7 +55,7 @@ export default function AdminLessonsPage() {
       setNewLesson({ title: "", description: "", subject: "" });
       fetchLessons();
     } catch (err) {
-      console.error("Lesson creation failed:", err.response?.data?.error || err.message);
+      console.error("Lesson creation failed:", err.message);
     }
   };
 
@@ -62,7 +66,7 @@ export default function AdminLessonsPage() {
       setNewLesson({ title: "", description: "", subject: "" });
       fetchLessons();
     } catch (err) {
-      console.error("Lesson update failed:", err.response?.data?.error || err.message);
+      console.error("Lesson update failed:", err.message);
     }
   };
 
@@ -71,7 +75,7 @@ export default function AdminLessonsPage() {
       await axios.delete(`/api/admin/lessons/${id}`);
       fetchLessons();
     } catch (err) {
-      console.error("Lesson deletion failed:", err.response?.data?.error || err.message);
+      console.error("Lesson deletion failed:", err.message);
     }
   };
 
@@ -79,37 +83,30 @@ export default function AdminLessonsPage() {
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Manage Lessons
-        </Typography>
+        <Typography variant="h4" gutterBottom>Manage Lessons</Typography>
 
         <TextField
           label="Title"
           value={newLesson.title}
           onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })}
-          fullWidth
-          margin="normal"
+          fullWidth margin="normal"
         />
-
         <TextField
           label="Description"
           value={newLesson.description}
           onChange={(e) => setNewLesson({ ...newLesson, description: e.target.value })}
-          fullWidth
-          margin="normal"
+          fullWidth margin="normal"
         />
-
         <TextField
           select
           label="Subject"
           value={newLesson.subject}
           onChange={(e) => setNewLesson({ ...newLesson, subject: e.target.value })}
-          fullWidth
-          margin="normal"
+          fullWidth margin="normal"
         >
           {courses.map((course) => (
             <MenuItem key={course._id} value={course.title}>
-              {course.title.charAt(0).toUpperCase() + course.title.slice(1)}
+              {course.title}
             </MenuItem>
           ))}
         </TextField>
@@ -138,28 +135,17 @@ export default function AdminLessonsPage() {
                 <TableCell>{lesson.description}</TableCell>
                 <TableCell>{lesson.subject}</TableCell>
                 <TableCell>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      setEditingId(lesson._id);
-                      setNewLesson({
-                        title: lesson.title,
-                        description: lesson.description,
-                        subject: lesson.subject,
-                      });
-                    }}
-                  >
+                  <Button size="small" onClick={() => {
+                    setEditingId(lesson._id);
+                    setNewLesson({
+                      title: lesson.title,
+                      description: lesson.description,
+                      subject: lesson.subject
+                    });
+                  }}>
                     Edit
                   </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this lesson?")) {
-                        deleteLesson(lesson._id);
-                      }
-                    }}                    
-                  >
+                  <Button size="small" color="error" onClick={() => deleteLesson(lesson._id)}>
                     Delete
                   </Button>
                 </TableCell>

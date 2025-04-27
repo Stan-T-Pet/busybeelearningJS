@@ -36,7 +36,7 @@ export default function AdminCoursesPage() {
 
   // Delete
   const deleteCourse = async (id) => {
-    await axios.delete(`/api/admin/courses${id}`);
+    await axios.delete(`/api/admin/courses/${id}`);
     fetchCourses();
   };
 

@@ -21,18 +21,25 @@ export default function ChildCoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("/api/admin/courses");
-        setCourses(res.data.courses || []);
+        const res = await axios.get("/api/courses");
+        if (res.data && Array.isArray(res.data.courses)) {
+          setCourses(res.data.courses);
+        } else {
+          console.error("Unexpected response:", res.data);
+          setCourses([]);
+        }
       } catch (err) {
         console.error("Failed to load courses:", err);
+        setCourses([]);
       }
     };
-
+  
     fetchCourses();
   }, []);
+  
 
-  const handleViewLessons = (subject) => {
-    router.push(`/child/lessons?subject=${encodeURIComponent(subject)}`);
+  const handleViewCourse = (courseId) => {
+    router.push(`/child/courses/${courseId}`);
   };
 
   return (
@@ -62,9 +69,9 @@ export default function ChildCoursesPage() {
                     <Button
                       size="small"
                       variant="outlined"
-                      onClick={() => handleViewLessons(course.title)}
+                      onClick={() => handleViewCourse(course._id)}
                     >
-                      <Typography variant="body2">View Lessons</Typography>
+                      <Typography variant="body2">View Course</Typography>
                     </Button>
                   </CardActions>
                 </Card>
