@@ -78,7 +78,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
                     </Typography>
                   </CardContent>
                   <CardActions sx={{ justifyContent: "space-between" }}>
-                    <Link href={`/child/lessons/${lesson._id}`} passHref>
+                    <Link href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
                       <Button variant="contained" color={isCompleted ? "success" : "primary"}>
                         {isCompleted ? "Completed" : "Start Lesson"}
                       </Button>
@@ -91,7 +91,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
         </Grid>
 
         <Box mt={4} display="flex" justifyContent="center">
-          <Link href={`/child/quiz?courseId=${courseId}`} passHref>
+          <Link href={`/child/quiz?courseId=${courseId}`} passHref legacyBehavior>
             <Button variant="outlined">Go to Course Quizzes</Button>
           </Link>
         </Box>

@@ -22,7 +22,7 @@ export default function Home() {
               <Typography variant="body1" gutterBottom>
               Improve your grammar, vocabulary, and writing skills.
               </Typography>
-              <Link href="/courses/english" passHref>
+              <Link href="/courses/english" passHref legacyBehavior>
                 <Button variant="contained" color="primary">Start Learning</Button>
               </Link>
             </Paper>
@@ -35,7 +35,7 @@ export default function Home() {
               <Typography variant="body1" gutterBottom>
                 Master algebra, geometry, and arithmetic concepts.
               </Typography>
-              <Link href="/courses/mathematics" passHref>
+              <Link href="/courses/mathematics" passHref legacyBehavior>
                 <Button variant="contained" color="secondary">Start Learning</Button>
               </Link>
             </Paper>
@@ -48,7 +48,7 @@ export default function Home() {
               <Typography variant="body1" gutterBottom>
                 Explore historical events and learn about world-changing moments.
               </Typography>
-              <Link href="/courses/history" passHref>
+              <Link href="/courses/history" passHref legacyBehavior>
                 <Button variant="outlined" color="primary">Start Learning</Button>
               </Link>
             </Paper>

@@ -40,7 +40,7 @@ export default function javascriptCourse({ lessons }) {
                       </Typography>
                     )}
                     <Box sx={{ mt: 1 }}>
-                      <Link href={`/courses/javascript/${lesson._id}`} passHref>
+                      <Link href={`/courses/javascript/${lesson._id}`} passHref legacyBehavior>
                         <Button variant="contained">Start Lesson</Button>
                       </Link>
                     </Box>
