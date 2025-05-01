@@ -1,4 +1,3 @@
-// File: server/models/Quiz.js
 import mongoose from "mongoose";
 
 const QuizSchema = new mongoose.Schema(
@@ -42,20 +41,24 @@ const QuizSchema = new mongoose.Schema(
       },
     },
 
-    subject: {
-      type: String,
-      enum: ["english", "math", "history", "japanese", "html"],
+    lessonId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Lesson",
       required: true,
     },
 
+<<<<<<< HEAD
     imageUrl: {
       type: String,
       required: false, // Optional field
     },
 
+=======
+>>>>>>> origin/master
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
+      required: true,
     },
   },
   { timestamps: true }

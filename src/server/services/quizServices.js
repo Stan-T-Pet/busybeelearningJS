@@ -4,7 +4,7 @@ import Quiz from "../models/Quiz.js";
 export const createQuiz = async (quizData) => {
   const quiz = new Quiz({
     ...quizData,
-    courseId: quizData.courseId || null, // ✅ link to course
+    courseId: quizData.courseId || null, //link to course
   });
   return await quiz.save();
 };

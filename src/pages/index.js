@@ -1,8 +1,15 @@
-import { Typography, Container, Grid, Paper, Button } from '@mui/material';
-import Link from 'next/link';
-import Header from "../components/Header";
+// File: src/pages/index.js
 
-export default function Home() {
+import { Typography, Container, Grid, Paper, Button } from "@mui/material";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import Header from "../components/Header";
+import connectDB from "../server/config/database";
+import Course from "../server/models/Course";
+
+export default function Home({ randomCourses }) {
+  const { data: session, status } = useSession();
+
   return (
     <>
       <Header />
@@ -15,6 +22,7 @@ export default function Home() {
         </Typography>
         
         <Grid container spacing={3} sx={{ marginTop: 4 }}>
+<<<<<<< HEAD
           {/* Course 1 */}
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={3} sx={{ padding: 3, textAlign: 'center' }}>
@@ -53,8 +61,55 @@ export default function Home() {
               </Link>
             </Paper>
           </Grid>
+=======
+          {randomCourses.map((course) => (
+            <Grid item xs={12} sm={6} md={4} key={course._id}>
+              <Paper elevation={3} sx={{ padding: 3, textAlign: 'center' }}>
+                <Typography variant="h5" gutterBottom>{course.title}</Typography>
+                <Typography variant="body1" gutterBottom>
+                  {course.description.length > 100 ? course.description.slice(0, 100) + "..." : course.description}
+                </Typography>
+                <Link
+                  href={
+                    session
+                      ? `/child/courses/${course._id}` // if logged in, go straight to lessons
+                      : `/login?callbackUrl=/child/courses/${course._id}` // if not logged in, go to login first
+                  }
+                  passHref
+                >
+                  <Button variant="contained" color="primary">
+                    Start Learning
+                  </Button>
+                </Link>
+              </Paper>
+            </Grid>
+          ))}
+>>>>>>> origin/master
         </Grid>
       </Container>
     </>
   );
+}
+
+// Fetch 3 random courses from MongoDB
+export async function getServerSideProps() {
+  const connect = await connectDB();
+
+  try {
+    const courses = await Course.aggregate([{ $sample: { size: 3 } }]); // RANDOM 3 courses
+    const randomCourses = courses.map((course) => JSON.parse(JSON.stringify(course)));
+
+    return {
+      props: {
+        randomCourses,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching random courses:", error);
+    return {
+      props: {
+        randomCourses: [],
+      },
+    };
+  }
 }

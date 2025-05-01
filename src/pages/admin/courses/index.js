@@ -1,7 +1,7 @@
-// src/pages/admin/courses.js
+// src/pages/admin/courses/courses.js
 import React, { useEffect, useState } from "react";
 import { Container, Typography, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import Header from "../../components/Header";
+import Header from "@/components/Header";
 import axios from "axios";
 
 export default function AdminCoursesPage() {
@@ -52,6 +52,7 @@ export default function AdminCoursesPage() {
           onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
           fullWidth margin="normal"
         />
+        
         <TextField
           label="Description"
           value={newCourse.description}

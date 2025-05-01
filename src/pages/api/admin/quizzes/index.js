@@ -1,9 +1,11 @@
 // File: src/pages/api/admin/quizzes/index.js
 
-import connectDB from "../../../../server/config/database";
-import Quiz from "../../../../server/models/Quiz";
+import connectDB from "@/server/config/database";
+import Quiz from "@/server/models/Quiz";
+import Lesson from "@/server/models/Lesson";
+import { authOptions } from '../../auth/[...nextauth]';
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
+
 
 export default async function handler(req, res) {
   await connectDB();
@@ -24,8 +26,22 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     try {
-      const quiz = await Quiz.create(req.body);
-      return res.status(201).json({ quiz });
+      const { questionText, type, correctAnswer, options, steps, lessonId } = req.body;
+
+      const lesson = await Lesson.findById(lessonId);
+      if (!lesson) return res.status(400).json({ error: "Invalid lesson ID" });
+
+      const newQuiz = await Quiz.create({
+        questionText,
+        type,
+        correctAnswer,
+        options,
+        steps,
+        lessonId,
+        courseId: lesson.courseId,
+      });
+
+      return res.status(201).json({ quiz: newQuiz });
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }

@@ -5,7 +5,7 @@ export const createCourse = async (courseData) => {
   const course = new Course({
     ...courseData,
     lessons: courseData.lessons || [],
-    quizzes: courseData.quizzes || [], // ✅ new field
+    quizzes: courseData.quizzes || [], // new field
   });
   return await course.save();
 };
@@ -13,7 +13,7 @@ export const createCourse = async (courseData) => {
 export const getCourseWithContent = async (courseId) => {
   return await Course.findById(courseId)
     .populate("lessons")
-    .populate("quizzes"); // ✅ populate quizzes
+    .populate("quizzes"); // populate quizzes
 };
 
 export const updateCourse = async (courseId, updates) => {

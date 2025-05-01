@@ -1,5 +1,3 @@
-// File: src/pages/api/admin/lessons/index.js
-
 import connectDB from "../../../../server/config/database";
 import Lesson from "../../../../server/models/Lesson";
 import { getServerSession } from "next-auth/next";
@@ -15,7 +13,9 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     try {
-      const lessons = await Lesson.find({});
+      const { courseId } = req.query;
+      const query = courseId ? { courseId } : {};
+      const lessons = await Lesson.find(query);
       return res.status(200).json({ lessons });
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -24,13 +24,14 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     try {
-      const { title, description, subject, courseId } = req.body;
+      const { title, description, courseId } = req.body;
+
       const lesson = await Lesson.create({
         title,
         description,
-        subject,
         courseId,
       });
+
       return res.status(201).json({ lesson });
     } catch (error) {
       return res.status(400).json({ error: error.message });

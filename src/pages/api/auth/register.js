@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import connectDB from "../../../server/config/database";
 // Import named exports from User.js and Child.js
 import { Parent, Admin } from "../../../server/models/User";

@@ -1,5 +1,5 @@
 import { Admin } from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function addAdmin({ fullName, email, password }) {
   const hashedPassword = await bcrypt.hash(password, 10);

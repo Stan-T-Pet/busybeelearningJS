@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
 import connectDB from "../../../../server/config/database";
 import { Admin, Parent, Child } from "../../../../server/models/User";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
   await connectDB();

@@ -1,4 +1,5 @@
-// File: src/pages/child/quiz.js
+//file: src\pages\child\quiz.js
+
 /*
  Im really sorry to anyone reading this, I (Stanley) made a mistake in the naming of this file. 
  It should be quizzes.js not quiz.js. But it is called quiz.js and is being used as such in the code.
@@ -6,6 +7,7 @@
  since this is still here:
  ---> I apologize for the confusion. <---
  */
+
  import React, { useEffect, useState } from "react";
  import { Box, Typography, Button, Container } from "@mui/material";
  import Link from "next/link";
@@ -19,8 +21,13 @@
    const router = useRouter();
    const { courseId } = router.query;
  
+   const [mounted, setMounted] = useState(false);
    const [quizzes, setQuizzes] = useState(initialQuizzes || []);
    const [progressMap, setProgressMap] = useState({});
+ 
+   useEffect(() => {
+     setMounted(true);
+   }, []);
  
    useEffect(() => {
      if (!session?.user?.id || !courseId) return;
@@ -29,18 +36,15 @@
        try {
          const res = await axios.get(`/api/lessons/progress?childId=${session.user.id}`);
          const progressData = res.data.progress || [];
-         const completedQuizIds = progressData
-           .filter(
-             (entry) =>
-               entry.contentType === "quiz" &&
-               entry.completed === true &&
-               entry.courseId === courseId
-           )
-           .reduce((acc, curr) => {
-             acc[curr.contentId] = true;
-             return acc;
-           }, {});
-         setProgressMap(completedQuizIds);
+ 
+         const map = {};
+         progressData
+           .filter((entry) => entry.contentType === "quiz" && entry.courseId === courseId)
+           .forEach((entry) => {
+             map[entry.contentId] = entry.completed ? "completed" : "started";
+           });
+ 
+         setProgressMap(map);
        } catch (err) {
          console.error("Error loading progress data:", err);
        }
@@ -48,6 +52,8 @@
  
      fetchProgress();
    }, [session?.user?.id, courseId]);
+ 
+   if (!mounted) return null;
  
    return (
      <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
@@ -83,15 +89,30 @@
          >
            {quizzes.length > 0 ? (
              quizzes.map((quiz) => {
-               const isCompleted = progressMap[quiz._id];
+               const status = progressMap[quiz._id];
+               const color =
+                 status === "completed" ? "success" :
+                 status === "started" ? "warning" :
+                 "secondary";
+ 
+               const badge =
+                 status === "completed" ? " ✓ Completed" :
+                 status === "started" ? " • In Progress" :
+                 "";
+ 
                return (
                  <Link key={quiz._id} href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
                    <Button
                      variant="contained"
-                     color={isCompleted ? "success" : "secondary"}
-                     sx={{ height: "100%", fontSize: "1.1rem" }}
+                     color={color}
+                     sx={{
+                       height: "100%",
+                       fontSize: "1.1rem",
+                       textTransform: "none",
+                       justifyContent: "flex-start",
+                     }}
                    >
-                     {quiz.title} {isCompleted ? "✓ Completed" : ""}
+                     {quiz.title || quiz.questionText || "Untitled Quiz"} {badge}
                    </Button>
                  </Link>
                );
@@ -126,5 +147,4 @@
        props: { initialQuizzes: [] },
      };
    }
- }
- 
+ } 

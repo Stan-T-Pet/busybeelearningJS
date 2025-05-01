@@ -1,5 +1,5 @@
 import { Parent } from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function addParent({ fullName, email, password }) {
   const hashedPassword = await bcrypt.hash(password, 10);

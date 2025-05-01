@@ -20,11 +20,6 @@ const ProgressSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
     },
-    subject: {
-      type: String,
-      enum: ["english", "math", "history"],
-      required: true,
-    },
     startedAt: {
       type: Date,
     },

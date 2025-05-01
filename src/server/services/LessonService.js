@@ -1,22 +1,23 @@
 // server/services/lessonService.js
 import Lesson from "../models/Lesson.js";
 
-export const createLesson = async (lessonData) => {
-  const lesson = new Lesson({
-    ...lessonData,
-    courseId: lessonData.courseId || null, // ✅ link to course
-  });
+export async function createLesson(data) {
+  const lesson = new Lesson(data);
   return await lesson.save();
-};
+}
 
-export const getLessonById = async (lessonId) => {
-  return await Lesson.findById(lessonId).populate("courseId");
-};
+export async function updateLesson(id, data) {
+  return await Lesson.findByIdAndUpdate(id, data, { new: true });
+}
 
-export const getLessonsByCourse = async (courseId) => {
+export async function getLessonById(id) {
+  return await Lesson.findById(id);
+}
+
+export async function getLessonsByCourse(courseId) {
   return await Lesson.find({ courseId });
-};
+}
 
-export const getAllLessons = async () => {
-  return await Lesson.find();
-};
+export async function deleteLesson(id) {
+  return await Lesson.findByIdAndDelete(id);
+}
