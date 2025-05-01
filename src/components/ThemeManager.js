@@ -3,10 +3,9 @@
 import React, { createContext, useMemo, useState, useContext } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 
+
 const ThemeModeContext = createContext();
-
 export const useThemeMode = () => useContext(ThemeModeContext);
-
 export default function ThemeManager({ children }) {
   const [mode, setMode] = useState("light");
 

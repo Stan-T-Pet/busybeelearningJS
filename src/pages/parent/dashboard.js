@@ -4,6 +4,7 @@ import { Container, Typography, Button, Box } from "@mui/material";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 import ProgressOverview from "../../components/Progress/progressOverview";
 
 export default function ParentDashboard() {

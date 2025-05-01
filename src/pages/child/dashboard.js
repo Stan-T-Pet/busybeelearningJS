@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import Link from "next/link";
-import DynamicCard from "../../components/DynamicCard";
 
 export default function ChildDashboard() {
   const [lessons, setLessons] = useState([]);

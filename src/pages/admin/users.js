@@ -84,7 +84,7 @@ export default function AdminUsers() {
                       Role: {user.role}
                     </Typography>
                   </CardContent>
-                  <DynamicCardActions>
+                  <CardActions>
                     <IconButton
                       color="primary"
                       onClick={() => router.push(`/admin/users/edit/${user._id}`)}

@@ -10,6 +10,7 @@ import {
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 
 export default function ParentProgress() {
   const { data: session, status } = useSession();

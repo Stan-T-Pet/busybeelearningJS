@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Typography, Box, Grid, Card, CardContent, Button } from "@mui/material";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 import Link from "next/link";
 import connectDB from "../../server/config/database";
 import Lesson from "../../server/models/Lesson";

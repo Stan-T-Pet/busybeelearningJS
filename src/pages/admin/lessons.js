@@ -107,7 +107,7 @@ export default function AdminLessonsPage() {
             fullWidth margin="normal"
           />
           <TextField
-            label="Content (HTML)"
+            label="Content (Markdown/HTML)"
             multiline
             minRows={4}
             value={newLesson.content}

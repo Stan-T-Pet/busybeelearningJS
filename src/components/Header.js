@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useThemeMode } from "./ThemeManager"; // import theme toggle
 
+
 export default function Header() {
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
