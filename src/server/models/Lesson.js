@@ -18,6 +18,10 @@ const LessonSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
     },
+    imageUrl: {
+      type: String,
+      required: false, // Optional field
+    },
   },
   { timestamps: true }
 );

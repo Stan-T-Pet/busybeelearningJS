@@ -1,6 +1,7 @@
 // File: src/pages/api/lessons/Lesson.js
 import connectDB from "../../../server/config/database";
 import Lesson from "../../../server/models/Lesson";
+import { uploadImage } from "../../../server/cdn/claudinary";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -21,15 +22,21 @@ export default async function handler(req, res) {
   } else if (req.method === "POST") {
     try {
       // Destructure lesson details from the request body.
-      const { title, description, subject, content } = req.body;
+      const { title, description, subject, content, imagePath } = req.body;
       if (!title || !subject) {
         return res
           .status(400)
           .json({ error: "Title and subject are required." });
       }
 
+      let imageUrl = null;
+      if (imagePath) {
+        // Upload image to Cloudinary
+        imageUrl = await uploadImage(imagePath, "lessons");
+      }
+
       // Create and save the new lesson.
-      const lesson = new Lesson({ title, description, subject, content });
+      const lesson = new Lesson({ title, description, subject, content, imageUrl });
       const savedLesson = await lesson.save();
       return res.status(201).json({ lesson: savedLesson });
     } catch (error) {

@@ -1,21 +1,22 @@
 // File: src/pages/api/quizzes/add.js
 import connectDB from "../../../server/config/database";
 import Quiz from "../../../server/models/Quiz";
+import { uploadImage } from "../../../server/cdn/claudinary";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
-  
+
   try {
     await connectDB();
-    const { type, questionText, correctAnswer, options, steps } = req.body;
-    
+    const { type, questionText, correctAnswer, options, steps, imagePath } = req.body;
+
     // Basic validation (expand as needed)
     if (!type || !questionText) {
       return res.status(400).json({ error: "type and questionText are required." });
     }
-    
+
     // For each type, ensure required fields are provided:
     if (type === "isTrue" && typeof correctAnswer !== "boolean") {
       return res.status(400).json({ error: "correctAnswer must be a boolean for isTrue questions." });
@@ -26,15 +27,22 @@ export default async function handler(req, res) {
     if (type === "multipleSteps" && (!steps || !Array.isArray(steps) || steps.length === 0)) {
       return res.status(400).json({ error: "At least one step is required for multipleSteps questions." });
     }
-    
+
+    let imageUrl = null;
+    if (imagePath) {
+      // Upload image to Cloudinary
+      imageUrl = await uploadImage(imagePath, "quizzes");
+    }
+
     const newQuiz = new Quiz({
       type,
       questionText,
       correctAnswer: type === "isTrue" ? correctAnswer : undefined,
       options: type === "multipleChoice" ? options : undefined,
       steps: type === "multipleSteps" ? steps : undefined,
+      imageUrl,
     });
-    
+
     const savedQuiz = await newQuiz.save();
     return res.status(201).json({ message: "Quiz question added successfully", quiz: savedQuiz });
   } catch (error) {

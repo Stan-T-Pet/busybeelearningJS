@@ -48,6 +48,10 @@ const QuizSchema = new mongoose.Schema(
       required: true,
     },
 
+    imageUrl: {
+      type: String,
+      required: false, // Optional field
+    },
 
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
