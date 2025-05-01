@@ -1,7 +1,7 @@
 // File: src/pages/api/lessons/Lesson.js
 import connectDB from "../../../server/config/database";
 import Lesson from "../../../server/models/Lesson";
-import { uploadImage } from "../../../server/cdn/claudinary";
+import { uploadImage } from "../../../server/cdn/cloudinary";
 
 export default async function handler(req, res) {
   await connectDB();
