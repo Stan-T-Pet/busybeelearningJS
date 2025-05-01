@@ -1,3 +1,5 @@
+// file: src\pages\courses\index.js
+
 import React from "react";
 import { Container, Typography, Box, Grid, Card, CardContent, Button } from "@mui/material";
 import Link from "next/link";

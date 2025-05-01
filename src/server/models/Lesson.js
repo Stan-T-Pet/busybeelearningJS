@@ -12,7 +12,7 @@ const LessonSchema = new mongoose.Schema(
     },
     subject: {
       type: String,
-      required: true,
+      required: false,
     },
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -20,10 +20,18 @@ const LessonSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      default: "", // This can be HTML or Markdown content will be rendered in the frontend. have to ask niamh about FIREBASE and CLAUDINARY
+      default: "", // This will be HTML or Markdown content and will be rendered in the frontend, atleast thats the idea
     },
   },
   { timestamps: true }
 );
+
+// Ensure title starts with a capital letter
+LessonSchema.pre("save", function (next) {
+  if (this.title && typeof this.title === "string") {
+    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
+  }
+  next();
+});
 
 export default mongoose.models.Lesson || mongoose.model("Lesson", LessonSchema);

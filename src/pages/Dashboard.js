@@ -12,17 +12,23 @@ export default function Dashboard() {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    if (status === "loading") return; // Wait for session
+    if (status === "loading") return; // Still checking session, don't redirect yet
 
     if (!session) {
-      router.replace("/login");
+      // No session -> allow basic visitor view, but prevent access to protected parts
       return;
     }
 
-    // Fetch available courses from the database
+    // If logged in but not a child, redirect based on role
+    if (session.user.role && session.user.role !== "child") {
+      router.replace("/"); // Redirect admins, parents, etc. to home
+      return;
+    }
+
+    // Fetch available courses for child users
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("/api/admin/courses");
+        const res = await axios.get("/api/courses");
         setCourses(res.data.courses || []);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -32,7 +38,25 @@ export default function Dashboard() {
     fetchCourses();
   }, [session, status, router]);
 
-  if (status === "loading" || !session) {
+  // Visitor View (not logged in yet)
+  if (!session && status !== "loading") {
+    return (
+      <>
+        <Header />
+        <Container sx={{ mt: 4 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Welcome to Busy Bee Learning!
+          </Typography>
+          <Typography variant="h6" align="center" color="textSecondary">
+            Please <Button onClick={() => router.push("/login")}>Login</Button> or Explore Courses.
+          </Typography>
+        </Container>
+      </>
+    );
+  }
+
+  // Loading State
+  if (status === "loading") {
     return (
       <Container maxWidth="sm">
         <Typography variant="h5" align="center" mt={5}>
@@ -42,6 +66,7 @@ export default function Dashboard() {
     );
   }
 
+  // Logged-in Child View
   return (
     <>
       <Header />
