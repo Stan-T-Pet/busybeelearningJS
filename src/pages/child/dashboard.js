@@ -1,4 +1,3 @@
-// File: src/pages/child/dashboard.js
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -18,13 +17,10 @@ export default function ChildDashboard() {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch both lessons and quizzes from the API and randomize their order.
   useEffect(() => {
     async function fetchActivities() {
       try {
-        // Fetch lessons
         const lessonsRes = await fetch("/api/lessons/Lesson");
-        // Fetch quizzes (adjust the query param as needed)
         const quizzesRes = await fetch("/api/quizzes/get");
         if (!lessonsRes.ok || !quizzesRes.ok) {
           console.error("Failed to fetch lessons or quizzes");
@@ -33,13 +29,8 @@ export default function ChildDashboard() {
         const lessonsData = await lessonsRes.json();
         const quizzesData = await quizzesRes.json();
 
-        // Randomize the arrays
-        const randomizedLessons = (lessonsData.lessons || []).sort(
-          () => Math.random() - 0.5
-        );
-        const randomizedQuizzes = (quizzesData.quizzes || []).sort(
-          () => Math.random() - 0.5
-        );
+        const randomizedLessons = (lessonsData.lessons || []).sort(() => Math.random() - 0.5);
+        const randomizedQuizzes = (quizzesData.quizzes || []).sort(() => Math.random() - 0.5);
 
         setLessons(randomizedLessons);
         setQuizzes(randomizedQuizzes);
@@ -129,7 +120,7 @@ export default function ChildDashboard() {
                 <Grid container spacing={3}>
                   {quizzes.map((quiz) => (
                     <Grid item xs={12} sm={6} md={4} key={quiz._id}>
-                      <Link href={`/child/quizzes/${quiz._id}`} passHref legacyBehavior>
+                      <Link href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
                         <Card
                           sx={{
                             borderRadius: 2,
@@ -144,13 +135,8 @@ export default function ChildDashboard() {
                           <CardActionArea>
                             <CardContent>
                               <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
-                                {quiz.title}
+                                {quiz.title || quiz.questionText || "Untitled Quiz"}
                               </Typography>
-                              {quiz.description && (
-                                <Typography variant="body2" align="center" color="text.secondary">
-                                  {quiz.description}
-                                </Typography>
-                              )}
                               <Box sx={{ textAlign: "center", mt: 2 }}>
                                 <Button variant="contained" color="primary">
                                   Take Quiz
@@ -170,7 +156,7 @@ export default function ChildDashboard() {
               )}
             </Box>
 
-            {/* Optional Go Back Button */}
+            {/* Progress Button */}
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Link href="/child/profile" passHref legacyBehavior>
                 <Button variant="outlined" color="primary">

@@ -1,11 +1,11 @@
 // File: src/pages/api/admin/courses/[id].js
 
-import connectDB from "../../../../server/config/database";
-import Course from "../../../../server/models/Course";
-import "../../../../server/models/Lesson";
-import "../../../../server/models/Quiz";
+import connectDB from "@/server/config/database";
+import Course from "@/server/models/Course";
+import "@/server/models/Lesson";
+import "@/server/models/Quiz";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
+import { authOptions } from "@/auth/[...nextauth]";
 
 export default async function handler(req, res) {
   await connectDB();

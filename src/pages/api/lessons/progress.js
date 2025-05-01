@@ -2,7 +2,7 @@
 import connectDB from "../../../server/config/database";
 import Progress from "../../../server/models/Progress";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
+import { authOptions } from "../../api/auth/[...nextauth]";
 
 export default async function handler(req, res) {
   await connectDB();
