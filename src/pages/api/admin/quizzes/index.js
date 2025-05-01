@@ -2,9 +2,10 @@
 
 import connectDB from "@/server/config/database";
 import Quiz from "@/server/models/Quiz";
-import Lesson from "@/server/models/Lessons";
+import Lesson from "@/server/models/Lesson";
+import { authOptions } from '../../auth/[...nextauth]';
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/auth/[...nextauth]";
+
 
 export default async function handler(req, res) {
   await connectDB();

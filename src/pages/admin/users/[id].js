@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
-import connectDB from "../../../../server/config/database";
-import { Admin, Parent, Child } from "../../../../server/models/User";
+import { authOptions } from "../../api/auth/[...nextauth]";
+import connectDB from "@/server/config/database";
+import { Admin, Parent, Child } from "@/server/models/User";
 import bcrypt from "bcrypt";
 
 export default async function handler(req, res) {
