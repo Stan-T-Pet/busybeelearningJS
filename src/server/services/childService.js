@@ -1,6 +1,6 @@
 // File: server/services/childService.js
 import Child from "../models/Child";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function addChild({ fullName, password, age, parentEmail }) {
   const hashedPassword = await bcrypt.hash(password, 10);

@@ -1,11 +1,11 @@
 // File: src/pages/api/admin/metrics/index.js
 
-import connectDB from "../../../../server/config/database";
+import connectDB from "@/server/config/database";
+import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
-import User from "../../../../server/models/User";
-import Child from "../../../../server/models/Child";
-import Progress from "../../../../server/models/Progress";
+import User from "@/server/models/User";
+import Child from "@/server/models/Child";
+import Progress from "@/server/models/Progress";
 
 export default async function handler(req, res) {
   await connectDB();

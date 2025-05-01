@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "./config/database";
 import { Parent, Admin } from "./models/User";
 import Child from "./models/Child";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const authOptions = {
   providers: [
