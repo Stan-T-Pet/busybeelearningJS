@@ -9,7 +9,7 @@
  */
 // File: components/MultipleChoiceQuestion.js
 import React, { useState } from "react";
-import { Card, CardContent, CardActions, Typography, Button, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";, CardContent, CardActions, Typography, Button, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 export default function MultipleChoiceQuestion({ question, onAnswer }) {
   const [selected, setSelected] = useState("");
@@ -25,7 +25,7 @@ export default function MultipleChoiceQuestion({ question, onAnswer }) {
   };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: "auto", mb: 4 }}>
+    <DynamicCard sx={{ maxWidth: 600, margin: "auto", mb: 4 }}>
       <CardContent>
         <Typography variant="h6">{question.questionText}</Typography>
         <RadioGroup name="multipleChoice" value={selected} onChange={handleSelect}>
@@ -34,11 +34,11 @@ export default function MultipleChoiceQuestion({ question, onAnswer }) {
           ))}
         </RadioGroup>
       </CardContent>
-      <CardActions>
+      <DynamicCardActions>
         <Button variant="contained" onClick={handleSubmit} disabled={!selected}>
           Submit Answer
         </Button>
       </CardActions>
-    </Card>
+    </DynamicCard>
   );
 }

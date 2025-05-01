@@ -49,7 +49,7 @@ export default function CoursePage({ lessons, subject }) {
           <Grid container spacing={2}>
             {lessons.map((lesson) => (
               <Grid item xs={12} sm={6} md={4} key={lesson._id}>
-                <Card>
+                <DynamicCard>
                   <CardContent>
                     <Typography variant="h6">{lesson.title}</Typography>
                     {lesson.description && (
@@ -63,7 +63,7 @@ export default function CoursePage({ lessons, subject }) {
                       </Link>
                     </Box>
                   </CardContent>
-                </Card>
+                </DynamicCard>
               </Grid>
             ))}
           </Grid>

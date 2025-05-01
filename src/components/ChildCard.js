@@ -40,8 +40,8 @@ export default function ChildCard({ child, onEdit, onDelete }) {
   };
 
   return (
-    <Card sx={{ maxWidth: 345, m: 1 }}>
-      <CardHeader
+    <DynamicCard sx={{ maxWidth: 345, m: 1 }}>
+      <DynamicCardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="child">
             {child.fullName ? child.fullName.charAt(0).toUpperCase() : "C"}
@@ -81,6 +81,6 @@ export default function ChildCard({ child, onEdit, onDelete }) {
           </Typography>
         </CardContent>
       </Collapse>
-    </Card>
+    </DynamicCard>
   );
 }

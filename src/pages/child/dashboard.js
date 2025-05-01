@@ -4,13 +4,13 @@ import {
   Container,
   Grid,
   Typography,
-  Card,
   CardActionArea,
   CardContent,
   Button,
 } from "@mui/material";
 import Header from "../../components/Header";
 import Link from "next/link";
+import DynamicCard from "../../components/DynamicCard";
 
 export default function ChildDashboard() {
   const [lessons, setLessons] = useState([]);
@@ -71,7 +71,8 @@ export default function ChildDashboard() {
                   {lessons.map((lesson) => (
                     <Grid item xs={12} sm={6} md={4} key={lesson._id}>
                       <Link href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
-                        <Card
+                        <DynamicCard
+                          title={lesson.title}
                           sx={{
                             borderRadius: 2,
                             boxShadow: 3,
@@ -84,9 +85,6 @@ export default function ChildDashboard() {
                         >
                           <CardActionArea>
                             <CardContent>
-                              <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
-                                {lesson.title}
-                              </Typography>
                               {lesson.description && (
                                 <Typography variant="body2" align="center" color="text.secondary">
                                   {lesson.description}
@@ -99,7 +97,7 @@ export default function ChildDashboard() {
                               </Box>
                             </CardContent>
                           </CardActionArea>
-                        </Card>
+                        </DynamicCard>
                       </Link>
                     </Grid>
                   ))}
@@ -121,7 +119,8 @@ export default function ChildDashboard() {
                   {quizzes.map((quiz) => (
                     <Grid item xs={12} sm={6} md={4} key={quiz._id}>
                       <Link href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
-                        <Card
+                        <DynamicCard
+                          title="Quiz"
                           sx={{
                             borderRadius: 2,
                             boxShadow: 3,
@@ -144,7 +143,7 @@ export default function ChildDashboard() {
                               </Box>
                             </CardContent>
                           </CardActionArea>
-                        </Card>
+                        </DynamicCard>
                       </Link>
                     </Grid>
                   ))}

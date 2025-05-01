@@ -27,7 +27,7 @@ import {
 export default function ProgressOverview({ progressData, childName }) {
   if (!progressData || progressData.length === 0) {
     return (
-      <Card sx={{ mt: 2 }}>
+      <DynamicCard sx={{ mt: 2 }}>
         <CardContent>
           <Typography variant="h6">
             {childName ? `${childName}'s ` : "Child's "}Progress
@@ -36,12 +36,12 @@ export default function ProgressOverview({ progressData, childName }) {
             No progress records found.
           </Typography>
         </CardContent>
-      </Card>
+      </DynamicCard>
     );
   }
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <DynamicCard sx={{ mt: 2 }}>
       <CardContent>
         <Typography variant="h6">
           {childName ? `${childName}'s ` : "Child's "}Progress
@@ -83,6 +83,6 @@ export default function ProgressOverview({ progressData, childName }) {
           );
         })}
       </CardContent>
-    </Card>
+    </DynamicCard>
   );
 }

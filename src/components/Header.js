@@ -1,4 +1,3 @@
-// File: src/components/Header.js
 import React, { useState, useEffect } from "react";
 import {
   AppBar,
@@ -13,13 +12,17 @@ import {
   Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useThemeMode } from "./ThemeManager"; // import theme toggle
 
 export default function Header() {
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userRole, setUserRole] = useState("unauthenticated");
+  const { mode, toggleTheme } = useThemeMode(); // get mode and toggle
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -70,7 +73,6 @@ export default function Header() {
   const drawer = (
     <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
       <List>
-        {/* Dashboard link for authenticated users */}
         {status === "authenticated" && (
           <Link href={getDashboardRoute(userRole)} passHref legacyBehavior>
             <ListItem button component="a">
@@ -119,7 +121,7 @@ export default function Header() {
         </Typography>
 
         {/* Desktop Navigation */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1, alignItems: "center" }}>
           {status === "authenticated" && (
             <Link href={getDashboardRoute(userRole)} passHref legacyBehavior>
               <Button color="inherit" component="a">
@@ -152,6 +154,10 @@ export default function Header() {
               </Link>
             </>
           )}
+          {/* Theme toggle button */}
+          <IconButton color="inherit" onClick={toggleTheme} title="Toggle Theme">
+            {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
         </Box>
       </Toolbar>
 

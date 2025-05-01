@@ -23,7 +23,7 @@ export default function CoursesLanding() {
         <Grid container spacing={4}>
           {availableCourses.map((course) => (
             <Grid item xs={12} sm={6} md={4} key={course.subject}>
-              <Card>
+              <DynamicCard>
                 <CardContent>
                   <Typography variant="h5" align="center">{course.title}</Typography>
                   <Box sx={{ mt: 2, textAlign: "center" }}>
@@ -32,7 +32,7 @@ export default function CoursesLanding() {
                     </Link>
                   </Box>
                 </CardContent>
-              </Card>
+              </DynamicCard>
             </Grid>
           ))}
         </Grid>

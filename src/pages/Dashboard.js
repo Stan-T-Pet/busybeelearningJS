@@ -69,43 +69,34 @@ export default function Dashboard() {
   // Logged-in Child View
   return (
     <>
-      <Header />
-      <Container sx={{ mt: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Welcome, {session.user.name}!
-        </Typography>
+      <Typography
+        variant="h5"
+        align="center"
+        gutterBottom
+        sx={{ fontWeight: "bold" }}
+      >
+        Available Courses
+      </Typography>
 
-        {session.user.role === "child" && (
-          <>
-            <Typography variant="h5" align="center" gutterBottom>
-              Available Courses
-            </Typography>
-
-            <Grid container spacing={3}>
-              {courses.map((course) => (
-                <Grid item xs={12} sm={6} md={4} key={course._id}>
-                  <Card sx={{ boxShadow: 3 }}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {course.title}
-                      </Typography>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        onClick={() =>
-                          router.push(`/child/lessons?subject=${encodeURIComponent(course.title.toLowerCase())}`)
-                        }
-                      >
-                        View Lessons
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </>
-        )}
-      </Container>
+      <Grid container spacing={3}>
+        {courses.map((course) => (
+          <Grid item xs={12} sm={6} md={4} key={course._id}>
+            <DynamicCard title={course.title} sx={{ height: "100%" }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() =>
+                  router.push(
+                    `/child/lessons?subject=${encodeURIComponent(course.title.toLowerCase())}`
+                  )
+                }
+              >
+                View Lessons
+              </Button>
+            </DynamicCard>
+          </Grid>
+        ))}
+      </Grid>
     </>
   );
 }

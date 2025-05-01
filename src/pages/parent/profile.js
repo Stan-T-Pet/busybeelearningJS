@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
   Grid,
   Button,
   Box,
@@ -20,6 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 
 export default function ParentProfile() {
   const { data: session } = useSession();
@@ -28,11 +27,9 @@ export default function ParentProfile() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
-  // Using fullName to match the Child model.
   const [childForm, setChildForm] = useState({ fullName: "", password: "", age: "" });
 
   useEffect(() => {
-    // Only fetch if session is available.
     if (!session || !session.user) return;
     const fetchChildren = async () => {
       try {
@@ -54,7 +51,6 @@ export default function ParentProfile() {
     if (child) {
       setEditMode(true);
       setSelectedChild(child);
-      // Set form values from the child.
       setChildForm({ fullName: child.fullName, password: "", age: child.age });
     } else {
       setEditMode(false);
@@ -125,9 +121,8 @@ export default function ParentProfile() {
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
         {/* Parent Details */}
-        <Card sx={{ mb: 4 }}>
+        <DynamicCard title="Parent Details" sx={{ mb: 4 }}>
           <CardContent>
-            <Typography variant="h5">Parent Details</Typography>
             <Typography>
               <b>Name:</b> {session.user.name}
             </Typography>
@@ -135,12 +130,11 @@ export default function ParentProfile() {
               <b>Email:</b> {session.user.email}
             </Typography>
           </CardContent>
-        </Card>
+        </DynamicCard>
 
         {/* Children List with personal details */}
-        <Card sx={{ mb: 4 }}>
+        <DynamicCard title="Your Children" sx={{ mb: 4 }}>
           <CardContent>
-            <Typography variant="h5">Your Children</Typography>
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -153,7 +147,7 @@ export default function ParentProfile() {
               {children.length > 0 ? (
                 children.map((child) => (
                   <Grid item xs={12} sm={6} md={4} key={child._id}>
-                    <Card>
+                    <DynamicCard>
                       <CardContent>
                         <Typography variant="h6">{child.fullName}</Typography>
                         <Typography>Age: {child.age}</Typography>
@@ -169,7 +163,7 @@ export default function ParentProfile() {
                           </IconButton>
                         </Box>
                       </CardContent>
-                    </Card>
+                    </DynamicCard>
                   </Grid>
                 ))
               ) : (
@@ -179,7 +173,7 @@ export default function ParentProfile() {
               )}
             </Grid>
           </CardContent>
-        </Card>
+        </DynamicCard>
 
         <Box sx={{ textAlign: "center", mb: 4 }}>
           <Button variant="contained" color="secondary" onClick={() => router.push("/dashboard")}>
