@@ -12,6 +12,7 @@ import {
   Button,
 } from "@mui/material";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard"; 
 import { useRouter } from "next/router";
 
 export default function ChildCoursesPage() {
@@ -46,40 +47,34 @@ export default function ChildCoursesPage() {
     <>
       <Header />
       <Container sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom align="center">
+        <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: "bold" }}>
           Available Courses
         </Typography>
-
+    
         {courses.length === 0 ? (
           <Typography align="center">No courses available.</Typography>
         ) : (
           <Grid container spacing={3}>
             {courses.map((course) => (
               <Grid item xs={12} sm={6} md={4} key={course._id}>
-                <Card sx={{ boxShadow: 3 }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {course.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {course.description || "No description provided."}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => handleViewCourse(course._id)}
-                    >
-                      <Typography variant="body2">View Course</Typography>
-                    </Button>
-                  </CardActions>
-                </Card>
+                <DynamicCard title={course.title} sx={{ height: "100%" }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    {course.description || "No description provided."}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => handleViewCourse(course._id)}
+                    fullWidth
+                  >
+                    View Course
+                  </Button>
+                </DynamicCard>
               </Grid>
             ))}
           </Grid>
         )}
       </Container>
-    </>
+    </>    
   );
 }

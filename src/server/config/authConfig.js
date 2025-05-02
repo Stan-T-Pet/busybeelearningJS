@@ -3,7 +3,7 @@ import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "database"; // Ensure MongoDB connection
 import User from "../models/User";
 import Child from "../models/Child";
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 const authConfig = {
   adapter: MongoDBAdapter(clientPromise), // Use the MongoDB Adapter
@@ -33,7 +33,7 @@ const authConfig = {
         }
         
         // Validate the provided password
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        const isPasswordValid = await bcryptjs.compare(credentials.password, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid credentials.");
         }

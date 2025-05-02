@@ -25,8 +25,8 @@ export default async function handler(req, res) {
     // Fetch children's progress
     const progressData = children.map((child) => ({
       name: child.name,
-      lessonProgress: child.lessonsCompleted || 0, // ✅ Standardized name
-      quizProgress: child.quizzesCompleted || 0,  // ✅ Standardized name
+      lessonProgress: child.lessonsCompleted || 0, // Standardized name
+      quizProgress: child.quizzesCompleted || 0,  // Standardized name
     }));
 
     return res.status(200).json({ progress: progressData });

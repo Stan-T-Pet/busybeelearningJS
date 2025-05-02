@@ -1,9 +1,9 @@
 // File: server/services/childService.js
 import Child from "../models/Child";
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 export async function addChild({ fullName, password, age, parentEmail }) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
   const newChild = new Child({
     fullName,
     password: hashedPassword,
@@ -66,7 +66,7 @@ export async function updateChild({ childId, fullName, password, age, requesterR
   }
 
   //Hash new pass
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
 
   //Update child properties
   child.fullName = fullName;

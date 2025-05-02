@@ -6,7 +6,8 @@
 */
 // File: components/IsTrueQuestion.js
 import React, { useState } from "react";
-import { Card, CardContent, CardActions, Typography, Button, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
+import {CardContent, CardActions, Typography, Button, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 export default function IsTrueQuestion({ question, onAnswer }) {
   const [selected, setSelected] = useState(null);
@@ -21,7 +22,7 @@ export default function IsTrueQuestion({ question, onAnswer }) {
   };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: "auto", mb: 4 }}>
+    <DynamicCard sx={{ maxWidth: 600, margin: "auto", mb: 4 }}>
       <CardContent>
         <Typography variant="h6">{question.questionText}</Typography>
         <RadioGroup name="isTrue" value={selected} onChange={handleSelect}>
@@ -34,6 +35,6 @@ export default function IsTrueQuestion({ question, onAnswer }) {
           Submit Answer
         </Button>
       </CardActions>
-    </Card>
+    </DynamicCard>
   );
 }

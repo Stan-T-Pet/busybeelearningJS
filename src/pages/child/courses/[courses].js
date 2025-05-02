@@ -70,7 +70,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
 
             return (
               <Grid item xs={12} sm={6} md={4} key={lesson._id}>
-                <Card sx={{ height: "100%" }}>
+                <DynamicCard sx={{ height: "100%" }}>
                   <CardContent>
                     <Typography variant="h6">{lesson.title}</Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -78,20 +78,20 @@ export default function CourseLessonsPage({ initialLessons, course }) {
                     </Typography>
                   </CardContent>
                   <CardActions sx={{ justifyContent: "space-between" }}>
-                    <Link href={`/child/lessons/${lesson._id}`} passHref>
+                    <Link href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
                       <Button variant="contained" color={isCompleted ? "success" : "primary"}>
                         {isCompleted ? "Completed" : "Start Lesson"}
                       </Button>
                     </Link>
                   </CardActions>
-                </Card>
+                </DynamicCard>
               </Grid>
             );
           })}
         </Grid>
 
         <Box mt={4} display="flex" justifyContent="center">
-          <Link href={`/child/quiz?courseId=${courseId}`} passHref>
+          <Link href={`/child/quiz?courseId=${courseId}`} passHref legacyBehavior>
             <Button variant="outlined">Go to Course Quizzes</Button>
           </Link>
         </Box>

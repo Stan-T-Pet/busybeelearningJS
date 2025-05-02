@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "../../../server/config/database";
 import { Parent, Admin } from "../../../server/models/User";
 import Child from "../../../server/models/Child";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 
 export const authOptions = {
   providers: [
@@ -31,7 +31,7 @@ export const authOptions = {
 
         if (!user) throw new Error("No user found with this email.");
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        const isPasswordValid = await bcryptjs.compare(credentials.password, user.password);
         if (!isPasswordValid) throw new Error("Invalid credentials.");
 
         return {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Typography, Box, Grid, Card, CardContent, Button } from "@mui/material";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 import Link from "next/link";
 import connectDB from "../../server/config/database";
 import Lesson from "../../server/models/Lesson";
@@ -49,7 +50,7 @@ export default function CoursePage({ lessons, subject }) {
           <Grid container spacing={2}>
             {lessons.map((lesson) => (
               <Grid item xs={12} sm={6} md={4} key={lesson._id}>
-                <Card>
+                <DynamicCard>
                   <CardContent>
                     <Typography variant="h6">{lesson.title}</Typography>
                     {lesson.description && (
@@ -58,12 +59,12 @@ export default function CoursePage({ lessons, subject }) {
                       </Typography>
                     )}
                     <Box sx={{ mt: 1 }}>
-                      <Link href={`/lessons/${lesson._id}`} passHref>
+                      <Link href={`/lessons/${lesson._id}`} passHref legacyBehavior>
                         <Button variant="contained">Start Lesson</Button>
                       </Link>
                     </Box>
                   </CardContent>
-                </Card>
+                </DynamicCard>
               </Grid>
             ))}
           </Grid>

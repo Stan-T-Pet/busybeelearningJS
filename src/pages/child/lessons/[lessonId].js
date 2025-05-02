@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 import Header from "../../../components/Header";
+import DynamicCard from "../../../components/DynamicCard";
 
 export default function LessonPage() {
   const router = useRouter();
@@ -100,7 +101,7 @@ export default function LessonPage() {
     <Box sx={{ background: "#f7f7f7", minHeight: "100vh" }}>
       <Header />
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Card elevation={4} sx={{ borderRadius: 4, p: 3 }}>
+        <DynamicCard elevation={4} sx={{ borderRadius: 4, p: 3 }}>
           <CardContent>
             <Box display="flex" alignItems="center" mb={2}>
               <SchoolIcon color="primary" sx={{ mr: 1 }} />
@@ -128,7 +129,7 @@ export default function LessonPage() {
               </Button>
             </Box>
           </CardContent>
-        </Card>
+        </DynamicCard>
       </Container>
     </Box>
   );

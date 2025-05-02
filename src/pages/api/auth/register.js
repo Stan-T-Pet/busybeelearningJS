@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 import connectDB from "../../../server/config/database";
 // Import named exports from User.js and Child.js
 import { Parent, Admin } from "../../../server/models/User";
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
       return res.status(409).json({ error: "User already exists." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcryptjs.hash(password, 10);
     let newUser = null;
 
     if (role === "parent") {

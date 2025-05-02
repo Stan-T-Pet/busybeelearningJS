@@ -1,8 +1,8 @@
 import { Parent } from "../models/User.js";
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 export async function addParent({ fullName, email, password }) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
   const newParent = new Parent({ fullName, email, password: hashedPassword });
   return newParent.save();
 }
@@ -31,7 +31,7 @@ export async function updateParent({ parentId, fullName, email, password, reques
     throw new Error("Unauthorized role.");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
   parent.fullName = fullName;
   parent.email = email;
   parent.password = hashedPassword;

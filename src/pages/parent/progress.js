@@ -10,6 +10,7 @@ import {
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 
 export default function ParentProgress() {
   const { data: session, status } = useSession();
@@ -74,13 +75,13 @@ export default function ParentProgress() {
         <Grid container spacing={2}>
           {progressData.map((child) => (
             <Grid item xs={12} sm={6} key={child.name}>
-              <Card>
-                <CardContent>
+              <DynamicCard>
+                
                   <Typography variant="h6">{child.name}</Typography>
                   <Typography>Lesson Progress: {child.lessonProgress}%</Typography>
                   <Typography>Quiz Progress: {child.quizProgress}%</Typography>
-                </CardContent>
-              </Card>
+                
+              </DynamicCard>
             </Grid>
           ))}
         </Grid>

@@ -72,7 +72,7 @@ export default function AdminUsers() {
           <Grid container spacing={3}>
             {users.map((user) => (
               <Grid item xs={12} sm={6} md={4} key={user._id}>
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+                <DynamicCard sx={{ boxShadow: 3, borderRadius: 2 }}>
                   <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                       {user.name}
@@ -108,7 +108,7 @@ export default function AdminUsers() {
                       <DeleteIcon />
                     </IconButton>
                   </CardActions>
-                </Card>
+                </DynamicCard>
               </Grid>
             ))}
           </Grid>

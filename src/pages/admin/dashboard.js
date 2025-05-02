@@ -14,6 +14,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -59,16 +60,19 @@ export default function AdminDashboard() {
   return (
     <>
       <Header />
-      <Container 
-        maxWidth="xl" 
-        sx={{ 
-          mt: 4, 
-          pb: 4, 
-          background: "linear-gradient(to bottom, #f0f8ff, #e6f7ff)", 
-          borderRadius: 2, 
-          p: 3 
-        }}
-      >
+          <Container
+            maxWidth="lg"
+              sx={{
+                mt: 4,
+                pb: 4,
+                background: "linear-gradient(to bottom,rgb(2, 11, 20),rgb(3, 52, 97))", // adjust based on the image
+                borderRadius: 2,
+                boxShadow: 3,
+                p: 4,
+                color: "white",
+              }
+            }
+          >
         <Typography 
           variant="h3" 
           align="center" 
@@ -77,13 +81,27 @@ export default function AdminDashboard() {
         >
           Admin Dashboard
         </Typography>
-        <Typography 
-          variant="h5" 
-          align="center" 
-          paragraph 
-          sx={{ color: theme.palette.text.secondary }}
-        >
-          Welcome, {session.user.name}!
+        <Typography
+          variant="h4" // larger than h5
+          align="center"
+          paragraph
+          sx={{
+            color: (theme) =>
+              theme.palette.mode === "dark"
+                ? theme.palette.common.white
+                : theme.palette.common.black,
+            fontWeight: "bold",
+            fontSize: {
+              xs: "1.5rem",
+              sm: "1.75rem",
+              md: "2rem",
+            },
+            textShadow: (theme) =>
+              theme.palette.mode === "white"
+                ? "1px 1px 4px rgba(16, 57, 240, 0.7)"
+                : "none",
+          }}
+        > Welcome, {session.user.name}!
         </Typography>
 
         {/* Navigation Buttons */}
@@ -147,46 +165,32 @@ export default function AdminDashboard() {
         </Box>
 
         {/* Metrics Overview */}
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
           {metrics ? (
             <>
               <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ boxShadow: 4, borderRadius: 3, backgroundColor: "#fff" }}>
-                  <CardContent>
-                    <Typography variant="h6" align="center">
-                      Total Users
-                    </Typography>
-                    <Typography variant="h4" align="center" color="primary">
-                      {metrics.totalUsers}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <DynamicCard title="Total Users">
+                  <Typography variant="h4" align="center" color="primary">
+                    {metrics.totalUsers}
+                  </Typography>
+                </DynamicCard>
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ boxShadow: 4, borderRadius: 3, backgroundColor: "#fff" }}>
-                  <CardContent>
-                    <Typography variant="h6" align="center">
-                      Total Parents
-                    </Typography>
-                    <Typography variant="h4" align="center" color="primary">
-                      {metrics.totalParents}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <DynamicCard title="Total Parents">
+                  <Typography variant="h4" align="center" color="primary">
+                    {metrics.totalParents}
+                  </Typography>
+                </DynamicCard>
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ boxShadow: 4, borderRadius: 3, backgroundColor: "#fff" }}>
-                  <CardContent>
-                    <Typography variant="h6" align="center">
-                      Total Children
-                    </Typography>
-                    <Typography variant="h4" align="center" color="primary">
-                      {metrics.totalChildren}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <DynamicCard title="Total Children">
+                  <Typography variant="h4" align="center" color="primary">
+                    {metrics.totalChildren}
+                  </Typography>
+                </DynamicCard>
               </Grid>
-              {/* Additional metric cards can be added here */}
             </>
           ) : (
             <Grid item xs={12}>

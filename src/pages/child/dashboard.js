@@ -4,13 +4,13 @@ import {
   Container,
   Grid,
   Typography,
-  Card,
-  CardActionArea,
-  CardContent,
   Button,
 } from "@mui/material";
-import Header from "../../components/Header";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import DynamicCard from "@/components/DynamicCard";
 import Link from "next/link";
+import playSound from "@/components/SoundManager";
 
 export default function ChildDashboard() {
   const [lessons, setLessons] = useState([]);
@@ -22,18 +22,17 @@ export default function ChildDashboard() {
       try {
         const lessonsRes = await fetch("/api/lessons/Lesson");
         const quizzesRes = await fetch("/api/quizzes/get");
+
         if (!lessonsRes.ok || !quizzesRes.ok) {
           console.error("Failed to fetch lessons or quizzes");
           return;
         }
+
         const lessonsData = await lessonsRes.json();
         const quizzesData = await quizzesRes.json();
 
-        const randomizedLessons = (lessonsData.lessons || []).sort(() => Math.random() - 0.5);
-        const randomizedQuizzes = (quizzesData.quizzes || []).sort(() => Math.random() - 0.5);
-
-        setLessons(randomizedLessons);
-        setQuizzes(randomizedQuizzes);
+        setLessons((lessonsData.lessons || []).sort(() => Math.random() - 0.5));
+        setQuizzes((quizzesData.quizzes || []).sort(() => Math.random() - 0.5));
       } catch (error) {
         console.error("Error fetching activities:", error);
       } finally {
@@ -45,9 +44,20 @@ export default function ChildDashboard() {
   }, []);
 
   return (
-    <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        background: (theme) =>
+          theme.palette.mode === "dark"
+            ? "linear-gradient(to bottom, #0f172a, #1e293b)"
+            : "linear-gradient(to bottom, #fdfbfb, #ebedee)",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Header />
-      <Container maxWidth="lg" sx={{ mt: 4, pb: 4 }}>
+
+      <Container maxWidth="lg" sx={{ mt: 4, pb: 6, flexGrow: 1 }}>
         <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
           Hey there, ready to learn?
         </Typography>
@@ -71,10 +81,12 @@ export default function ChildDashboard() {
                   {lessons.map((lesson) => (
                     <Grid item xs={12} sm={6} md={4} key={lesson._id}>
                       <Link href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
-                        <Card
+                        <DynamicCard
+                          title={lesson.title}
                           sx={{
                             borderRadius: 2,
                             boxShadow: 3,
+                            cursor: "pointer",
                             transition: "transform 0.2s, box-shadow 0.2s",
                             "&:hover": {
                               transform: "scale(1.02)",
@@ -82,24 +94,17 @@ export default function ChildDashboard() {
                             },
                           }}
                         >
-                          <CardActionArea>
-                            <CardContent>
-                              <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
-                                {lesson.title}
-                              </Typography>
-                              {lesson.description && (
-                                <Typography variant="body2" align="center" color="text.secondary">
-                                  {lesson.description}
-                                </Typography>
-                              )}
-                              <Box sx={{ textAlign: "center", mt: 2 }}>
-                                <Button variant="contained" color="primary">
-                                  Start Lesson
-                                </Button>
-                              </Box>
-                            </CardContent>
-                          </CardActionArea>
-                        </Card>
+                          {lesson.description && (
+                            <Typography variant="body2" align="center" sx={{ color: "text.secondary", mb: 2 }}>
+                              {lesson.description}
+                            </Typography>
+                          )}
+                          <Box sx={{ textAlign: "center" }}>
+                            <Button onClick={() => {playSound("select");}} variant="contained" color="primary">
+                              Start Lesson
+                            </Button>
+                          </Box>
+                        </DynamicCard>
                       </Link>
                     </Grid>
                   ))}
@@ -121,10 +126,12 @@ export default function ChildDashboard() {
                   {quizzes.map((quiz) => (
                     <Grid item xs={12} sm={6} md={4} key={quiz._id}>
                       <Link href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
-                        <Card
+                        <DynamicCard
+                          title={quiz.title || quiz.questionText || "Untitled Quiz"}
                           sx={{
                             borderRadius: 2,
                             boxShadow: 3,
+                            cursor: "pointer",
                             transition: "transform 0.2s, box-shadow 0.2s",
                             "&:hover": {
                               transform: "scale(1.02)",
@@ -132,19 +139,12 @@ export default function ChildDashboard() {
                             },
                           }}
                         >
-                          <CardActionArea>
-                            <CardContent>
-                              <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
-                                {quiz.title || quiz.questionText || "Untitled Quiz"}
-                              </Typography>
-                              <Box sx={{ textAlign: "center", mt: 2 }}>
-                                <Button variant="contained" color="primary">
-                                  Take Quiz
-                                </Button>
-                              </Box>
-                            </CardContent>
-                          </CardActionArea>
-                        </Card>
+                          <Box sx={{ textAlign: "center" }}>
+                            <Button variant="contained" color="primary">
+                              Take Quiz
+                            </Button>
+                          </Box>
+                        </DynamicCard>
                       </Link>
                     </Grid>
                   ))}
@@ -167,6 +167,8 @@ export default function ChildDashboard() {
           </>
         )}
       </Container>
+
+      <Footer />
     </Box>
   );
 }

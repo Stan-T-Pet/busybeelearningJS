@@ -58,7 +58,7 @@ export default function AdminProfile() {
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4, pb: 4 }}>
-        <Card sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
+        <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
@@ -97,7 +97,7 @@ export default function AdminProfile() {
               {/* Add any additional admin navigation buttons here */}
             </Box>
           </CardContent>
-        </Card>
+        </DynamicCard>
         <Box sx={{ textAlign: "center", mt: 4 }}>
           <Button variant="outlined" color="error" onClick={() => signOut()}>
             Log Out
