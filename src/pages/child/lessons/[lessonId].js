@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 import Header from "../../../components/Header";
+import DynamicCard from "../../../components/DynamicCard";
 
 export default function LessonPage() {
   const router = useRouter();

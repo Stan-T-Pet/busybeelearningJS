@@ -76,11 +76,11 @@ export default function ParentProgress() {
           {progressData.map((child) => (
             <Grid item xs={12} sm={6} key={child.name}>
               <DynamicCard>
-                <CardContent>
+                
                   <Typography variant="h6">{child.name}</Typography>
                   <Typography>Lesson Progress: {child.lessonProgress}%</Typography>
                   <Typography>Quiz Progress: {child.quizProgress}%</Typography>
-                </CardContent>
+                
               </DynamicCard>
             </Grid>
           ))}

@@ -1,8 +1,5 @@
-// File: src/components/DynamicCard.js
-
 import React from "react";
-import DynamicCard from "../../components/DynamicCard";
-import { CardContent } from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 export default function DynamicCard({ title, children, sx = {}, ...props }) {
@@ -10,7 +7,7 @@ export default function DynamicCard({ title, children, sx = {}, ...props }) {
   const isDark = theme.palette.mode === "dark";
 
   return (
-    <DynamicCard
+    <Card
       sx={{
         backgroundColor: isDark ? "#1e1e1e" : "#ffffff",
         color: isDark ? "#ffffff" : "#000000",
@@ -34,10 +31,8 @@ export default function DynamicCard({ title, children, sx = {}, ...props }) {
           </Typography>
         )}
 
-        <Box sx={{ color: isDark ? "#ccc" : "#333" }}>
-          {children}
-        </Box>
+        <Box sx={{ color: isDark ? "#ccc" : "#333" }}>{children}</Box>
       </CardContent>
-    </DynamicCard>
+    </Card>
   );
 }

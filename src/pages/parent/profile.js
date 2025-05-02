@@ -122,19 +122,19 @@ export default function ParentProfile() {
       <Container maxWidth="md" sx={{ mt: 4 }}>
         {/* Parent Details */}
         <DynamicCard title="Parent Details" sx={{ mb: 4 }}>
-          <CardContent>
+          
             <Typography>
               <b>Name:</b> {session.user.name}
             </Typography>
             <Typography>
               <b>Email:</b> {session.user.email}
             </Typography>
-          </CardContent>
+          
         </DynamicCard>
 
         {/* Children List with personal details */}
         <DynamicCard title="Your Children" sx={{ mb: 4 }}>
-          <CardContent>
+          
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -148,7 +148,7 @@ export default function ParentProfile() {
                 children.map((child) => (
                   <Grid item xs={12} sm={6} md={4} key={child._id}>
                     <DynamicCard>
-                      <CardContent>
+                      
                         <Typography variant="h6">{child.fullName}</Typography>
                         <Typography>Age: {child.age}</Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -162,7 +162,7 @@ export default function ParentProfile() {
                             <DeleteIcon />
                           </IconButton>
                         </Box>
-                      </CardContent>
+                      
                     </DynamicCard>
                   </Grid>
                 ))
@@ -172,7 +172,7 @@ export default function ParentProfile() {
                 </Typography>
               )}
             </Grid>
-          </CardContent>
+          
         </DynamicCard>
 
         <Box sx={{ textAlign: "center", mb: 4 }}>

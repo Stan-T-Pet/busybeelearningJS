@@ -8,7 +8,8 @@ import {
   CardContent,
   Button,
 } from "@mui/material";
-import Header from "../../components/Header";
+import Header from "@/components/Header";
+import DynamicCard from "@/components/DynamicCard";
 import Link from "next/link";
 
 export default function ChildDashboard() {

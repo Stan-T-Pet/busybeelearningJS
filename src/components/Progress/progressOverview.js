@@ -8,7 +8,7 @@ import {
   LinearProgress,
   Box,
 } from "@mui/material";
-
+import DynamicCard from "../DynamicCard";
 /**
  * @param {Object[]} progressData - Array of progress documents from the database.
  *   Example shape: [
