@@ -70,7 +70,7 @@
            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
              Quizzes for This Course
            </Typography>
-           <Link href="/child/dashboard" passHref>
+           <Link href="/child/dashboard" passHref legacyBehavior>
              <Button variant="outlined" color="primary">
                Go Back
              </Button>
@@ -101,7 +101,7 @@
                  "";
  
                return (
-                 <Link key={quiz._id} href={`/child/quiz/${quiz._id}`} passHref>
+                 <Link key={quiz._id} href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
                    <Button
                      variant="contained"
                      color={color}

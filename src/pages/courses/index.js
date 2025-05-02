@@ -27,7 +27,7 @@ export default function CoursesLanding() {
                 <CardContent>
                   <Typography variant="h5" align="center">{course.title}</Typography>
                   <Box sx={{ mt: 2, textAlign: "center" }}>
-                    <Link href={`/courses/${course.subject}`} passHref>
+                    <Link href={`/courses/${course.subject}`} passHref legacyBehavior>
                       <Button variant="contained">View Lessons</Button>
                     </Link>
                   </Box>

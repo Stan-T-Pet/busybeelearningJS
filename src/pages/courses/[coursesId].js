@@ -59,7 +59,7 @@ export default function CoursePage({ lessons, subject }) {
                       </Typography>
                     )}
                     <Box sx={{ mt: 1 }}>
-                      <Link href={`/lessons/${lesson._id}`} passHref>
+                      <Link href={`/lessons/${lesson._id}`} passHref legacyBehavior>
                         <Button variant="contained">Start Lesson</Button>
                       </Link>
                     </Box>
