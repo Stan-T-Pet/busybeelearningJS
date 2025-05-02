@@ -1,7 +1,8 @@
 // File: src/components/DynamicCard.js
 
 import React from "react";
-import DynamicCard from "../../components/DynamicCard";, CardContent, Typography, Box } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
+import { CardContent } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 export default function DynamicCard({ title, children, sx = {}, ...props }) {
