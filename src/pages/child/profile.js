@@ -94,7 +94,7 @@ export default function Profile() {
               title="Lesson Progress"
               sx={{ borderRadius: 2, boxShadow: 3 }}
             >
-              <CardContent>
+              
                 <Divider sx={{ mb: 2 }} />
                 {progress.lessons.length > 0 ? (
                   progress.lessons.map((lesson, index) => (
@@ -121,7 +121,7 @@ export default function Profile() {
                     No lesson progress available.
                   </Typography>
                 )}
-              </CardContent>
+              
             </DynamicCard>
           </Grid>
 
@@ -131,7 +131,7 @@ export default function Profile() {
               title="Quiz Progress"
               sx={{ borderRadius: 2, boxShadow: 3 }}
             >
-              <CardContent>
+              
                 <Divider sx={{ mb: 2 }} />
                 {progress.quizzes.length > 0 ? (
                   progress.quizzes.map((quiz, index) => (
@@ -162,14 +162,14 @@ export default function Profile() {
                     No quiz progress available.
                   </Typography>
                 )}
-              </CardContent>
+              
             </DynamicCard>
           </Grid>
         </Grid>
 
         {/* Log Out Button */}
         <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="contained" color="secondary" onClick={() => open("/dashboard", "_self")}>
+          <Button variant="contained" color="secondary" onClick={() => open("dashboard", "_self")}>
             Dashboard
           </Button>
         </Box>
