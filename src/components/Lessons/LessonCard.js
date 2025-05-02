@@ -2,7 +2,7 @@
 
 import React from "react";
 import DynamicCard from "../../components/DynamicCard";
-import {CardContent, CardActions, Typography, CardActions, Button } from "@mui/material";
+import {CardContent, CardActions, Typography, Button } from "@mui/material";
 import Link from "next/link";
 
 const LessonCard = ({ lesson }) => {
