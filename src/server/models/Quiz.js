@@ -46,7 +46,7 @@ const QuizSchema = new mongoose.Schema(
       ref: "Lesson",
       required: true,
     },
-
+    
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
