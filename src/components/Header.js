@@ -16,14 +16,13 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useThemeMode } from "./ThemeManager"; // import theme toggle
-
+import { useThemeMode } from "./ThemeManager"; 
 
 export default function Header() {
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userRole, setUserRole] = useState("unauthenticated");
-  const { mode, toggleTheme } = useThemeMode(); // get mode and toggle
+  const { mode, toggleTheme } = useThemeMode();
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -155,7 +154,7 @@ export default function Header() {
               </Link>
             </>
           )}
-          {/* Theme toggle button */}
+          {/* Theme toggle */}
           <IconButton color="inherit" onClick={toggleTheme} title="Toggle Theme">
             {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
