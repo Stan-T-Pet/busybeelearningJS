@@ -29,7 +29,7 @@ export default function IsTrueQuestion({ question, onAnswer }) {
           <FormControlLabel value="false" control={<Radio />} label="False" />
         </RadioGroup>
       </CardContent>
-      <DynamicCardActions>
+      <CardActions>
         <Button variant="contained" onClick={handleSubmit} disabled={selected === null}>
           Submit Answer
         </Button>

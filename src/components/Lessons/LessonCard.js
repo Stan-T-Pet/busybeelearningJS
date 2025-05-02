@@ -17,7 +17,7 @@ const LessonCard = ({ lesson }) => {
           </Typography>
         )}
       </CardContent>
-      <DynamicCardActions>
+      <CardActions>
         <Link href={`/lessons/${lesson._id}`} passHref legacyBehavior>
           <Button size="small">View Lesson</Button>
         </Link>

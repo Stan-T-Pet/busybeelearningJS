@@ -47,7 +47,7 @@ export default function MultipleStepsQuestion({ question, onComplete }) {
           sx={{ mt: 2 }}
         />
       </CardContent>
-      <DynamicCardActions>
+      <CardActions>
         <Button variant="contained" onClick={handleNext}>
           {currentStep < question.steps.length - 1 ? "Next Step" : "Submit Answers"}
         </Button>

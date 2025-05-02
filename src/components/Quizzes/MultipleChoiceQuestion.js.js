@@ -34,7 +34,7 @@ export default function MultipleChoiceQuestion({ question, onAnswer }) {
           ))}
         </RadioGroup>
       </CardContent>
-      <DynamicCardActions>
+      <CardActions>
         <Button variant="contained" onClick={handleSubmit} disabled={!selected}>
           Submit Answer
         </Button>
