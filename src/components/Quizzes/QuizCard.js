@@ -1,7 +1,9 @@
 //file: components/Courses/CourseCard.js
 
 import React from "react";
-import DynamicCard from "../../components/DynamicCard";, CardContent, Typography, CardActions, Button } from "@mui/material";
+import { CardContent, Typography, Button } from "@mui/material";
+import { CardActions as DynamicCardActions } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
 import Link from "next/link";
 
 const QuizCard = ({ quiz }) => {
@@ -15,7 +17,7 @@ const QuizCard = ({ quiz }) => {
           Type: {quiz.type}
         </Typography>
       </CardContent>
-      <DynamicCardActions>
+      <CardActions>
         <Link href={`/quizzes/${quiz._id}`} passHref legacyBehavior>
           <Button size="small">Take Quiz</Button>
         </Link>
