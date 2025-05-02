@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
 import connectDB from "../../../../server/config/database";
 import { Admin, Parent, Child } from "../../../../server/models/User";
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
           return res.status(409).json({ error: "User with this email already exists." });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcryptjs.hash(password, 10);
         const newUser = new Model({ name, email, password: hashedPassword });
         await newUser.save();
 
