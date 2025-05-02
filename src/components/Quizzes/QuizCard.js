@@ -1,8 +1,7 @@
 //file: components/Courses/CourseCard.js
 
 import React from "react";
-import { CardContent, Typography, Button } from "@mui/material";
-import { CardActions as DynamicCardActions } from "@mui/material";
+import { CardContent, CardActions, Typography, Button } from "@mui/material";
 import DynamicCard from "../../components/DynamicCard";
 import Link from "next/link";
 

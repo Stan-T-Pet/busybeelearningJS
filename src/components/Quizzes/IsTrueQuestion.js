@@ -6,7 +6,8 @@
 */
 // File: components/IsTrueQuestion.js
 import React, { useState } from "react";
-import DynamicCard from "../../components/DynamicCard";, CardContent, CardActions, Typography, Button, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
+import {CardContent, CardActions, Typography, Button, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 export default function IsTrueQuestion({ question, onAnswer }) {
   const [selected, setSelected] = useState(null);

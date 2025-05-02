@@ -9,7 +9,8 @@
 
 // File: components/MultipleStepsQuestion.js
 import React, { useState } from "react";
-import DynamicCard from "../../components/DynamicCard";, CardContent, CardActions, Typography, Button, TextField } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
+import {CardContent, CardActions, Typography, Button, TextField } from "@mui/material";
 
 export default function MultipleStepsQuestion({ question, onComplete }) {
   // We'll store answers for each step in an array.
