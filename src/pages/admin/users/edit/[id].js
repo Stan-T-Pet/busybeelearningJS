@@ -1,5 +1,3 @@
-// File: src/pages/admin/users/edit/[id].js
-
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -9,8 +7,9 @@ import {
   Button,
   MenuItem,
   Box,
+  CircularProgress,
 } from "@mui/material";
-import Header from "../../../../components/Header";
+import Header from "@/components/Header";
 import { useSession } from "next-auth/react";
 
 export default function EditUserPage() {
@@ -18,8 +17,8 @@ export default function EditUserPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const [user, setUser] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", role: "", password: "" });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -27,21 +26,33 @@ export default function EditUserPage() {
     if (!session || session.user.role !== "admin") {
       router.replace("/unauthorized");
     }
-  }, [session, status, router]);
+  }, [session, status]);
 
   useEffect(() => {
+    if (!id) return;
+
     async function fetchUser() {
-      if (!id) return;
       try {
-        const res = await fetch(`/api/admin/users/${id}`);
+        const res = await fetch(`/api/admin/${id}`);
         const data = await res.json();
-        setUser(data.user);
-        setForm({ name: data.user.name, email: data.user.email, role: data.user.role, password: "" });
+
+        if (!res.ok || !data.user) {
+          throw new Error(data.error || "User not found");
+        }
+
+        setForm({
+          name: data.user.name || "",
+          email: data.user.email || "",
+          role: data.user.role || "",
+          password: "",
+        });
       } catch (err) {
-        console.error("Error loading user:", err);
-        setError("Failed to load user.");
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     }
+
     fetchUser();
   }, [id]);
 
@@ -51,28 +62,37 @@ export default function EditUserPage() {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`/api/admin/users/${id}`, {
+      const res = await fetch(`/api/admin/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to update user.");
-      }
-
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update user");
       router.push("/admin/users");
     } catch (err) {
       setError(err.message);
     }
   };
 
-  if (!user) {
+  if (loading) {
     return (
       <Container>
         <Header />
-        <Typography>Loading user...</Typography>
+        <Typography sx={{ mt: 4 }}>
+          <CircularProgress size={24} /> Loading...
+        </Typography>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Header />
+        <Typography color="error" sx={{ mt: 4 }}>
+          {error}
+        </Typography>
       </Container>
     );
   }
@@ -82,11 +102,6 @@ export default function EditUserPage() {
       <Header />
       <Container maxWidth="sm" sx={{ mt: 4 }}>
         <Typography variant="h5" gutterBottom>Edit User</Typography>
-        {error && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {error}
-          </Typography>
-        )}
 
         <TextField
           fullWidth

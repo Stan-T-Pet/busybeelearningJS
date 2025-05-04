@@ -48,8 +48,6 @@ ChildSchema.pre("save", function (next) {
   next();
 });
 
-const Parent = models.Parent || model("Parent", ParentSchema, "parents");
-const Admin = models.Admin || model("Admin", AdminSchema, "admins");
-const Child = models.Child || model("Child", ChildSchema, "children");
-
-export { Parent, Admin, Child };
+export const Parent = models.Parent || model("Parent", ParentSchema, "parents");
+export const Admin = models.Admin || model("Admin", AdminSchema, "admins");
+export const Child = models.Child || model("Child", ChildSchema, "children");
