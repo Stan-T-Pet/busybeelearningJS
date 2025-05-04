@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-  Button,
-} from "@mui/material";
+import {Box,Container,Grid,Typography, Button} from "@mui/material";
+import Link from "next/link";
+import DynamicCard from "@/components/DynamicCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import DynamicCard from "@/components/DynamicCard";
-import Link from "next/link";
 import playSound from "@/components/SoundManager";
 
 export default function ChildDashboard() {
