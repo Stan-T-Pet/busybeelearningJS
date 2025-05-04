@@ -70,7 +70,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
 
             return (
               <Grid item xs={12} sm={6} md={4} key={lesson._id}>
-                <Card sx={{ height: "100%" }}>
+                <DynamicCard sx={{ height: "100%" }}>
                   <CardContent>
                     <Typography variant="h6">{lesson.title}</Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -84,7 +84,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
                       </Button>
                     </Link>
                   </CardActions>
-                </Card>
+                </DynamicCard>
               </Grid>
             );
           })}

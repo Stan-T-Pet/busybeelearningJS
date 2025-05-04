@@ -1,8 +1,8 @@
 import { Admin } from "../models/User.js";
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 export async function addAdmin({ fullName, email, password }) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
   const newAdmin = new Admin({ fullName, email, password: hashedPassword });
   return newAdmin.save();
 }
@@ -20,7 +20,7 @@ export async function updateAdmin({ adminId, fullName, email, password, requeste
   const admin = await Admin.findById(adminId);
   if (!admin) throw new Error("Admin not found.");
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
   admin.fullName = fullName;
   admin.email = email;
   admin.password = hashedPassword;

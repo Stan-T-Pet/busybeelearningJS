@@ -10,13 +10,12 @@ import {
   Toolbar,
   Divider,
   CircularProgress,
-  Card,
-  CardContent,
   Grid,
 } from "@mui/material";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
+import DynamicCard from "../../components/DynamicCard";
 
 export default function Profile() {
   const { data: session, status } = useSession();
@@ -91,11 +90,11 @@ export default function Profile() {
         <Grid container spacing={3}>
           {/* Lesson Progress Card */}
           <Grid item xs={12} md={6}>
-            <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-              <CardContent>
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", color: "#1976d2" }}>
-                  Lesson Progress
-                </Typography>
+            <DynamicCard
+              title="Lesson Progress"
+              sx={{ borderRadius: 2, boxShadow: 3 }}
+            >
+              
                 <Divider sx={{ mb: 2 }} />
                 {progress.lessons.length > 0 ? (
                   progress.lessons.map((lesson, index) => (
@@ -122,17 +121,17 @@ export default function Profile() {
                     No lesson progress available.
                   </Typography>
                 )}
-              </CardContent>
-            </Card>
+              
+            </DynamicCard>
           </Grid>
 
           {/* Quiz Progress Card */}
           <Grid item xs={12} md={6}>
-            <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-              <CardContent>
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", color: "#d32f2f" }}>
-                  Quiz Progress
-                </Typography>
+            <DynamicCard
+              title="Quiz Progress"
+              sx={{ borderRadius: 2, boxShadow: 3 }}
+            >
+              
                 <Divider sx={{ mb: 2 }} />
                 {progress.quizzes.length > 0 ? (
                   progress.quizzes.map((quiz, index) => (
@@ -163,14 +162,14 @@ export default function Profile() {
                     No quiz progress available.
                   </Typography>
                 )}
-              </CardContent>
-            </Card>
+              
+            </DynamicCard>
           </Grid>
         </Grid>
 
         {/* Log Out Button */}
         <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="contained" color="secondary" onClick={() => open("/dashboard", "_self")}>
+          <Button variant="contained" color="secondary" onClick={() => open("dashboard", "_self")}>
             Dashboard
           </Button>
         </Box>

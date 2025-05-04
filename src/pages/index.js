@@ -76,7 +76,7 @@ export default function Home({ randomCourses }) {
                       : `/login?callbackUrl=/child/courses/${course._id}` // if not logged in, go to login first
                   }
                   passHref
-                >
+                  legacyBehavior>
                   <Button variant="contained" color="primary">
                     Start Learning
                   </Button>

@@ -28,10 +28,12 @@
    useEffect(() => {
      setMounted(true);
    }, []);
- 
+    
+  
    useEffect(() => {
      if (!session?.user?.id || !courseId) return;
- 
+    
+     // fetch progress and update new completed quiz
      const fetchProgress = async () => {
        try {
          const res = await axios.get(`/api/lessons/progress?childId=${session.user.id}`);
@@ -49,7 +51,7 @@
          console.error("Error loading progress data:", err);
        }
      };
- 
+     
      fetchProgress();
    }, [session?.user?.id, courseId]);
  

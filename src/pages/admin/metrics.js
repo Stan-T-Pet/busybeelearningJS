@@ -72,34 +72,34 @@ export default function AdminMetrics() {
         {metrics ? (
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
+              <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     Total Users
                   </Typography>
                   <Typography variant="h4">{metrics.totalUsers}</Typography>
                 </CardContent>
-              </Card>
+              </DynamicCard>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
+              <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     Total Children
                   </Typography>
                   <Typography variant="h4">{metrics.totalChildren}</Typography>
                 </CardContent>
-              </Card>
+              </DynamicCard>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
+              <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     Average Quiz Score
                   </Typography>
                   <Typography variant="h4">{metrics.averageQuizScore}%</Typography>
                 </CardContent>
-              </Card>
+              </DynamicCard>
             </Grid>
             {/* Add more metric cards as needed */}
           </Grid>

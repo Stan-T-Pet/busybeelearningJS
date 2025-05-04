@@ -9,7 +9,8 @@
 
 // File: components/MultipleStepsQuestion.js
 import React, { useState } from "react";
-import { Card, CardContent, CardActions, Typography, Button, TextField } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
+import {CardContent, CardActions, Typography, Button, TextField } from "@mui/material";
 
 export default function MultipleStepsQuestion({ question, onComplete }) {
   // We'll store answers for each step in an array.
@@ -33,7 +34,7 @@ export default function MultipleStepsQuestion({ question, onComplete }) {
   };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: "auto", mb: 4 }}>
+    <DynamicCard sx={{ maxWidth: 600, margin: "auto", mb: 4 }}>
       <CardContent>
         <Typography variant="h6">{question.questionText}</Typography>
         <Typography variant="subtitle1" sx={{ mt: 2 }}>
@@ -52,7 +53,7 @@ export default function MultipleStepsQuestion({ question, onComplete }) {
           {currentStep < question.steps.length - 1 ? "Next Step" : "Submit Answers"}
         </Button>
       </CardActions>
-    </Card>
+    </DynamicCard>
   );
 }
 

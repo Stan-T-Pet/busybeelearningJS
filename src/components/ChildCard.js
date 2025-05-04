@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Collapse,
+  Avatar,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { red } from "@mui/material/colors";
+import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 
 // Custom ExpandMore button styled component.
 const ExpandMore = styled((props) => {
@@ -40,8 +43,8 @@ export default function ChildCard({ child, onEdit, onDelete }) {
   };
 
   return (
-    <Card sx={{ maxWidth: 345, m: 1 }}>
-      <CardHeader
+    <DynamicCard sx={{ maxWidth: 345, m: 1 }}>
+      <DynamicCardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="child">
             {child.fullName ? child.fullName.charAt(0).toUpperCase() : "C"}
@@ -81,6 +84,6 @@ export default function ChildCard({ child, onEdit, onDelete }) {
           </Typography>
         </CardContent>
       </Collapse>
-    </Card>
+    </DynamicCard>
   );
 }

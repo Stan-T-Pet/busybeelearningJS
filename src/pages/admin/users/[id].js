@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import connectDB from "@/server/config/database";
 import { Admin, Parent, Child } from "@/server/models/User";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         const { name, email, password, role } = req.body;
         const updateData = { name, email, role };
         if (password) {
-          updateData.password = await bcrypt.hash(password, 10);
+          updateData.password = await bcryptjs.hash(password, 10);
         }
 
         const updatedUser = await updateUserById(userId, updateData);

@@ -1,12 +1,13 @@
 //file: components/Courses/CourseCard.js
 
 import React from "react";
-import { Card, CardContent, Typography, CardActions, Button } from "@mui/material";
+import { CardContent, CardActions, Typography, Button } from "@mui/material";
+import DynamicCard from "../../components/DynamicCard";
 import Link from "next/link";
 
 const QuizCard = ({ quiz }) => {
   return (
-    <Card sx={{ minWidth: 275, margin: 1 }}>
+    <DynamicCard sx={{ minWidth: 275, margin: 1 }}>
       <CardContent>
         <Typography variant="h6" component="div">
           {quiz.questionText}
@@ -20,7 +21,7 @@ const QuizCard = ({ quiz }) => {
           <Button size="small">Take Quiz</Button>
         </Link>
       </CardActions>
-    </Card>
+    </DynamicCard>
   );
 };
 

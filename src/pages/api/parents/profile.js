@@ -94,7 +94,7 @@ export default function ParentProfile() {
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
         {/* Parent Details */}
-        <Card sx={{ mb: 4 }}>
+        <DynamicCard sx={{ mb: 4 }}>
           <CardContent>
             <Typography variant="h5">Parent Details</Typography>
             <Typography>
@@ -104,10 +104,10 @@ export default function ParentProfile() {
               <b>Email:</b> {session?.user?.email}
             </Typography>
           </CardContent>
-        </Card>
+        </DynamicCard>
 
         {/* Children List */}
-        <Card sx={{ mb: 4 }}>
+        <DynamicCard sx={{ mb: 4 }}>
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Typography variant="h5">Your Children</Typography>
@@ -123,7 +123,7 @@ export default function ParentProfile() {
               ))}
             </Grid>
           </CardContent>
-        </Card>
+        </DynamicCard>
 
         {/* Add/Edit Child Modal */}
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)} fullWidth maxWidth="sm">
