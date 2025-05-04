@@ -60,7 +60,6 @@ export default function ChildDashboard() {
       <Header />
 
       {/* Floating Music Panel */}
-
       <Box
         sx={{
           position: "absolute",
