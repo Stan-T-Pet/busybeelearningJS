@@ -1,6 +1,13 @@
 // File: src/pages/parent/dashboard.js
+
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Button, Box } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Button,
+  Box,
+  Grid,
+} from "@mui/material";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
@@ -12,7 +19,6 @@ export default function ParentDashboard() {
   const router = useRouter();
   const [childProgress, setChildProgress] = useState([]);
 
-  // Redirect if not logged in or not a parent.
   useEffect(() => {
     if (status === "loading") return;
     if (!session || session.user.role !== "parent") {
@@ -20,25 +26,12 @@ export default function ParentDashboard() {
     }
   }, [session, status, router]);
 
-  // Fetch progress details for children.
   useEffect(() => {
-    if (session && session.user && session.user.role === "parent") {
-      const fetchProgress = async () => {
-        try {
-          const response = await fetch(
-            `/api/progress/getChildProgress?parentEmail=${session.user.email}`
-          );
-          if (!response.ok) {
-            console.error("Failed to fetch progress");
-            return;
-          }
-          const data = await response.json();
-          setChildProgress(data.progress || []);
-        } catch (error) {
-          console.error("Error fetching progress:", error);
-        }
-      };
-      fetchProgress();
+    if (session?.user?.role === "parent") {
+      fetch(`/api/progress/getChildProgress?parentEmail=${session.user.email}`)
+        .then((res) => res.json())
+        .then((data) => setChildProgress(data.progress || []))
+        .catch((err) => console.error("Error fetching progress:", err));
     }
   }, [session]);
 
@@ -52,41 +45,53 @@ export default function ParentDashboard() {
     );
   }
 
-  if (!session || session.user.role !== "parent") {
-    return (
-      <Container maxWidth="sm">
-        <Typography variant="h5" align="center" mt={5}>
-          You must be logged in as a Parent to access this page.
-        </Typography>
-        <Box mt={2} textAlign="center">
-          <Button variant="contained" color="primary" onClick={() => router.push("/login")}>
-            Login
-          </Button>
-        </Box>
-      </Container>
-    );
-  }
-
   return (
     <>
       <Header />
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Parent Dashboard
-        </Typography>
-        <Typography variant="body1" align="center" paragraph>
-          Welcome, {session.user.name}!
-        </Typography>
+      <Box
+        sx={{
+          background: "linear-gradient(to bottom, #F2FAFF, #E0F7FA)",
+          minHeight: "100vh",
+          pt: 6,
+          pb: 6,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+            Parent Dashboard
+          </Typography>
+          <Typography variant="h6" align="center" paragraph color="text.secondary">
+            Welcome, {session.user.name}
+          </Typography>
 
-        {/* Display only the overall progress for all children */}
-        <ProgressOverview progressData={childProgress} />
+          {/* Progress Overview */}
+          <Box sx={{ mt: 4 }}>
+            <ProgressOverview progressData={childProgress} />
+          </Box>
 
-        <Box sx={{ mt: 4, textAlign: "center" }}>
-          <Button variant="contained" color="secondary" onClick={() => open("/parent/profile", "_self")}>
-            Profile
-          </Button>
-        </Box>
-      </Container>
+          <Grid container spacing={3} justifyContent="center" sx={{ mt: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="View Profile" onClick={() => router.push("/parent/profile")}>
+                <Box textAlign="center">
+                  <Button variant="contained" color="secondary" fullWidth>
+                    Profile
+                  </Button>
+                </Box>
+              </DynamicCard>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Logout">
+                <Box textAlign="center">
+                  <Button variant="outlined" color="error" fullWidth onClick={() => signOut()}>
+                    Logout
+                  </Button>
+                </Box>
+              </DynamicCard>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </>
   );
 }
