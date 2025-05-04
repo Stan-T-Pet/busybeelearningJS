@@ -1,32 +1,50 @@
 import React, { useEffect, useState } from "react";
-import {Box,Container,Grid,Typography, Button} from "@mui/material";
-import Link from "next/link";
-import DynamicCard from "@/components/DynamicCard";
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  CardContent,
+  Button,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import playSound from "@/components/SoundManager";
+import DynamicCard from "@/components/DynamicCard";
+import Link from "next/link";
+
+const studyTracks = {
+  "Best Song Ever! (❁´◡`❁)": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746206768/never_give_up_dbqlyy.mp3",
+  "Lofi Beats (〃￣︶￣)人(￣︶￣〃)": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746207610/lofi_rdqrkd.mp3",
+  "Ambient Rain |~^///^^///^^///^~|": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746208595/rain_qein7k.mp3",
+  "Nature Sounds ﹏𓃗﹏𓃗﹏": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746208587/forest_sswwok.mp3",
+  "Hans the goat Zimmerman ( ⓛ ω ⓛ *)":"https://res.cloudinary.com/dedlpzbla/video/upload/v1746208712/corn_chivzy.mp3"
+};
 
 export default function ChildDashboard() {
   const [lessons, setLessons] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentTrack, setCurrentTrack] = useState("");
+  const [audioRef, setAudioRef] = useState(null);
 
   useEffect(() => {
     async function fetchActivities() {
       try {
         const lessonsRes = await fetch("/api/lessons/Lesson");
         const quizzesRes = await fetch("/api/quizzes/get");
-
         if (!lessonsRes.ok || !quizzesRes.ok) {
           console.error("Failed to fetch lessons or quizzes");
           return;
         }
-
         const lessonsData = await lessonsRes.json();
         const quizzesData = await quizzesRes.json();
 
-        setLessons((lessonsData.lessons || []).sort(() => Math.random() - 0.5));
-        setQuizzes((quizzesData.quizzes || []).sort(() => Math.random() - 0.5));
+        const randomizedLessons = (lessonsData.lessons || []).sort(() => Math.random() - 0.5);
+        const randomizedQuizzes = (quizzesData.quizzes || []).sort(() => Math.random() - 0.5);
+
+        setLessons(randomizedLessons);
+        setQuizzes(randomizedQuizzes);
       } catch (error) {
         console.error("Error fetching activities:", error);
       } finally {
@@ -38,20 +56,70 @@ export default function ChildDashboard() {
   }, []);
 
   return (
-    <Box
-      sx={{
-        background: (theme) =>
-          theme.palette.mode === "dark"
-            ? "linear-gradient(to bottom, #0f172a, #1e293b)"
-            : "linear-gradient(to bottom, #fdfbfb, #ebedee)",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <Box sx={{ background: "linear-gradient(to bottom,  rgb(189, 252, 160),rgb(14, 73, 122))", minHeight: "100vh" }}>
       <Header />
 
-      <Container maxWidth="lg" sx={{ mt: 4, pb: 6, flexGrow: 1 }}>
+      {/* Floating Music Panel */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 120,
+          left: 0,
+          width: "relative",
+          height: "relative",
+          backgroundColor: "color.pimary",
+          boxShadow: 3,
+          p: 2,
+          zIndex: 1200,
+          shape: "circle",
+          borderRadius: 30,
+          textAlign: "center",
+          textDecorationColor: "text.secondary",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Study Music
+        </Typography>
+        <Select
+          value={currentTrack}
+          onChange={(e) => {
+            setCurrentTrack(e.target.value);
+            if (audioRef) {
+              audioRef.src = e.target.value;
+              audioRef.play();
+            }
+          }}
+          displayEmpty
+          fullWidth
+          size="small"
+        >
+          <MenuItem value="" color="text.secondary">Vibe Out</MenuItem>
+          {Object.entries(studyTracks).map(([label, url]) => (
+            <MenuItem key={label} value={url}>
+              {label}
+            </MenuItem>
+          ))}
+        </Select>
+        <audio
+          controls
+          ref={(el) => setAudioRef(el)}
+          style={{ marginTop: "1rem", width: "100%" }}
+        />
+      </Box>
+
+      {/* Main Content */}
+      <Container
+        maxWidth="xl"
+        sx={{
+          mt: 4,
+          pb: 4,
+          ml: { xs: 0, sm: "260px" },
+          px: { xs: 2, sm: 4 },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
           Hey there, ready to learn?
         </Typography>
@@ -66,92 +134,121 @@ export default function ChildDashboard() {
         ) : (
           <>
             {/* Lessons Section */}
-            <Box sx={{ mt: 4 }}>
-              <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-                Lessons
+            <Box
+              sx={{
+                width: "100%",
+                mt: 6,
+                p: 3,
+                borderRadius: 3,
+                background: "linear-gradient(135deg, rgb(57, 189, 75) 0%)",
+                boxShadow: 2,
+              }}
+            >
+              <Typography variant="h5" align="center" sx={{ fontWeight: "bold", mb: 4 }}>
+               Complete a Lesson
               </Typography>
-              {lessons.length > 0 ? (
-                <Grid container spacing={3}>
-                  {lessons.map((lesson) => (
-                    <Grid item xs={12} sm={6} md={4} key={lesson._id}>
-                      <Link href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
-                        <DynamicCard
-                          title={lesson.title}
-                          sx={{
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            cursor: "pointer",
-                            transition: "transform 0.2s, box-shadow 0.2s",
-                            "&:hover": {
-                              transform: "scale(1.02)",
-                              boxShadow: 6,
-                            },
-                          }}
-                        >
+
+              <Grid container spacing={3} justifyContent="center">
+                {lessons.map((lesson) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={lesson._id}>
+                    <Link href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
+                      <DynamicCard
+                        title={lesson.title}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          height: "100%",
+                          borderRadius: 2,
+                          boxShadow: 3,
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          "&:hover": {
+                            transform: "scale(1.02)",
+                            boxShadow: 6,
+                          },
+                        }}
+                      >
+                        <CardContent sx={{ flexGrow: 1 }}>
                           {lesson.description && (
-                            <Typography variant="body2" align="center" sx={{ color: "text.secondary", mb: 2 }}>
+                            <Typography
+                              variant="h6"
+                              align="center"
+                              sx={{ fontWeight: "bold", mb: 1 }}
+                            >
                               {lesson.description}
                             </Typography>
                           )}
-                          <Box sx={{ textAlign: "center" }}>
-                            <Button onClick={() => {playSound("select");}} variant="contained" color="primary">
+                          <Box sx={{ textAlign: "center", mt: "auto" }}>
+                            <Button variant="contained" color="primary">
                               Start Lesson
                             </Button>
                           </Box>
-                        </DynamicCard>
-                      </Link>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : (
-                <Typography variant="body1" align="center">
-                  No lessons available.
-                </Typography>
-              )}
+                        </CardContent>
+                      </DynamicCard>
+                    </Link>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
 
             {/* Quizzes Section */}
-            <Box sx={{ mt: 6 }}>
-              <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+            <Box
+              sx={{
+                width: "100%",
+                mt: 6,
+                p: 3,
+                borderRadius: 3,
+                background: "linear-gradient(135deg rgb(125, 177, 170) 10%)",
+                boxShadow: 2,
+              }}
+            >
+              <Typography variant="h5" align="center" sx={{ fontWeight: "bold", mb: 4 }}>
                 Quizzes
               </Typography>
-              {quizzes.length > 0 ? (
-                <Grid container spacing={3}>
-                  {quizzes.map((quiz) => (
-                    <Grid item xs={12} sm={6} md={4} key={quiz._id}>
-                      <Link href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
-                        <DynamicCard
-                          title={quiz.title || quiz.questionText || "Untitled Quiz"}
-                          sx={{
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            cursor: "pointer",
-                            transition: "transform 0.2s, box-shadow 0.2s",
-                            "&:hover": {
-                              transform: "scale(1.02)",
-                              boxShadow: 6,
-                            },
-                          }}
-                        >
-                          <Box sx={{ textAlign: "center" }}>
+
+              <Grid container spacing={3} justifyContent="center">
+                {quizzes.map((quiz) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={quiz._id}>
+                    <Link href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
+                      <DynamicCard
+                        title="Quiz"
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          height: "100%",
+                          borderRadius: 2,
+                          boxShadow: 3,
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          "&:hover": {
+                            transform: "scale(1.02)",
+                            boxShadow: 6,
+                          },
+                        }}
+                      >
+                        <CardContent sx={{ flexGrow: 1 }}>
+                          <Typography
+                            variant="h6"
+                            align="center"
+                            sx={{ fontWeight: "bold", mb: 1 }}
+                          >
+                            {quiz.title || quiz.questionText || "Untitled Quiz"}
+                          </Typography>
+                          <Box sx={{ textAlign: "center", mt: "auto" }}>
                             <Button variant="contained" color="primary">
                               Take Quiz
                             </Button>
                           </Box>
-                        </DynamicCard>
-                      </Link>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : (
-                <Typography variant="body1" align="center">
-                  No quizzes available.
-                </Typography>
-              )}
+                        </CardContent>
+                      </DynamicCard>
+                    </Link>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
 
             {/* Progress Button */}
-            <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Box sx={{ textAlign: "center", mt: 6 }}>
               <Link href="/child/profile" passHref legacyBehavior>
                 <Button variant="outlined" color="primary">
                   View Progress
@@ -161,8 +258,6 @@ export default function ChildDashboard() {
           </>
         )}
       </Container>
-
-      <Footer />
     </Box>
   );
 }
