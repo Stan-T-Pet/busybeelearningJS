@@ -46,16 +46,7 @@ const QuizSchema = new mongoose.Schema(
       ref: "Lesson",
       required: true,
     },
-<<<<<<< HEAD
 
-    imageUrl: {
-      type: String,
-      required: false, // Optional field
-    },
-
-=======
-    
->>>>>>> origin/master
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
