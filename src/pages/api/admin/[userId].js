@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import connectDB from "@/server/config/database";
-import { Child } from "@/server/models/User";
+import { Admin, Parent, Child } from "@/server/models/User";
 import bcryptjs from "bcryptjs";
 import mongoose from "mongoose";
 
