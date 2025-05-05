@@ -22,7 +22,7 @@ export default function Home({ randomCourses }) {
         </Typography>
         
         <Grid container spacing={3} sx={{ marginTop: 4 }}>
-<<<<<<< HEAD
+
           {/* Course 1 */}
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={3} sx={{ padding: 3, textAlign: 'center' }}>
@@ -61,7 +61,7 @@ export default function Home({ randomCourses }) {
               </Link>
             </Paper>
           </Grid>
-=======
+
           {randomCourses.map((course) => (
             <Grid item xs={12} sm={6} md={4} key={course._id}>
               <Paper elevation={3} sx={{ padding: 3, textAlign: 'center' }}>
@@ -84,7 +84,7 @@ export default function Home({ randomCourses }) {
               </Paper>
             </Grid>
           ))}
->>>>>>> origin/master
+
         </Grid>
       </Container>
     </>

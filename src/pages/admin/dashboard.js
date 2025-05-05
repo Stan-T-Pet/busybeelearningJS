@@ -162,6 +162,14 @@ export default function AdminDashboard() {
           >
             Quizzes
           </Button>
+        <Button
+          variant="contained"
+          color="info"
+          onClick={() => router.push("/admin/questions")}
+          sx={{ textTransform: "none", fontSize: "1rem" }}
+          >
+            Questions
+        </Button>
         </Box>
 
         {/* Metrics Overview */}

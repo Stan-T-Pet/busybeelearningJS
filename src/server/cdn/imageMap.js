@@ -45,4 +45,7 @@ const imageMap = {
     Q5_2A: `${base}Quiz5/quest2A.png`,
     Q5_2B: `${base}Quiz5/quest2B.png`,
 
+    //TEST IMAGE
+    TEST: `${base}test.png`,
+
 };

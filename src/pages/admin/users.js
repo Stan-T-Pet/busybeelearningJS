@@ -17,6 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../components/Header";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import DynamicCard from "../../components/DynamicCard";
 
 export default function AdminUsers() {
   const { data: session, status } = useSession();

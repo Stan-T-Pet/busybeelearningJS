@@ -195,16 +195,16 @@ export default function AdminQuizzesPage() {
               <Grid item xs={12}>
                 <Typography variant="subtitle1" gutterBottom>Options</Typography>
                 {questionData.options.map((opt, index) => (
-                  <TextField
+                    <TextField
                     key={index}
-                    label={`Option ${index + 1}`}
-                    value={opt.text}
-                    onChange={(e) => {
-                      const updated = [...questionData.options];
-                      updated[index].text = e.target.value;
-                      setQuestionData({ ...questionData, options: updated });
-                    }}
-                    fullWidth
+                      label={`Option ${index + 1}`}
+                      value={opt.text}
+                      onChange={(e) => {
+                        const updated = [...questionData.options];
+                        updated[index].text = e.target.value;
+                        setQuestionData({ ...questionData, options: updated });
+                      }}
+                      fullWidth
                     margin="dense"
                   />
                 ))}
