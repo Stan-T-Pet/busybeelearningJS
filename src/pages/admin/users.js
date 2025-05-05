@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DynamicCard from "../../components/DynamicCard";
 import Header from "../../components/Header";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";

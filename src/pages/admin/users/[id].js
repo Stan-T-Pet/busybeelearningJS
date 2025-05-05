@@ -1,80 +1,79 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../api/auth/[...nextauth]";
-import connectDB from "@/server/config/database";
-import { Admin, Parent, Child } from "@/server/models/User";
-import bcryptjs from "bcryptjs";
+// File: src/pages/admin/users/[id].js
 
-export default async function handler(req, res) {
-  await connectDB();
-  const session = await getServerSession(req, res, authOptions);
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import { Container, Typography, CircularProgress } from "@mui/material";
+import Header from "@/components/Header";
 
-  if (!session || session.user.role !== "admin") {
-    return res.status(403).json({ error: "Forbidden: Admins only." });
+export default function ViewUserPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { id } = router.query;
+
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`/api/admin/users/${id}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "User not found");
+        setUser(data.user);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [id]);
+
+  if (status === "loading" || loading) {
+    return (
+      <Container>
+        <Header />
+        <Typography sx={{ mt: 4 }}>
+          <CircularProgress size={24} /> Loading user...
+        </Typography>
+      </Container>
+    );
   }
 
-  const { userId } = req.query;
-
-  // Dynamically find the correct model
-  const getUserById = async (id) => {
+  if (error) {
     return (
-      (await Admin.findById(id)) ||
-      (await Parent.findById(id)) ||
-      (await Child.findById(id))
+      <Container>
+        <Header />
+        <Typography color="error" sx={{ mt: 4 }}>
+          {error}
+        </Typography>
+      </Container>
     );
-  };
-
-  const updateUserById = async (id, update) => {
-    return (
-      (await Admin.findByIdAndUpdate(id, update, { new: true, runValidators: true })) ||
-      (await Parent.findByIdAndUpdate(id, update, { new: true, runValidators: true })) ||
-      (await Child.findByIdAndUpdate(id, update, { new: true, runValidators: true }))
-    );
-  };
-
-  const deleteUserById = async (id) => {
-    return (
-      (await Admin.findByIdAndDelete(id)) ||
-      (await Parent.findByIdAndDelete(id)) ||
-      (await Child.findByIdAndDelete(id))
-    );
-  };
-
-  switch (req.method) {
-    case "GET":
-      try {
-        const user = await getUserById(userId);
-        if (!user) return res.status(404).json({ error: "User not found" });
-        return res.status(200).json({ user });
-      } catch (error) {
-        return res.status(500).json({ error: error.message });
-      }
-
-    case "PUT":
-      try {
-        const { name, email, password, role } = req.body;
-        const updateData = { name, email, role };
-        if (password) {
-          updateData.password = await bcryptjs.hash(password, 10);
-        }
-
-        const updatedUser = await updateUserById(userId, updateData);
-        if (!updatedUser) return res.status(404).json({ error: "User not found" });
-        return res.status(200).json({ user: updatedUser });
-      } catch (error) {
-        return res.status(500).json({ error: error.message });
-      }
-
-    case "DELETE":
-      try {
-        const deletedUser = await deleteUserById(userId);
-        if (!deletedUser) return res.status(404).json({ error: "User not found" });
-        return res.status(200).json({ message: "User deleted successfully" });
-      } catch (error) {
-        return res.status(500).json({ error: error.message });
-      }
-
-    default:
-      res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
-      return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
+
+  if (!user) {
+    return (
+      <Container>
+        <Header />
+        <Typography sx={{ mt: 4 }}>
+          No user data available.
+        </Typography>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <Header />
+      <Typography variant="h5" sx={{ mt: 4 }}>
+        Viewing User: {user.name}
+      </Typography>
+      <Typography>Email: {user.email}</Typography>
+      <Typography>Role: {user.role}</Typography>
+    </Container>
+  );
 }

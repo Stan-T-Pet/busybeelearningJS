@@ -12,6 +12,8 @@ import {
 import Header from "@/components/Header";
 import DynamicCard from "@/components/DynamicCard";
 import Link from "next/link";
+/*
+ *<Deprecated and has been moved to a module called SoundManager.js>
 
 const studyTracks = {
   "Best Song Ever! (❁´◡`❁)": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746206768/never_give_up_dbqlyy.mp3",
@@ -19,7 +21,7 @@ const studyTracks = {
   "Ambient Rain |~^///^^///^^///^~|": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746208595/rain_qein7k.mp3",
   "Nature Sounds ﹏𓃗﹏𓃗﹏": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746208587/forest_sswwok.mp3",
   "Hans the goat Zimmerman ( ⓛ ω ⓛ *)":"https://res.cloudinary.com/dedlpzbla/video/upload/v1746208712/corn_chivzy.mp3"
-};
+};*/
 
 export default function ChildDashboard() {
   const [lessons, setLessons] = useState([]);
@@ -58,9 +60,8 @@ export default function ChildDashboard() {
   return (
     <Box sx={{ background: "linear-gradient(to bottom,  rgb(189, 252, 160),rgb(14, 73, 122))", minHeight: "100vh" }}>
       <Header />
-
-      {/* Floating Music Panel */}
-
+      {/* Floating Music Panel 
+        * <it is Deprecated and has been moved to a module called SoundManager.js>
       <Box
         sx={{
           position: "absolute",
@@ -106,7 +107,7 @@ export default function ChildDashboard() {
           ref={(el) => setAudioRef(el)}
           style={{ marginTop: "1rem", width: "100%" }}
         />
-      </Box>
+      </Box>*/}
 
       {/* Main Content */}
       <Container

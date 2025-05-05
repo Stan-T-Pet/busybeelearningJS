@@ -1,10 +1,9 @@
-//file: pages\api\admin\users\[userId].js
-
+// File: pages/api/admin/users/[userId].js
+import connectDB from "@/server/config/database";
+import { Admin, Parent, Child } from "@/server/models/User";
+import bcryptjs from "bcryptjs";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
-import connectDB from "../../../../server/config/database";
-import User from "../../../../server/models/User";
-import bcryptjs from "bcryptjs";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -16,10 +15,25 @@ export default async function handler(req, res) {
 
   const { userId } = req.query;
 
+  const getUserById = async (id) =>
+    (await Admin.findById(id)) ||
+    (await Parent.findById(id)) ||
+    (await Child.findById(id));
+
+  const updateUserById = async (id, update) =>
+    (await Admin.findByIdAndUpdate(id, update, { new: true, runValidators: true })) ||
+    (await Parent.findByIdAndUpdate(id, update, { new: true, runValidators: true })) ||
+    (await Child.findByIdAndUpdate(id, update, { new: true, runValidators: true }));
+
+  const deleteUserById = async (id) =>
+    (await Admin.findByIdAndDelete(id)) ||
+    (await Parent.findByIdAndDelete(id)) ||
+    (await Child.findByIdAndDelete(id));
+
   switch (req.method) {
     case "GET":
       try {
-        const user = await User.findById(userId).select("-password");
+        const user = await getUserById(userId);
         if (!user) return res.status(404).json({ error: "User not found" });
         return res.status(200).json({ user });
       } catch (error) {
@@ -30,16 +44,9 @@ export default async function handler(req, res) {
       try {
         const { name, email, password, role } = req.body;
         const updateData = { name, email, role };
+        if (password) updateData.password = await bcryptjs.hash(password, 10);
 
-        if (password) {
-          updateData.password = await bcryptjs.hash(password, 10);
-        }
-
-        const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-          new: true,
-          runValidators: true,
-        });
-
+        const updatedUser = await updateUserById(userId, updateData);
         if (!updatedUser) return res.status(404).json({ error: "User not found" });
         return res.status(200).json({ user: updatedUser });
       } catch (error) {
@@ -48,7 +55,7 @@ export default async function handler(req, res) {
 
     case "DELETE":
       try {
-        const deletedUser = await User.findByIdAndDelete(userId);
+        const deletedUser = await deleteUserById(userId);
         if (!deletedUser) return res.status(404).json({ error: "User not found" });
         return res.status(200).json({ message: "User deleted successfully" });
       } catch (error) {

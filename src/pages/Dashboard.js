@@ -1,6 +1,12 @@
-// File: src/pages/dashboard.js
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Grid, Card, CardContent, Button } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Grid,
+  Button,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
@@ -13,20 +19,15 @@ export default function Dashboard() {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    if (status === "loading") return; // Still checking session, don't redirect yet
+    if (status === "loading") return;
 
-    if (!session) {
-      // No session -> allow basic visitor view, but prevent access to protected parts
+    if (!session) return;
+
+    if (session.user.role !== "child") {
+      router.replace("/");
       return;
     }
 
-    // If logged in but not a child, redirect based on role
-    if (session.user.role && session.user.role !== "child") {
-      router.replace("/"); // Redirect admins, parents, etc. to home
-      return;
-    }
-
-    // Fetch available courses for child users
     const fetchCourses = async () => {
       try {
         const res = await axios.get("/api/courses");
@@ -39,19 +40,34 @@ export default function Dashboard() {
     fetchCourses();
   }, [session, status, router]);
 
-  // Visitor View (not logged in yet)
+  // Visitor View
   if (!session && status !== "loading") {
     return (
       <>
         <Header />
-        <Container sx={{ mt: 4 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Welcome to Busy Bee Learning!
-          </Typography>
-          <Typography variant="h6" align="center" color="textSecondary">
-            Please <Button onClick={() => router.push("/login")}>Login</Button> or Explore Courses.
-          </Typography>
-        </Container>
+        <Box
+          sx={{
+            background: "linear-gradient(to bottom, #fffefc, #f5f7fa)",
+            minHeight: "100vh",
+            py: 6,
+          }}
+        >
+          <Container maxWidth="md" sx={{ textAlign: "center" }}>
+            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
+              Welcome to Busy Bee Learning!
+            </Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+              Please <Button onClick={() => router.push("/login")}>Login</Button> to access your lessons.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => router.push("/explore")}
+            >
+              Explore Available Courses
+            </Button>
+          </Container>
+        </Box>
       </>
     );
   }
@@ -59,45 +75,82 @@ export default function Dashboard() {
   // Loading State
   if (status === "loading") {
     return (
-      <Container maxWidth="sm">
-        <Typography variant="h5" align="center" mt={5}>
-          Loading...
-        </Typography>
-      </Container>
+      <>
+        <Header />
+        <Container maxWidth="sm" sx={{ textAlign: "center", mt: 5 }}>
+          <CircularProgress />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Loading your dashboard...
+          </Typography>
+        </Container>
+      </>
     );
   }
 
-  // Logged-in Child View
+  // Child View
   return (
     <>
-      <Typography
-        variant="h5"
-        align="center"
-        gutterBottom
-        sx={{ fontWeight: "bold" }}
+      <Header />
+      <Box
+        sx={{
+          background: "linear-gradient(to right, #e0f7fa, #e3f2fd)",
+          minHeight: "100vh",
+          py: 6,
+        }}
       >
-        Available Courses
-      </Typography>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h4"
+            align="center"
+            sx={{ fontWeight: "bold", mb: 4 }}
+          >
+            Your Courses
+          </Typography>
 
-      <Grid container spacing={3}>
-        {courses.map((course) => (
-          <Grid item xs={12} sm={6} md={4} key={course._id}>
-            <DynamicCard title={course.title} sx={{ height: "100%" }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() =>
-                  router.push(
-                    `/child/lessons?subject=${encodeURIComponent(course.title.toLowerCase())}`
-                  )
-                }
-              >
-                View Lessons
-              </Button>
-            </DynamicCard>
-          </Grid>
-        ))}
-      </Grid>
+          {courses.length === 0 ? (
+            <Typography align="center" color="text.secondary">
+              No courses available at the moment.
+            </Typography>
+          ) : (
+            <Grid container spacing={3} justifyContent="center">
+              {courses.map((course) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={course._id}>
+                  <DynamicCard
+                    title={course.title}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                      transition: "transform 0.2s",
+                      "&:hover": {
+                        transform: "scale(1.02)",
+                      },
+                    }}
+                  >
+                    <Box textAlign="center" mt="auto">
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={() =>
+                          router.push(
+                            `/child/lessons?subject=${encodeURIComponent(
+                              course.title.toLowerCase()
+                            )}`
+                          )
+                        }
+                      >
+                        View Lessons
+                      </Button>
+                    </Box>
+                  </DynamicCard>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
+      </Box>
     </>
   );
 }

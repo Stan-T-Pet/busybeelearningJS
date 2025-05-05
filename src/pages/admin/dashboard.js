@@ -1,19 +1,18 @@
 // File: src/pages/admin/dashboard.js
+
 import React, { useEffect, useState } from "react";
-import { 
-  Container, 
-  Typography, 
-  Button, 
-  Box, 
-  Grid, 
-  Card, 
-  CardContent, 
-  useTheme 
+import {
+  Container,
+  Typography,
+  Button,
+  Box,
+  Grid,
+  useTheme,
 } from "@mui/material";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
-
+import DynamicCard from "../../components/DynamicCard";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -21,7 +20,6 @@ export default function AdminDashboard() {
   const [metrics, setMetrics] = useState(null);
   const theme = useTheme();
 
-  // Redirect if not authenticated or not an admin.
   useEffect(() => {
     if (status === "loading") return;
     if (!session || session.user.role !== "admin") {
@@ -29,23 +27,12 @@ export default function AdminDashboard() {
     }
   }, [session, status, router]);
 
-  // Fetch metrics from API.
   useEffect(() => {
-    if (session && session.user.role === "admin") {
-      async function fetchMetrics() {
-        try {
-          const res = await fetch("/api/admin/metrics");
-          if (!res.ok) {
-            console.error("Failed to fetch metrics");
-            return;
-          }
-          const data = await res.json();
-          setMetrics(data.metrics);
-        } catch (error) {
-          console.error("Error fetching metrics:", error);
-        }
-      }
-      fetchMetrics();
+    if (session?.user?.role === "admin") {
+      fetch("/api/admin/metrics")
+        .then((res) => res.json())
+        .then((data) => setMetrics(data.metrics))
+        .catch((err) => console.error("Error loading metrics:", err));
     }
   }, [session]);
 
@@ -60,50 +47,79 @@ export default function AdminDashboard() {
   return (
     <>
       <Header />
-          <Container
-            maxWidth="lg"
-              sx={{
-                mt: 4,
-                pb: 4,
-                background: "linear-gradient(to bottom,rgb(2, 11, 20),rgb(3, 52, 97))", // adjust based on the image
-                borderRadius: 2,
-                boxShadow: 3,
-                p: 4,
-                color: "white",
-              }
-            }
-          >
-        <Typography 
-          variant="h3" 
-          align="center" 
-          gutterBottom 
-          sx={{ fontWeight: "bold", color: theme.palette.primary.main }}
-        >
-          Admin Dashboard
-        </Typography>
-        <Typography
-          variant="h4" // larger than h5
-          align="center"
-          paragraph
-          sx={{
-            color: (theme) =>
-              theme.palette.mode === "dark"
-                ? theme.palette.common.white
-                : theme.palette.common.black,
-            fontWeight: "bold",
-            fontSize: {
-              xs: "1.5rem",
-              sm: "1.75rem",
-              md: "2rem",
-            },
-            textShadow: (theme) =>
-              theme.palette.mode === "white"
-                ? "1px 1px 4px rgba(16, 57, 240, 0.7)"
-                : "none",
-          }}
-        > Welcome, {session.user.name}!
-        </Typography>
+      <Box
+        sx={{
+          background: "linear-gradient(to bottom right, #001f3f, #0074D9)",
+          minHeight: "100vh",
+          pt: 6,
+          pb: 6,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Typography variant="h3" align="center" sx={{ fontWeight: "bold", color: "#fff", mb: 3 }}>
+            Admin Dashboard
+          </Typography>
+          <Typography variant="h5" align="center" sx={{ color: "#ddd", mb: 5 }}>
+            Welcome, {session.user.name}
+          </Typography>
 
+          {/* Navigation Grid */}
+          <Grid container spacing={3} justifyContent="center">
+            {[
+              { label: "Profile", route: "/admin/profile", color: "primary" },
+              { label: "Manage Users", route: "/admin/users", color: "secondary" },
+              { label: "Metrics", route: "/admin/metrics", color: "info" },
+              { label: "Courses", route: "/admin/courses", color: "success" },
+              { label: "Lessons", route: "/admin/lessons", color: "warning" },
+              { label: "Quizzes", route: "/admin/quizzes", color: "error" },
+            ].map(({ label, route, color }) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={label}>
+                <DynamicCard
+                  title={label}
+                  sx={{ cursor: "pointer", height: "100%" }}
+                  onClick={() => router.push(route)}
+                >
+                  <Box textAlign="center">
+                    <Button variant="contained" color={color} fullWidth>
+                      {label}
+                    </Button>
+                  </Box>
+                </DynamicCard>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Metrics Section */}
+          <Typography variant="h5" sx={{ mt: 6, mb: 3, color: "#fff", textAlign: "center" }}>
+            Site Metrics
+          </Typography>
+          <Grid container spacing={3} justifyContent="center">
+            {metrics ? (
+              <>
+                <Grid item xs={12} sm={6} md={4}>
+                  <DynamicCard title="Total Users">
+                    <Typography variant="h4" align="center">{metrics.totalUsers}</Typography>
+                  </DynamicCard>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <DynamicCard title="Total Parents">
+                    <Typography variant="h4" align="center">{metrics.totalParents}</Typography>
+                  </DynamicCard>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <DynamicCard title="Total Children">
+                    <Typography variant="h4" align="center">{metrics.totalChildren}</Typography>
+                  </DynamicCard>
+                </Grid>
+              </>
+            ) : (
+              <Grid item xs={12}>
+                <Typography align="center" color="error">
+                  Unable to load metrics.
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
         {/* Navigation Buttons */}
         <Box 
           sx={{ 
@@ -209,17 +225,14 @@ export default function AdminDashboard() {
           )}
         </Grid>
 
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button 
-            variant="outlined" 
-            color="error" 
-            onClick={() => signOut()} 
-            sx={{ textTransform: "none" }}
-          >
-            Log out
-          </Button>
-        </Box>
-      </Container>
+          {/* Logout */}
+          <Box sx={{ textAlign: "center", mt: 6 }}>
+            <Button variant="outlined" color="error" onClick={() => signOut()}>
+              Logout
+            </Button>
+          </Box>
+        </Container>
+      </Box>
     </>
   );
 }

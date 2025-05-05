@@ -2,8 +2,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import connectDB from "../../../server/config/database";
-import User from "../../../server/models/User";
-import Child from "../../../server/models/Child";
+import {Child} from "../../../server/models/User";
 import Progress from "../../../server/models/Progress";
 
 export default async function handler(req, res) {

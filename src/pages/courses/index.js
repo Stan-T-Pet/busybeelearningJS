@@ -1,7 +1,8 @@
 // file: src\pages\courses\index.js
 
 import React from "react";
-import { Container, Typography, Box, Grid, Card, CardContent, Button } from "@mui/material";
+import { Container, Typography, Box, Grid, CardContent, Button } from "@mui/material";
+import DynamicCard from "@/components/DynamicCard";
 import Link from "next/link";
 
 const availableCourses = [
