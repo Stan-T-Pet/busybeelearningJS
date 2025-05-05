@@ -3,9 +3,9 @@
 import { Typography, Container, Grid, Paper, Button } from "@mui/material";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import Header from "../components/Header";
-import connectDB from "../server/config/database";
-import Course from "../server/models/Course";
+import Header from "@/components/Header";
+import connectDB from "@/server/config/database";
+import Course from "@/server/models/Course";
 
 export default function Home({ randomCourses }) {
   const { data: session, status } = useSession();
