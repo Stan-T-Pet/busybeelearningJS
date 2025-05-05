@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials"; // Ensure this import is correct
 import connectDB from "../../../server/config/database";
 import { Parent, Admin } from "../../../server/models/User";
 import Child from "../../../server/models/Child";
@@ -87,4 +87,3 @@ export const authOptions = {
 };
 
 export default NextAuth(authOptions);
- 
