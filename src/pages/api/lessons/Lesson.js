@@ -1,15 +1,25 @@
-// File: src/pages/api/lessons/Lesson.js
 import connectDB from "../../../server/config/database";
 import Lesson from "../../../server/models/Lesson";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
   await connectDB();
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session || !session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const userRole = session.user.role;
 
   if (req.method === "GET") {
     try {
-      // Fetch all lessons from the database
+      if (userRole !== "child" && userRole !== "admin") {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
       const lessons = await Lesson.find({}).lean();
-      // Serialize documents (convert ObjectIDs/dates into JSON‐friendly values)
       const lessonsJSON = lessons.map((lesson) =>
         JSON.parse(JSON.stringify(lesson))
       );
@@ -20,15 +30,15 @@ export default async function handler(req, res) {
     }
   } else if (req.method === "POST") {
     try {
-      // Destructure lesson details from the request body.
-      const { title, description, subject, content } = req.body;
-      if (!title || !subject) {
-        return res
-          .status(400)
-          .json({ error: "Title and subject are required." });
+      if (userRole !== "admin") {
+        return res.status(403).json({ error: "Only admins can add lessons" });
       }
 
-      // Create and save the new lesson.
+      const { title, description, subject, content } = req.body;
+      if (!title || !subject) {
+        return res.status(400).json({ error: "Title and subject are required." });
+      }
+
       const lesson = new Lesson({ title, description, subject, content });
       const savedLesson = await lesson.save();
       return res.status(201).json({ lesson: savedLesson });

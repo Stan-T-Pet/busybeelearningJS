@@ -1,9 +1,11 @@
+// File: src/pages/child/quiz/[quizId].js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import {Container, Typography, Box, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, TextField, Paper,
-  Dialog, DialogTitle, DialogContent, DialogActions,
+import {
+  Container, Typography, Box, Button, Radio, RadioGroup, FormControlLabel,
+  FormControl, FormLabel, TextField, Paper, Dialog, DialogTitle, DialogContent, DialogActions
 } from "@mui/material";
 import Header from "../../../components/Header";
 
@@ -18,16 +20,15 @@ export default function QuizDetails({ quiz }) {
   const [feedback, setFeedback] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  useEffect(() => setMounted(true), []);
   if (!mounted) return null;
 
+  // Handle field changes for each quiz type
   const handleChange = (field, value) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Submission handler for all quiz types
   const handleSubmit = async () => {
     if (!session?.user?.id) return;
 
@@ -56,14 +57,6 @@ export default function QuizDetails({ quiz }) {
 
     setScore(calculatedScore);
 
-    console.log({
-        contentId: quiz._id,
-        contentType: "quiz",
-        childId: session.user.id,
-        courseId: quiz.courseId,
-        action: "complete",
-        score: calculatedScore,
-      });      
     try {
       await axios.post("/api/progress/update", {
         contentId: quiz._id,
@@ -92,7 +85,7 @@ export default function QuizDetails({ quiz }) {
             {quiz.title || quiz.questionText || "Quiz"}
           </Typography>
 
-          {/* isTrue */}
+          {/* Boolean Quiz */}
           {quiz.type === "isTrue" && (
             <FormControl component="fieldset" sx={{ my: 3 }}>
               <FormLabel component="legend">{quiz.questionText}</FormLabel>
@@ -122,7 +115,7 @@ export default function QuizDetails({ quiz }) {
             </FormControl>
           )}
 
-          {/* multipleChoice */}
+          {/* MCQ Quiz */}
           {quiz.type === "multipleChoice" && (
             <FormControl component="fieldset" sx={{ my: 3 }}>
               <FormLabel component="legend">{quiz.questionText}</FormLabel>
@@ -151,7 +144,7 @@ export default function QuizDetails({ quiz }) {
             </FormControl>
           )}
 
-          {/* multipleSteps */}
+          {/* Step-by-step Quiz */}
           {quiz.type === "multipleSteps" && (
             <Box>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -181,11 +174,10 @@ export default function QuizDetails({ quiz }) {
             </Box>
           )}
 
+          {/* Submit Button or Result */}
           {!submitted ? (
             <Box mt={4} textAlign="center">
-              <Button variant="contained" onClick={handleSubmit}>
-                Submit Quiz
-              </Button>
+              <Button variant="contained" onClick={handleSubmit}>Submit Quiz</Button>
             </Box>
           ) : (
             <Typography variant="h6" color="success.main" align="center" sx={{ mt: 4 }}>
@@ -222,6 +214,7 @@ export default function QuizDetails({ quiz }) {
   );
 }
 
+// Server-side fetch for quiz
 export async function getServerSideProps(context) {
   const { quizId } = context.query;
   const connectDB = (await import("../../../server/config/database")).default;
@@ -231,14 +224,10 @@ export async function getServerSideProps(context) {
     await connectDB();
     const quiz = await Quiz.findById(quizId).lean();
     return {
-      props: {
-        quiz: JSON.parse(JSON.stringify(quiz)),
-      },
+      props: { quiz: JSON.parse(JSON.stringify(quiz)) },
     };
   } catch (error) {
     console.error("Failed to load quiz:", error);
-    return {
-      notFound: true,
-    };
+    return { notFound: true };
   }
 }

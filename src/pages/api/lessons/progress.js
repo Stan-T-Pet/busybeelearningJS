@@ -2,14 +2,18 @@
 import connectDB from "../../../server/config/database";
 import Progress from "../../../server/models/Progress";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../api/auth/[...nextauth]";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
   await connectDB();
   const session = await getServerSession(req, res, authOptions);
+
   if (!session || !session.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+
+  const userRole = session.user.role;
+  const userId = session.user.id;
 
   if (req.method === "GET") {
     try {
@@ -17,6 +21,12 @@ export default async function handler(req, res) {
       if (!childId) {
         return res.status(400).json({ error: "childId query parameter required" });
       }
+
+      // Allow only the child or an admin to fetch progress
+      if (userRole !== "admin" && userId !== childId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
       const progress = await Progress.find({ childId });
       return res.status(200).json({ progress });
     } catch (error) {
@@ -38,6 +48,11 @@ export default async function handler(req, res) {
 
       if (!childId || !contentType || !contentId || !subject) {
         return res.status(400).json({ error: "Missing required fields in progress data." });
+      }
+
+      // Allow only the child to post progress, admin as well for testing purposes.
+      if (userRole !== "admin" && userId !== childId) {
+        return res.status(403).json({ error: "Access denied" });
       }
 
       const newProgress = new Progress({
@@ -66,15 +81,21 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Progress ID is required in query." });
       }
 
+      const existing = await Progress.findById(progressId);
+      if (!existing) {
+        return res.status(404).json({ error: "Progress record not found." });
+      }
+
+      // Only allow updates by the admin or the child who owns the progress record
+      if (userRole !== "admin" && userId !== existing.childId.toString()) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
       const updatedProgress = await Progress.findByIdAndUpdate(
         progressId,
         req.body,
         { new: true }
       );
-
-      if (!updatedProgress) {
-        return res.status(404).json({ error: "Progress record not found." });
-      }
 
       return res.status(200).json({ progress: updatedProgress });
     } catch (error) {
