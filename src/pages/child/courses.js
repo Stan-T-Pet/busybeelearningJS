@@ -2,12 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Container,
-  Typography,
-  Grid,
-  Button,
-} from "@mui/material";
+import { Box, Container, Typography, Grid, Button} from "@mui/material";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
 import { useRouter } from "next/router";
