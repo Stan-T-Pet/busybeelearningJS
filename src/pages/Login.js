@@ -31,7 +31,7 @@ export default function Login() {
       setErrorMessage(res.error);
     } else {
       console.log("Login successful, redirecting...");
-      router.push("/dashboard" || "/Dashboard"); // Redirect to the dashboard or any other page
+      router.push("/dashboard" || "/Dashboard"); // Redirect to the dashboard, defaulting to "/dashboard" or "/Dashboard" incase file name is changed by GitHub I HATE GITHUB sometimes
     }
   };  
 
