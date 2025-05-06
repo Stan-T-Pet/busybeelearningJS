@@ -49,7 +49,7 @@ export default function Home({ randomCourses }) {
     </>
   );
 }
-
+/*
 // Fetch 3 random courses from MongoDB
 export async function getServerSideProps() {
   const connect = await connectDB();
@@ -71,4 +71,4 @@ export async function getServerSideProps() {
       },
     };
   }
-}
+}*/
