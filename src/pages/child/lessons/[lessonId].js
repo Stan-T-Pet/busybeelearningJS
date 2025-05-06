@@ -1,3 +1,5 @@
+// File: src/pages/child/lessons/[lessonId].js
+
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -7,7 +9,6 @@ import {
   Container,
   Typography,
   CircularProgress,
-  Card,
   CardContent,
   Button,
 } from "@mui/material";
@@ -24,6 +25,7 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch lesson content when ID is available
   useEffect(() => {
     if (!lessonId) return;
 
@@ -42,6 +44,7 @@ export default function LessonPage() {
     fetchLesson();
   }, [lessonId]);
 
+  // Handle "Complete & Start Quiz" button
   const handleCompleteAndQuiz = async () => {
     if (!session) {
       router.push("/login");
@@ -49,6 +52,7 @@ export default function LessonPage() {
     }
 
     try {
+      // Update progress
       await axios.post("/api/progress/update", {
         childId: session.user.id,
         contentType: "lesson",
@@ -57,6 +61,7 @@ export default function LessonPage() {
         action: "complete",
       });
 
+      // Check for quizzes associated with the lesson
       const quizRes = await axios.get(`/api/quizzes/byLesson?lessonId=${lesson._id}`);
       const quizzes = quizRes.data.quizzes;
 
@@ -71,6 +76,7 @@ export default function LessonPage() {
     }
   };
 
+  // Loading and error fallback UIs
   if (loading) {
     return (
       <Box minHeight="60vh" display="flex" justifyContent="center" alignItems="center">
@@ -82,9 +88,7 @@ export default function LessonPage() {
   if (error) {
     return (
       <Container>
-        <Typography variant="h6" color="error">
-          {error}
-        </Typography>
+        <Typography variant="h6" color="error">{error}</Typography>
       </Container>
     );
   }
@@ -97,6 +101,7 @@ export default function LessonPage() {
     );
   }
 
+  // Main Render
   return (
     <Box sx={{ background: "#f7f7f7", minHeight: "100vh" }}>
       <Header />
@@ -105,15 +110,14 @@ export default function LessonPage() {
           <CardContent>
             <Box display="flex" alignItems="center" mb={2}>
               <SchoolIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h4" fontWeight="bold">
-                {lesson.title}
-              </Typography>
+              <Typography variant="h4" fontWeight="bold">{lesson.title}</Typography>
             </Box>
 
             <Typography variant="subtitle1" color="text.secondary" gutterBottom>
               Course: {lesson.courseTitle || lesson.subject}
             </Typography>
 
+            {/* HTML lesson content */}
             <Box sx={{ mt: 2 }}>
               <div dangerouslySetInnerHTML={{ __html: lesson.content || "<p>No content available.</p>" }} />
             </Box>

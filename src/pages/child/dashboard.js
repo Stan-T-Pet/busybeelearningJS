@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-  CardContent,
-  Button,
-  Select,
-  MenuItem,
-} from "@mui/material";
-import Header from "@/components/Header";
-import DynamicCard from "@/components/DynamicCard";
-import Link from "next/link";
+ // File: src/pages/child/dashboard.js
+ import React, { useEffect, useState } from "react";
+ import {
+   Box,
+   Container,
+   Grid,
+   Typography,
+   CardContent,
+   Button,
+ } from "@mui/material";
+ import Header from "@/components/Header";
+ import DynamicCard from "@/components/DynamicCard";
+ import Link from "next/link";
 /*
  *<Deprecated and has been moved to a module called SoundManager.js>
 
@@ -21,15 +20,17 @@ const studyTracks = {
   "Ambient Rain |~^///^^///^^///^~|": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746208595/rain_qein7k.mp3",
   "Nature Sounds ﹏𓃗﹏𓃗﹏": "https://res.cloudinary.com/dedlpzbla/video/upload/v1746208587/forest_sswwok.mp3",
   "Hans the goat Zimmerman ( ⓛ ω ⓛ *)":"https://res.cloudinary.com/dedlpzbla/video/upload/v1746208712/corn_chivzy.mp3"
-};*/
+};
+*/
+
+
 
 export default function ChildDashboard() {
   const [lessons, setLessons] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentTrack, setCurrentTrack] = useState("");
-  const [audioRef, setAudioRef] = useState(null);
 
+  // Fetch lessons and quizzes from APIs and randomize them
   useEffect(() => {
     async function fetchActivities() {
       try {
@@ -39,6 +40,7 @@ export default function ChildDashboard() {
           console.error("Failed to fetch lessons or quizzes");
           return;
         }
+
         const lessonsData = await lessonsRes.json();
         const quizzesData = await quizzesRes.json();
 
@@ -109,19 +111,9 @@ export default function ChildDashboard() {
         />
       </Box>*/}
 
+      
       {/* Main Content */}
-      <Container
-        maxWidth="xl"
-        sx={{
-          mt: 4,
-          pb: 4,
-          ml: { xs: 0, sm: "260px" },
-          px: { xs: 2, sm: 4 },
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <Container maxWidth="xl" sx={{ mt: 4, pb: 4 }}>
         <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
           Hey there, ready to learn?
         </Typography>
@@ -136,18 +128,9 @@ export default function ChildDashboard() {
         ) : (
           <>
             {/* Lessons Section */}
-            <Box
-              sx={{
-                width: "100%",
-                mt: 6,
-                p: 3,
-                borderRadius: 3,
-                background: "linear-gradient(135deg, rgb(57, 189, 75) 0%)",
-                boxShadow: 2,
-              }}
-            >
+            <Box sx={{ width: "100%", mt: 6, p: 3, borderRadius: 3, background: "linear-gradient(135deg, rgb(57, 189, 75) 0%)", boxShadow: 2 }}>
               <Typography variant="h5" align="center" sx={{ fontWeight: "bold", mb: 4 }}>
-               Complete a Lesson
+                Complete a Lesson
               </Typography>
 
               <Grid container spacing={3} justifyContent="center">
@@ -163,27 +146,17 @@ export default function ChildDashboard() {
                           height: "100%",
                           borderRadius: 2,
                           boxShadow: 3,
-                          transition: "transform 0.2s, box-shadow 0.2s",
-                          "&:hover": {
-                            transform: "scale(1.02)",
-                            boxShadow: 6,
-                          },
+                          "&:hover": { transform: "scale(1.02)", boxShadow: 6 },
                         }}
                       >
-                        <CardContent sx={{ flexGrow: 1 }}>
+                        <CardContent>
                           {lesson.description && (
-                            <Typography
-                              variant="h6"
-                              align="center"
-                              sx={{ fontWeight: "bold", mb: 1 }}
-                            >
+                            <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
                               {lesson.description}
                             </Typography>
                           )}
-                          <Box sx={{ textAlign: "center", mt: "auto" }}>
-                            <Button variant="contained" color="primary">
-                              Start Lesson
-                            </Button>
+                          <Box sx={{ textAlign: "center" }}>
+                            <Button variant="contained" color="primary">Start Lesson</Button>
                           </Box>
                         </CardContent>
                       </DynamicCard>
@@ -194,16 +167,7 @@ export default function ChildDashboard() {
             </Box>
 
             {/* Quizzes Section */}
-            <Box
-              sx={{
-                width: "100%",
-                mt: 6,
-                p: 3,
-                borderRadius: 3,
-                background: "linear-gradient(135deg rgb(125, 177, 170) 10%)",
-                boxShadow: 2,
-              }}
-            >
+            <Box sx={{ width: "100%", mt: 6, p: 3, borderRadius: 3, background: "linear-gradient(135deg, rgb(125, 177, 170) 10%)", boxShadow: 2 }}>
               <Typography variant="h5" align="center" sx={{ fontWeight: "bold", mb: 4 }}>
                 Quizzes
               </Typography>
@@ -212,34 +176,13 @@ export default function ChildDashboard() {
                 {quizzes.map((quiz) => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={quiz._id}>
                     <Link href={`/child/quiz/${quiz._id}`} passHref legacyBehavior>
-                      <DynamicCard
-                        title="Quiz"
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          height: "100%",
-                          borderRadius: 2,
-                          boxShadow: 3,
-                          transition: "transform 0.2s, box-shadow 0.2s",
-                          "&:hover": {
-                            transform: "scale(1.02)",
-                            boxShadow: 6,
-                          },
-                        }}
-                      >
-                        <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography
-                            variant="h6"
-                            align="center"
-                            sx={{ fontWeight: "bold", mb: 1 }}
-                          >
+                      <DynamicCard title="Quiz">
+                        <CardContent>
+                          <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
                             {quiz.title || quiz.questionText || "Untitled Quiz"}
                           </Typography>
-                          <Box sx={{ textAlign: "center", mt: "auto" }}>
-                            <Button variant="contained" color="primary">
-                              Take Quiz
-                            </Button>
+                          <Box sx={{ textAlign: "center" }}>
+                            <Button variant="contained" color="primary">Take Quiz</Button>
                           </Box>
                         </CardContent>
                       </DynamicCard>
@@ -249,12 +192,10 @@ export default function ChildDashboard() {
               </Grid>
             </Box>
 
-            {/* Progress Button */}
+            {/* View Progress */}
             <Box sx={{ textAlign: "center", mt: 6 }}>
               <Link href="/child/profile" passHref legacyBehavior>
-                <Button variant="outlined" color="primary">
-                  View Progress
-                </Button>
+                <Button variant="outlined" color="primary">View Progress</Button>
               </Link>
             </Box>
           </>

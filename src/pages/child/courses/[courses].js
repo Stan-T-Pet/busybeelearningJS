@@ -10,12 +10,12 @@ import {
   Typography,
   Container,
   Grid,
-  Card,
   CardContent,
   CardActions,
 } from "@mui/material";
 import Link from "next/link";
 import Header from "../../../components/Header";
+import DynamicCard from "../../../components/DynamicCard";
 
 export default function CourseLessonsPage({ initialLessons, course }) {
   const { data: session } = useSession();
@@ -25,6 +25,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
   const [lessons, setLessons] = useState(initialLessons || []);
   const [progressMap, setProgressMap] = useState({});
 
+  // Fetch child progress to mark completed lessons
   useEffect(() => {
     if (!session?.user?.id || !courseId) return;
 
@@ -32,12 +33,12 @@ export default function CourseLessonsPage({ initialLessons, course }) {
       try {
         const res = await axios.get(`/api/lessons/progress?childId=${session.user.id}`);
         const progressData = res.data.progress || [];
+
         const completedLessons = progressData
-          .filter(
-            (entry) =>
-              entry.contentType === "lesson" &&
-              entry.completed === true &&
-              entry.courseId === courseId
+          .filter((entry) =>
+            entry.contentType === "lesson" &&
+            entry.completed === true &&
+            entry.courseId === courseId
           )
           .reduce((acc, curr) => {
             acc[curr.contentId] = true;
@@ -64,6 +65,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
           {course?.description}
         </Typography>
 
+        {/* Lessons Grid */}
         <Grid container spacing={3}>
           {lessons.map((lesson) => {
             const isCompleted = progressMap[lesson._id];
@@ -90,6 +92,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
           })}
         </Grid>
 
+        {/* Navigation to Quizzes */}
         <Box mt={4} display="flex" justifyContent="center">
           <Link href={`/child/quiz?courseId=${courseId}`} passHref legacyBehavior>
             <Button variant="outlined">Go to Course Quizzes</Button>
@@ -100,6 +103,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
   );
 }
 
+// Server-side fetch for course and its lessons
 export async function getServerSideProps(context) {
   const { courseId } = context.query;
   const connectDB = (await import("../../../server/config/database")).default;
@@ -112,13 +116,10 @@ export async function getServerSideProps(context) {
     const course = await Course.findById(courseId).lean();
     const lessons = await Lesson.find({ courseId }).lean();
 
-    const lessonsJSON = lessons.map((lesson) => JSON.parse(JSON.stringify(lesson)));
-    const courseJSON = course ? JSON.parse(JSON.stringify(course)) : null;
-
     return {
       props: {
-        initialLessons: lessonsJSON,
-        course: courseJSON,
+        initialLessons: lessons.map((lesson) => JSON.parse(JSON.stringify(lesson))),
+        course: course ? JSON.parse(JSON.stringify(course)) : null,
       },
     };
   } catch (error) {

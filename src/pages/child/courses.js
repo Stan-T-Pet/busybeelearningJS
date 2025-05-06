@@ -6,13 +6,10 @@ import {
   Container,
   Typography,
   Grid,
-  Card,
-  CardContent,
-  CardActions,
   Button,
 } from "@mui/material";
 import Header from "../../components/Header";
-import DynamicCard from "../../components/DynamicCard"; 
+import DynamicCard from "../../components/DynamicCard";
 import { useRouter } from "next/router";
 
 export default function ChildCoursesPage() {
@@ -20,6 +17,7 @@ export default function ChildCoursesPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Fetch all available courses from API
     const fetchCourses = async () => {
       try {
         const res = await axios.get("/api/courses");
@@ -34,30 +32,28 @@ export default function ChildCoursesPage() {
         setCourses([]);
       }
     };
-  
     fetchCourses();
   }, []);
-  
 
   const handleViewCourse = (courseId) => {
     router.push(`/child/courses/${courseId}`);
   };
 
   return (
-    <>
+    <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
       <Header />
       <Container sx={{ mt: 4 }}>
         <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: "bold" }}>
           Available Courses
         </Typography>
-    
+
         {courses.length === 0 ? (
           <Typography align="center">No courses available.</Typography>
         ) : (
           <Grid container spacing={3}>
             {courses.map((course) => (
               <Grid item xs={12} sm={6} md={4} key={course._id}>
-                <DynamicCard title={course.title} sx={{ height: "100%" }}>
+                <DynamicCard title={course.title}>
                   <Typography variant="body2" sx={{ mb: 2 }}>
                     {course.description || "No description provided."}
                   </Typography>
@@ -75,6 +71,6 @@ export default function ChildCoursesPage() {
           </Grid>
         )}
       </Container>
-    </>    
+    </Box>
   );
 }

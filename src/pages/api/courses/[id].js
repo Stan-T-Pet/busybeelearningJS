@@ -11,20 +11,26 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     try {
+      // Fetch course with lessons and quizzes
       const course = await Course.findById(id)
         .populate("lessons")
         .populate("quizzes");
+
       if (!course) {
         return res.status(404).json({ error: "Course not found" });
       }
+
       return res.status(200).json({ course });
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
   }
 
+  // PUT and DELETE require admin authentication
   if (req.method === "PUT" || req.method === "DELETE") {
     const session = await getServerSession(req, res, authOptions);
+
+    // Only admins are allowed to modify or delete courses
     if (!session || session.user.role !== "admin") {
       return res.status(403).json({ error: "Forbidden" });
     }
@@ -61,6 +67,7 @@ export default async function handler(req, res) {
     }
   }
 
+  // Default method handler
   res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
   return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
 }
