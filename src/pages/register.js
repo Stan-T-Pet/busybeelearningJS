@@ -12,8 +12,6 @@ import {
   Paper,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import AuthLayout from "@/components/layouts/AuthLayout";
-
 
 export default function Register() {
   const [formData, setFormData] = useState({
