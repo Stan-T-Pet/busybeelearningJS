@@ -1,5 +1,3 @@
-// File: src/pages/admin/dashboard.js
-
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -72,6 +70,7 @@ export default function AdminDashboard() {
               { label: "Courses", route: "/admin/courses", color: "success" },
               { label: "Lessons", route: "/admin/lessons", color: "warning" },
               { label: "Quizzes", route: "/admin/quizzes", color: "error" },
+              { label: "DataLoader", route: "/admin/dataloader", color: "info" },
             ].map(({ label, route, color }) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={label}>
                 <DynamicCard
