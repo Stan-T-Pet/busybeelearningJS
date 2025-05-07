@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import AuthLayout from "@/components/layouts/AuthLayout";
-
 
 export default function Login() {
   const [email, setEmail] = useState("");
