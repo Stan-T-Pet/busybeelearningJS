@@ -16,8 +16,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DynamicCard from "../../components/DynamicCard";
 import Header from "../../components/Header";
+import AdminLayout from "../../components/AdminLayout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+
 
 export default function AdminUsers() {
   const { data: session, status } = useSession();
@@ -63,6 +65,7 @@ export default function AdminUsers() {
   }
 
   return (
+    <AdminLayout>
     <>
       <Header />
       <Container maxWidth="lg" sx={{ mt: 4, pb: 4 }}>
@@ -129,5 +132,6 @@ export default function AdminUsers() {
         </Box>
       </Container>
     </>
+    </AdminLayout>
   );
 }

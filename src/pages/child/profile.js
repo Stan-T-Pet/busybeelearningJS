@@ -16,6 +16,8 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
+import ChildLayout from "../../components/layouts/ChildLayout";
+
 
 export default function Profile() {
   const { data: session, status } = useSession();
@@ -73,15 +75,16 @@ export default function Profile() {
   }
 
   return (
-    <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
+    <ChildLayout>
+    <Box sx={{ background: "linear-gradient(135deg, rgb(61, 78, 61) rgb(14, 73, 122))", minHeight: "100vh" }}>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
         {/* Account Header */}
-        <Box sx={{ textAlign: "center", mb: 4, p: 2, borderRadius: 2, backgroundColor: "#fff", boxShadow: 3 }}>
+        <Box sx={{ textAlign: "center", mb: 4, p: 2, borderRadius: 2, backgroundColor: "theme.primary", boxShadow: 5 }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
             Welcome, {session?.user?.name || "Guest"}!
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
+          <Typography variant="subtitle1" color="text.secondary" fontSize="1.5rem">
             {session?.user?.email || "N/A"}
           </Typography>
         </Box>
@@ -92,7 +95,7 @@ export default function Profile() {
           <Grid item xs={12} md={6}>
             <DynamicCard
               title="Lesson Progress"
-              sx={{ borderRadius: 2, boxShadow: 3 }}
+              sx={{ borderRadius: 2, boxShadow: 5 }}
             >
               
                 <Divider sx={{ mb: 2 }} />
@@ -175,5 +178,6 @@ export default function Profile() {
         </Box>
       </Container>
     </Box>
+    </ChildLayout>
   );
 }

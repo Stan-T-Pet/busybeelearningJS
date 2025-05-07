@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
+import ParentLayout from "../../components/layouts/ParentLayout";
 
 export default function ParentProgress() {
   const { data: session, status } = useSession();
@@ -66,6 +67,7 @@ export default function ParentProgress() {
 
   return (
     <>
+      <ParentLayout>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
@@ -86,6 +88,7 @@ export default function ParentProgress() {
           ))}
         </Grid>
       </Container>
+      </ParentLayout>
     </>
   );
 }

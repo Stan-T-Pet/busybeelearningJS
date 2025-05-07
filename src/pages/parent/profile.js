@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Typography,
-  Grid,
-  Button,
-  Box,
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
+import {Container,Typography,Grid,Button, Box, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -19,6 +8,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
+import ParentLayout from "../../components/layouts/ParentLayout";
+import { useThemeMode } from "../../components/ThemeManager";
 
 export default function ParentProfile() {
   const { data: session } = useSession();
@@ -118,11 +109,11 @@ export default function ParentProfile() {
 
   return (
     <>
+      <ParentLayout>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
         {/* Parent Details */}
         <DynamicCard title="Parent Details" sx={{ mb: 4 }}>
-          
             <Typography>
               <b>Name:</b> {session.user.name}
             </Typography>
@@ -133,8 +124,7 @@ export default function ParentProfile() {
         </DynamicCard>
 
         {/* Children List with personal details */}
-        <DynamicCard title="Your Children" sx={{ mb: 4 }}>
-          
+        <DynamicCard title="Your Children" sx={{ mb: 4 }} >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -148,7 +138,6 @@ export default function ParentProfile() {
                 children.map((child) => (
                   <Grid item xs={12} sm={6} md={4} key={child._id}>
                     <DynamicCard>
-                      
                         <Typography variant="h6">{child.fullName}</Typography>
                         <Typography>Age: {child.age}</Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -221,6 +210,7 @@ export default function ParentProfile() {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
-  );
+    </ParentLayout>
+    </>    
+    );
 }

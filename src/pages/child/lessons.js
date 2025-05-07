@@ -5,6 +5,7 @@ import Header from "../../components/Header";
 import Link from "next/link";
 import connectDB from "../../server/config/database";
 import Lesson from "../../server/models/Lesson";
+import ChildLayout from "../../components/layouts/ChildLayout";
 
 // SSR: Fetch lessons from MongoDB
 export async function getServerSideProps(context) {
@@ -24,7 +25,8 @@ export async function getServerSideProps(context) {
 
 export default function Lessons({ lessons, subject }) {
   return (
-    <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
+    <ChildLayout>
+    <Box sx={{ background: "linear-gradient(to bottom,rgba(146, 223, 223, 0.19),rgba(7, 74, 107, 0.86))", minHeight: "100vh" }}>
       <Header />
       <Container sx={{ mt: 4, mb: 4 }}>
         {/* Top Bar */}
@@ -44,7 +46,7 @@ export default function Lessons({ lessons, subject }) {
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
             gap: 2,
-            backgroundColor: "#BBE5ED",
+            backgroundColor: "rgb(179, 214, 230)",
             p: 2,
             borderRadius: 2,
           }}>
@@ -70,5 +72,6 @@ export default function Lessons({ lessons, subject }) {
         </Box>
       </Container>
     </Box>
+    </ChildLayout>
   );
 }

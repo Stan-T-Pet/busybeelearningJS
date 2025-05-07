@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import {
-  Container, Typography, Box, Button, Radio, RadioGroup, FormControlLabel,
+import {Container, Typography, Box, Button, Radio, RadioGroup, FormControlLabel,
   FormControl, FormLabel, TextField, Paper, Dialog, DialogTitle, DialogContent, DialogActions
 } from "@mui/material";
 import Header from "../../../components/Header";
+import ChildLayout from "../../../components/layouts/ChildLayout";
 
 export default function QuizDetails({ quiz }) {
   const { data: session } = useSession();
@@ -77,7 +77,8 @@ export default function QuizDetails({ quiz }) {
   };
 
   return (
-    <Box sx={{ background: "#f5f5f5", minHeight: "100vh" }}>
+    <ChildLayout title="Quiz" description="Take the quiz to test your knowledge.">
+    <Box sx={{ background: "theme.primary", minHeight: "100vh" }}>
       <Header />
       <Container maxWidth="md" sx={{ pt: 4, pb: 8 }}>
         <Paper sx={{ p: 4 }}>
@@ -211,6 +212,7 @@ export default function QuizDetails({ quiz }) {
         </DialogActions>
       </Dialog>
     </Box>
+    </ChildLayout>
   );
 }
 

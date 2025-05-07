@@ -6,13 +6,16 @@ import { useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import connectDB from "@/server/config/database";
 import Course from "@/server/models/Course";
+import AuthLayout from "@/components/layouts/AuthLayout";
 
 export default function Home({ randomCourses }) {
   const { data: session, status } = useSession();
 
   return (
     <>
+
       <Header />
+      <AuthLayout>
       <Container>
         <Typography variant="h2" align="center" gutterBottom>
           Welcome to Busy Bee Learning!
@@ -20,7 +23,6 @@ export default function Home({ randomCourses }) {
         <Typography variant="subtitle1" align="center" gutterBottom>
           Empowering young learners with interactive Courses
         </Typography>
-        
         <Grid container spacing={3} sx={{ marginTop: 4 }}>
           {randomCourses.map((course) => (
             <Grid item xs={12} sm={6} md={4} key={course._id}>
@@ -46,6 +48,7 @@ export default function Home({ randomCourses }) {
           ))}
         </Grid>
       </Container>
+      </AuthLayout>
     </>
   );
 }

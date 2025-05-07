@@ -10,6 +10,7 @@
  } from "@mui/material";
  import Header from "@/components/Header";
  import DynamicCard from "@/components/DynamicCard";
+ import ChildLayout from "../../components/layouts/ChildLayout";
  import Link from "next/link";
 /*
  *<Deprecated and has been moved to a module called SoundManager.js>
@@ -60,7 +61,8 @@ export default function ChildDashboard() {
   }, []);
 
   return (
-    <Box sx={{ background: "linear-gradient(to bottom,  rgb(189, 252, 160),rgb(14, 73, 122))", minHeight: "100vh" }}>
+    <ChildLayout>
+    <Box sx={{ background: "primary", minHeight: "100vh" }}>
       <Header />
       {/* Floating Music Panel 
         * <it is Deprecated and has been moved to a module called SoundManager.js>
@@ -128,7 +130,7 @@ export default function ChildDashboard() {
         ) : (
           <>
             {/* Lessons Section */}
-            <Box sx={{ width: "100%", mt: 6, p: 3, borderRadius: 3, background: "linear-gradient(135deg, rgb(57, 189, 75) 0%)", boxShadow: 2 }}>
+            <Box sx={{ width: "100%", mt: 6, p: 3, borderRadius: 3, background: "linear-gradient(135deg, rgb(95, 180, 92) 0%)", boxShadow: 2 }}>
               <Typography variant="h5" align="center" sx={{ fontWeight: "bold", mb: 4 }}>
                 Complete a Lesson
               </Typography>
@@ -202,5 +204,6 @@ export default function ChildDashboard() {
         )}
       </Container>
     </Box>
+    </ChildLayout>
   );
 }

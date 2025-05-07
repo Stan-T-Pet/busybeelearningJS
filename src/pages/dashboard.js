@@ -93,7 +93,7 @@ export default function Dashboard() {
       <Header />
       <Box
         sx={{
-          background: "linear-gradient(to right, #e0f7fa, #e3f2fd)",
+          background: "linear-gradient(rgb(10, 60, 75))",
           minHeight: "100vh",
           py: 6,
         }}
