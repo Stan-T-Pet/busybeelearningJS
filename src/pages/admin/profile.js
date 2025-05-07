@@ -12,6 +12,7 @@ import {
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
+import AdminLayout from "../../components/Layouts/AdminLayout";
 
 export default function AdminProfile() {
   const { data: session, status } = useSession();
@@ -55,6 +56,7 @@ export default function AdminProfile() {
   }
 
   return (
+    <AdminLayout>
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4, pb: 4 }}>
@@ -105,5 +107,6 @@ export default function AdminProfile() {
         </Box>
       </Container>
     </>
+    </AdminLayout>
   );
 }

@@ -10,6 +10,7 @@ import {
   Paper,
 } from "@mui/material";
 import Header from "../../components/Header";
+import AdminLayout from "../../components/Layouts/AdminLayout";
 import axios from "axios";
 
 const QUIZ_TYPES = ["isTrue", "multipleChoice", "multipleSteps"];
@@ -102,6 +103,7 @@ export default function AdminQuizzesPage() {
   };
 
   return (
+    <AdminLayout>
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
@@ -277,5 +279,6 @@ export default function AdminQuizzesPage() {
         </Paper>
       </Container>
     </>
+    </AdminLayout>
   );
 }

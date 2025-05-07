@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
+import AdminLayout from "../../components/Layouts/AdminLayout";
 
 export default function AdminLessonsPage() {
   const [lessons, setLessons] = useState([]);
@@ -88,7 +89,7 @@ export default function AdminLessonsPage() {
   }));
 
   return (
-    <>
+    <AdminLayout>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
         <Paper elevation={3} sx={{ p: 4 }}>
@@ -207,6 +208,6 @@ export default function AdminLessonsPage() {
           </Box>
         ))}
       </Container>
-    </>
+    </AdminLayout>
   );
 }

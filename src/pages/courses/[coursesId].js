@@ -1,19 +1,19 @@
 import React from "react";
+import Link from "next/link";
 import { Container, Typography, Box, Grid, Card, CardContent, Button } from "@mui/material";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
-import Link from "next/link";
 import connectDB from "../../server/config/database";
 import Lesson from "../../server/models/Lesson";
 
-const validSubjects = [
+/*const validSubjects = [
   "english",
   "mathematics",
   "history",
   "html",
   "japanese",
   "javascript",
-];
+];*/
 
 export async function getServerSideProps(context) {
   const { coursesId } = context.params;

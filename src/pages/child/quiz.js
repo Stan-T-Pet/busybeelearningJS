@@ -12,6 +12,7 @@
  import { Box, Typography, Button, Container } from "@mui/material";
  import Link from "next/link";
  import Header from "../../components/Header";
+ import ChildLayout from "../../components/layouts/ChildLayout";
  import { useSession } from "next-auth/react";
  import { useRouter } from "next/router";
  import axios from "axios";
@@ -58,6 +59,7 @@
    if (!mounted) return null;
  
    return (
+      <ChildLayout>
      <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
        <Header />
        <Container sx={{ mt: 4, mb: 4 }}>
@@ -127,6 +129,7 @@
          </Box>
        </Container>
      </Box>
+    </ChildLayout>
    );
  }
  

@@ -1,9 +1,19 @@
+// File: src/pages/register.js
 import React, { useState } from "react";
-import { 
-  Container, TextField, Button, Typography, 
-  Select, MenuItem, Box, Alert 
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Select,
+  MenuItem,
+  Box,
+  Alert,
+  Paper,
 } from "@mui/material";
 import { useRouter } from "next/router";
+import AuthLayout from "@/components/layouts/AuthLayout";
+
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -53,77 +63,94 @@ export default function Register() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h4" align="center" gutterBottom>
-        Register
-      </Typography>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(rgb(25, 88, 107))",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Register
+          </Typography>
 
-      {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
+          {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
 
-      <form onSubmit={handleRegister}>
-        <Box mb={2}>
-          <TextField 
-            name="name"
-            label="Name"
-            fullWidth
-            required
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </Box>
+          <form onSubmit={handleRegister}>
+            <Box mb={2}>
+              <TextField
+                name="name"
+                label="Name"
+                fullWidth
+                required
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </Box>
 
-        <Box mb={2}>
-          <TextField 
-            name="email"
-            label="Email"
-            type="email"
-            fullWidth
-            required
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </Box>
+            <Box mb={2}>
+              <TextField
+                name="email"
+                label="Email"
+                type="email"
+                fullWidth
+                required
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </Box>
 
-        <Box mb={2}>
-          <TextField 
-            name="password"
-            label="Password"
-            type="password"
-            fullWidth
-            required
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </Box>
+            <Box mb={2}>
+              <TextField
+                name="password"
+                label="Password"
+                type="password"
+                fullWidth
+                required
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </Box>
 
-        <Box mb={2}>
-          <Select 
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            fullWidth
-          >
-            <MenuItem value="parent">Parent</MenuItem>
-            <MenuItem value="admin">Admin</MenuItem>
-          </Select>
-        </Box>
+            <Box mb={2}>
+              <Select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                fullWidth
+              >
+                <MenuItem value="parent">Parent</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </Select>
+            </Box>
 
-        <Button 
-          type="submit" 
-          variant="contained" 
-          color="primary" 
-          fullWidth 
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Registering..." : "Register"}
-        </Button>
-      </form>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Registering..." : "Register"}
+            </Button>
+          </form>
 
-      <Box mt={2} textAlign="center">
-        <Button variant="text" color="primary" onClick={() => router.push("/login")}>
-          Already have an account? Login
-        </Button>
-      </Box>
-    </Container>
+          <Box mt={2} textAlign="center">
+            <Button
+              variant="text"
+              color="primary"
+              onClick={() => router.push("/login")}
+            >
+              Already have an account? Login
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }

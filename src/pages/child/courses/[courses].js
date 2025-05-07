@@ -16,6 +16,8 @@ import {
 import Link from "next/link";
 import Header from "../../../components/Header";
 import DynamicCard from "../../../components/DynamicCard";
+import ChildLayout from "../../../components/layouts/ChildLayout";
+
 
 export default function CourseLessonsPage({ initialLessons, course }) {
   const { data: session } = useSession();
@@ -54,7 +56,8 @@ export default function CourseLessonsPage({ initialLessons, course }) {
   }, [session?.user?.id, courseId]);
 
   return (
-    <Box sx={{ background: "#f9f9f9", minHeight: "100vh" }}>
+    <ChildLayout>
+    <Box sx={{ background: "theme.primary", minHeight: "100vh" }}>
       <Header />
       <Container sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" gutterBottom align="center">
@@ -100,6 +103,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
         </Box>
       </Container>
     </Box>
+    </ChildLayout>
   );
 }
 

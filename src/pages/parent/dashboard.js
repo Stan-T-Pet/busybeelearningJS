@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
 import ProgressOverview from "../../components/Progress/progressOverview";
+import ParentLayout from "../../components/layouts/ParentLayout";
 
 export default function ParentDashboard() {
   const { data: session, status } = useSession();
@@ -46,11 +47,12 @@ export default function ParentDashboard() {
   }
 
   return (
+    <ParentLayout>
     <>
       <Header />
       <Box
         sx={{
-          background: "linear-gradient(to bottom, #F2FAFF, #E0F7FA)",
+          background: "theme.palette.background.default",
           minHeight: "100vh",
           pt: 6,
           pb: 6,
@@ -93,5 +95,6 @@ export default function ParentDashboard() {
         </Container>
       </Box>
     </>
+  </ParentLayout>
   );
 }

@@ -44,6 +44,9 @@ export default function Header() {
     admin: [
       { label: "Users", href: "/admin/users" },
       { label: "Metrics", href: "/admin/metrics" },
+      { label: "Courses", href: "/admin/courses" },
+      {label: "Lessons", href: "/admin/lessons"},
+      { label: "Quizzes", href: "/admin/quizzes"},
     ],
     parent: [
       { label: "Profile", href: "/parent/profile" },

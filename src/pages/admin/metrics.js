@@ -13,6 +13,7 @@ import {
 import Header from "../../components/Header";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import AdminLayout from "../../components/Layouts/AdminLayout";
 
 
 export default function AdminMetrics() {
@@ -63,6 +64,7 @@ export default function AdminMetrics() {
   }
 
   return (
+    <AdminLayout>
     <>
       <Header />
       <Container maxWidth="lg" sx={{ mt: 4, pb: 4 }}>
@@ -116,5 +118,6 @@ export default function AdminMetrics() {
         </Box>
       </Container>
     </>
+    </AdminLayout>
   );
 }

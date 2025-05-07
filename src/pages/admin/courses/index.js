@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Typography, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import Header from "@/components/Header";
+import AdminLayout from "@/components/layouts/AdminLayout";
 import axios from "axios";
 
 export default function AdminCoursesPage() {
@@ -41,6 +42,7 @@ export default function AdminCoursesPage() {
   };
 
   return (
+    <AdminLayout>
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
@@ -89,5 +91,6 @@ export default function AdminCoursesPage() {
         </Table>
       </Container>
     </>
+    </AdminLayout>
   );
 }

@@ -5,7 +5,10 @@ import axios from "axios";
 import { Box, Container, Typography, Grid, Button} from "@mui/material";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
+import ChildLayout from "../../components/layouts/ChildLayout";
 import { useRouter } from "next/router";
+
+
 
 export default function ChildCoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -35,7 +38,8 @@ export default function ChildCoursesPage() {
   };
 
   return (
-    <Box sx={{ background: "linear-gradient(to bottom, #fdfbfb, #ebedee)", minHeight: "100vh" }}>
+    <ChildLayout>
+    <Box sx={{ background: "linear-gradient(135deg, rgb(118, 215, 228) rgb(40, 94, 8) 50%)", minHeight: "100vh" }}>
       <Header />
       <Container sx={{ mt: 4 }}>
         <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: "bold" }}>
@@ -67,5 +71,6 @@ export default function ChildCoursesPage() {
         )}
       </Container>
     </Box>
+    </ChildLayout>
   );
 }
