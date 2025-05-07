@@ -12,7 +12,7 @@ import {
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
-import AdminLayout from "@/components/TEMPlayouts/AdminLayout";
+import AdminLayout from "@/components/layouts/AdminLayout";
 export default function AdminProfile() {
   const { data: session, status } = useSession();
   const router = useRouter();

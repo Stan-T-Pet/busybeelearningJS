@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
-import ParentLayout from "@/components/TEMPlayouts/ParentLayout";
+import ParentLayout from "@/components/layouts/ParentLayout";
 import { useThemeMode } from "../../components/ThemeManager";
 
 export default function ParentProfile() {

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import connectDB from "@/server/config/database";
 import Course from "@/server/models/Course";
-import AuthLayout from "@/components/TEMPlayouts/AuthLayout"
+import AuthLayout from "@/components/layouts/AuthLayout"
 
 export default function Home({ randomCourses }) {
   const { data: session, status } = useSession();

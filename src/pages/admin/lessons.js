@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
-import AdminLayout from "@/components/TEMPlayouts/AdminLayout";
+import AdminLayout from "@/components/layouts/AdminLayout";
 export default function AdminLessonsPage() {
   const [lessons, setLessons] = useState([]);
   const [courses, setCourses] = useState([]);
