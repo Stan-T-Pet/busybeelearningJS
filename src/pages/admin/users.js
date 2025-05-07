@@ -16,7 +16,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DynamicCard from "../../components/DynamicCard";
 import Header from "../../components/Header";
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import AdminLayout from "@/components/TEMPlayouts/AdminLayout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 

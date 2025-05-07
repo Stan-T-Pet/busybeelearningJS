@@ -13,8 +13,7 @@ import {
 import Header from "../../components/Header";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import AdminLayout from "@/components/Layouts/AdminLayout";
-
+import AdminLayout from "@/components/TEMPlayouts/AdminLayout";
 
 export default function AdminMetrics() {
   const { data: session, status } = useSession();

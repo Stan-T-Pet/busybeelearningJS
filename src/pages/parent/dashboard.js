@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
 import ProgressOverview from "../../components/Progress/progressOverview";
-import ParentLayout from "../../components/layouts/ParentLayout";
+import ParentLayout from "@/components/TEMPlayouts/ParentLayout";
 
 export default function ParentDashboard() {
   const { data: session, status } = useSession();
