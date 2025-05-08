@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import AdminLayout from "../../components/Layouts/AdminLayout";
 
 const sectionColors = [
   "#e3f2fd", // Blue

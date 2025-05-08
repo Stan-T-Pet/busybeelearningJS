@@ -10,7 +10,8 @@ import {
   Paper,
 } from "@mui/material";
 import Header from "../../components/Header";
-import AdminLayout from "@/components/Layouts/AdminLayout";import axios from "axios";
+import AdminLayout from "../../components/Layouts/AdminLayout";
+import axios from "axios";
 
 const QUIZ_TYPES = ["isTrue", "multipleChoice", "multipleSteps"];
 
