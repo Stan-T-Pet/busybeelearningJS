@@ -21,6 +21,8 @@ export default function DataLoaderPage() {
   const [excludedCols, setExcludedCols] = useState({});
   const [courseId, setCourseId] = useState("");
   const [courseList, setCourseList] = useState([]);
+  const [lessonId, setLessonId] = useState("");
+  const [lessonList, setLessonList] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
 
   // Load file names
@@ -42,6 +44,15 @@ export default function DataLoaderPage() {
         .catch(err => console.error("Error loading courses", err));
     }
   }, [selectedType]);
+
+  // Load lessons when course changes
+  useEffect(() => {
+    if (selectedType === "quiz" && courseId) {
+      axios.get(`/api/admin/lessons?courseId=${courseId}`)
+        .then(res => setLessonList(res.data?.lessons || []))
+        .catch(err => console.error("Error loading lessons", err));
+    }
+  }, [selectedType, courseId]);
 
   // Load and initialize data
   useEffect(() => {
@@ -70,7 +81,6 @@ export default function DataLoaderPage() {
     if (selectedFile) fetch();
   }, [selectedFile]);
 
-  // Column rename
   const renameColumn = (index, newName) => {
     const oldName = columns[index];
     if (!newName || oldName === newName) return;
@@ -110,16 +120,42 @@ export default function DataLoaderPage() {
         for (let key in row) {
           if (!excludedCols[key]) copy[key] = row[key];
         }
-        if (selectedType !== "course") copy.courseId = courseId;
+  
+        // attach courseId only if it's missing in the row
+        if (selectedType !== "course") {
+          if (!copy.courseId && courseId) {
+            copy.courseId = courseId;
+          }
+  
+          // for quizzes
+          if (selectedType === "quiz") {
+            if (!copy.lessonId && !lessonId) return null;
+            if (!copy.lessonId && lessonId) {
+              copy.lessonId = lessonId;
+            }
+          }
+        }
+  
         return copy;
       })
-      .filter(obj => Object.keys(obj).length > 0);
-
+      .filter(obj => obj && Object.keys(obj).length > 0);
+  
+    // Validation
+    if (selectedType === "quiz" && !lessonId && !cleaned.every(q => q.lessonId)) {
+      alert("Please select a lesson or ensure all quizzes have lessonId set.");
+      return;
+    }
+  
+    if (selectedType === "lesson" && !courseId && !cleaned.every(l => l.courseId)) {
+      alert("Please select a course or ensure all lessons have courseId set.");
+      return;
+    }
+  
     if (cleaned.length === 0) {
       alert("No valid data to import.");
       return;
     }
-
+  
     try {
       const res = await axios.post(`/api/admin/import/${selectedType}`, { data: cleaned });
       alert(`Imported ${res.data.count} records successfully.`);
@@ -127,35 +163,80 @@ export default function DataLoaderPage() {
       console.error("Import failed:", err?.response?.data || err);
       alert("Import failed. See console for details.");
     }
-  };
+  };  
 
   return (
     <AdminLayout>
       <Container>
-        <Typography variant="h4" gutterBottom align="center">Data Import & Loader</Typography>
+        <Typography variant="h4" gutterBottom align="center">
+          Data Import & Loader
+        </Typography>
 
         <Box sx={{ my: 2 }}>
           <Grid container spacing={2}>
+            {/* Type Selector */}
             <Grid item xs={12} md={4}>
               <Typography>Data Type:</Typography>
-              <Select value={selectedType} fullWidth onChange={(e) => setSelectedType(e.target.value)}>
-                {CONTENT_TYPES.map(type => <MenuItem key={type} value={type}>{type}</MenuItem>)}
+              <Select
+                value={selectedType}
+                fullWidth
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                {CONTENT_TYPES.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
               </Select>
             </Grid>
 
+            {/* File Selector */}
             <Grid item xs={12} md={4}>
               <Typography>File:</Typography>
-              <Select value={selectedFile} fullWidth onChange={(e) => setSelectedFile(e.target.value)}>
-                {fileOptions.map(file => <MenuItem key={file} value={file}>{file}</MenuItem>)}
+              <Select
+                value={selectedFile}
+                fullWidth
+                onChange={(e) => setSelectedFile(e.target.value)}
+              >
+                {fileOptions.map((file) => (
+                  <MenuItem key={file} value={file}>
+                    {file}
+                  </MenuItem>
+                ))}
               </Select>
             </Grid>
 
+            {/* Course Selector */}
             {["lesson", "quiz"].includes(selectedType) && (
               <Grid item xs={12} md={4}>
                 <Typography>Link to Course:</Typography>
-                <Select value={courseId} fullWidth onChange={(e) => setCourseId(e.target.value)}>
-                  {courseList.map(course => (
-                    <MenuItem key={course._id} value={course._id}>{course.title}</MenuItem>
+                <Select
+                  value={courseId}
+                  fullWidth
+                  onChange={(e) => setCourseId(e.target.value)}
+                >
+                  {courseList.map((course) => (
+                    <MenuItem key={course._id} value={course._id}>
+                      {course.title}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            )}
+
+            {/* Lesson Selector */}
+            {selectedType === "quiz" && (
+              <Grid item xs={12} md={4}>
+                <Typography>Link to Lesson:</Typography>
+                <Select
+                  value={lessonId}
+                  fullWidth
+                  onChange={(e) => setLessonId(e.target.value)}
+                >
+                  {lessonList.map((lesson) => (
+                    <MenuItem key={lesson._id} value={lesson._id}>
+                      {lesson.title}
+                    </MenuItem>
                   ))}
                 </Select>
               </Grid>
@@ -165,9 +246,10 @@ export default function DataLoaderPage() {
 
         {data.length > 0 && (
           <>
-            <Typography variant="h6" sx={{ mt: 3 }}>Preview & Edit</Typography>
+            <Typography variant="h6" sx={{ mt: 3 }}>
+              Preview & Edit
+            </Typography>
 
-            {/* Column rename / exclusion */}
             <Box display="flex" flexWrap="wrap" gap={2} my={2}>
               {columns.map((col, index) => (
                 <FormControlLabel
@@ -189,29 +271,32 @@ export default function DataLoaderPage() {
               ))}
             </Box>
 
-            {/* Editable Table */}
             <TableContainer component={Paper}>
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    {columns.map((col) =>
-                      !excludedCols[col] ? <TableCell key={col}>{col}</TableCell> : null
+                    {columns.map(
+                      (col) =>
+                        !excludedCols[col] && <TableCell key={col}>{col}</TableCell>
                     )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {data.slice(0, 10).map((row, rowIdx) => (
                     <TableRow key={rowIdx}>
-                      {columns.map((col) =>
-                        !excludedCols[col] ? (
-                          <TableCell key={col}>
-                            <TextField
-                              value={row[col] ?? ""}
-                              onChange={(e) => updateCell(rowIdx, col, e.target.value)}
-                              fullWidth
-                            />
-                          </TableCell>
-                        ) : null
+                      {columns.map(
+                        (col) =>
+                          !excludedCols[col] && (
+                            <TableCell key={col}>
+                              <TextField
+                                value={row[col] ?? ""}
+                                onChange={(e) =>
+                                  updateCell(rowIdx, col, e.target.value)
+                                }
+                                fullWidth
+                              />
+                            </TableCell>
+                          )
                       )}
                     </TableRow>
                   ))}

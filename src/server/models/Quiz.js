@@ -7,7 +7,7 @@ const QuizSchema = new mongoose.Schema(
       required: true,
       enum: ["isTrue", "multipleChoice", "multipleSteps"],
     },
-
+    title: { type: String, required: false },
     questionText: { type: String, required: true },
 
     correctAnswer: {

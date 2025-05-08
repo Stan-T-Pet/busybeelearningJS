@@ -16,7 +16,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
-import ChildLayout from "../../components/layouts/ChildLayout";
+import ChildLayout from "../../components/Layouts/ChildLayout";
 
 
 export default function Profile() {

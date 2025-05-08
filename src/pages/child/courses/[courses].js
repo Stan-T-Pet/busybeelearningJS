@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import Header from "../../../components/Header";
 import DynamicCard from "../../../components/DynamicCard";
-import ChildLayout from "../../../components/layouts/ChildLayout";
+import ChildLayout from "../../../components/Layouts/ChildLayout";
 
 export default function CourseLessonsPage({ initialLessons, course }) {
   const { data: session } = useSession();

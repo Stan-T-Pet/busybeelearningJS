@@ -16,7 +16,17 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import axios from "axios";
-import AdminLayout from "@/components/layouts/AdminLayout";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+
+const sectionColors = [
+  "#e3f2fd", // Blue
+  "#fce4ec", // Pink
+  "#e8f5e9", // Green
+  "#fff3e0", // Orange
+  "#ede7f6", // Purple
+  "#f3e5f5", // Lilac
+];
+
 export default function AdminLessonsPage() {
   const [lessons, setLessons] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -81,7 +91,6 @@ export default function AdminLessonsPage() {
     }
   };
 
-  // Group lessons by courseId
   const groupedLessons = courses.map(course => ({
     ...course,
     lessons: lessons.filter(lesson => lesson.courseId === course._id),
@@ -139,73 +148,83 @@ export default function AdminLessonsPage() {
           </Box>
         </Paper>
 
-        {/* Grouped Lessons by Course */}
-        {groupedLessons.map(course => (
-          <Box key={course._id} mt={5}>
-            <Typography variant="h6" gutterBottom>
-              {course.title}
-            </Typography>
-            {course.lessons.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">No lessons linked to this course.</Typography>
-            ) : (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Preview</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {course.lessons.map((lesson) => (
-                    <TableRow key={lesson._id}>
-                      <TableCell>{lesson.title}</TableCell>
-                      <TableCell>{lesson.description}</TableCell>
-                      <TableCell>
-                        <Box
-                          sx={{
-                            border: "1px solid #ccc",
-                            padding: 1,
-                            borderRadius: 1,
-                            maxHeight: 100,
-                            overflow: "auto",
-                            maxWidth: 300,
-                          }}
-                          dangerouslySetInnerHTML={{ __html: lesson.content || "<i>No content</i>" }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            setEditingId(lesson._id);
-                            setNewLesson({
-                              title: lesson.title,
-                              description: lesson.description,
-                              content: lesson.content || "",
-                              courseId: lesson.courseId,
-                            });
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          onClick={() => deleteLesson(lesson._id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
+        {/* Grouped Lessons with Colored Sections */}
+        {groupedLessons.map((course, index) => {
+          const color = sectionColors[index % sectionColors.length];
+          return (
+            <Box key={course._id} mt={5} sx={{ backgroundColor: color, p: 3, borderRadius: 2, boxShadow: 2 }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+                Course: {course.title}
+              </Typography>
+              {course.description && (
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  {course.description}
+                </Typography>
+              )}
+              {course.lessons.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No lessons linked to this course.
+                </Typography>
+              ) : (
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Title</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Preview</TableCell>
+                      <TableCell>Actions</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-            <Divider sx={{ my: 3 }} />
-          </Box>
-        ))}
+                  </TableHead>
+                  <TableBody>
+                    {course.lessons.map((lesson) => (
+                      <TableRow key={lesson._id}>
+                        <TableCell>{lesson.title}</TableCell>
+                        <TableCell>{lesson.description}</TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              border: "1px solid #ccc",
+                              padding: 1,
+                              borderRadius: 1,
+                              maxHeight: 100,
+                              overflow: "auto",
+                              maxWidth: 300,
+                            }}
+                            dangerouslySetInnerHTML={{ __html: lesson.content || "<i>No content</i>" }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              setEditingId(lesson._id);
+                              setNewLesson({
+                                title: lesson.title,
+                                description: lesson.description,
+                                content: lesson.content || "",
+                                courseId: lesson.courseId,
+                              });
+                            }}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => deleteLesson(lesson._id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+              <Divider sx={{ my: 3 }} />
+            </Box>
+          );
+        })}
       </Container>
     </AdminLayout>
   );

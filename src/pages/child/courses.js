@@ -5,7 +5,7 @@ import axios from "axios";
 import { Box, Container, Typography, Grid, Button} from "@mui/material";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
-import ChildLayout from "../../components/layouts/ChildLayout";
+import ChildLayout from "../../components/Layouts/ChildLayout";
 import { useRouter } from "next/router";
 
 

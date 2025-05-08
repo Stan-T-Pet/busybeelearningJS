@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "4bbd2516d6d4460abf4056b3",
+    "title": "Mathematics",
+    "description": "Explore essential math topics including algebra, geometry, fractions, and decimals.",
+    "level": "beginner"
+  },
+  {
+    "_id": "8a943ef03b754f89b6907b4c",
+    "title": "English Language",
+    "description": "Improve grammar, vocabulary, reading comprehension, and sentence structure.",
+    "level": "beginner"
+  },
+  {
+    "_id": "f42ba8e7e72f41158b3a393c",
+    "title": "Science",
+    "description": "Learn about biology, ecosystems, the human body, and scientific thinking.",
+    "level": "beginner"
+  },
+  {
+    "_id": "2e68453f114b4bd3b50122b6",
+    "title": "History",
+    "description": "Explore the ancient civilizations of Egypt, Mesopotamia, Greece, and Rome.",
+    "level": "beginner"
+  },
+  {
+    "_id": "e06ca5ca37e049149744b8a6",
+    "title": "Geography",
+    "description": "Understand continents, countries, capitals, maps, and natural environments.",
+    "level": "beginner"
+  },
+  {
+    "_id": "89f3a658fbe14b9688018643",
+    "title": "Computer Science",
+    "description": "Discover the basics of hardware, binary systems, and logical thinking.",
+    "level": "beginner"
+  },
+  {
+    "_id": "707090acee764ee08beb359a",
+    "title": "Financial Literacy",
+    "description": "Learn the essentials of budgeting, saving, and managing money responsibly.",
+    "level": "beginner"
+  },
+  {
+    "_id": "98a6f3e07b3547068e9f40ae",
+    "title": "Digital Citizenship",
+    "description": "Understand online safety, responsible tech use, and digital ethics.",
+    "level": "beginner"
+  },
+  {
+    "_id": "6fbf54fa1f534cb7b75194f7",
+    "title": "Art and Creativity",
+    "description": "Develop creative skills through drawing, painting, and design principles.",
+    "level": "beginner"
+  },
+  {
+    "_id": "fc55f5018f474ee48eea9354",
+    "title": "Health and Wellbeing",
+    "description": "Explore nutrition, mental wellness, fitness, and personal growth.",
+    "level": "beginner"
+  }
+]

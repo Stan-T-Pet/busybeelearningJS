@@ -10,7 +10,7 @@
  } from "@mui/material";
  import Header from "@/components/Header";
  import DynamicCard from "@/components/DynamicCard";
- import ChildLayout from "../../components/layouts/ChildLayout";
+ import ChildLayout from "../../components/Layouts/ChildLayout";
  import Link from "next/link";
 /*
  *<Deprecated and has been moved to a module called SoundManager.js>
@@ -37,28 +37,46 @@ export default function ChildDashboard() {
       try {
         const lessonsRes = await fetch("/api/lessons/Lesson");
         const quizzesRes = await fetch("/api/quizzes/get");
+  
         if (!lessonsRes.ok || !quizzesRes.ok) {
           console.error("Failed to fetch lessons or quizzes");
           return;
         }
-
+  
         const lessonsData = await lessonsRes.json();
         const quizzesData = await quizzesRes.json();
-
-        const randomizedLessons = (lessonsData.lessons || []).sort(() => Math.random() - 0.5);
-        const randomizedQuizzes = (quizzesData.quizzes || []).sort(() => Math.random() - 0.5);
-
-        setLessons(randomizedLessons);
-        setQuizzes(randomizedQuizzes);
+  
+        // Helper function to get unique items by courseId
+        const getUniqueByCourse = (items, limit) => {
+          const seenCourses = new Set();
+          const uniqueItems = [];
+  
+          for (const item of items) {
+            if (!seenCourses.has(item.courseId)) {
+              seenCourses.add(item.courseId);
+              uniqueItems.push(item);
+            }
+            if (uniqueItems.length === limit) break;
+          }
+  
+          return uniqueItems;
+        };
+  
+        const uniqueLessons = getUniqueByCourse(lessonsData.lessons || [], 6);
+        const uniqueQuizzes = getUniqueByCourse(quizzesData.quizzes || [], 6);
+  
+        setLessons(uniqueLessons);
+        setQuizzes(uniqueQuizzes);
       } catch (error) {
         console.error("Error fetching activities:", error);
       } finally {
         setLoading(false);
       }
     }
-
+  
     fetchActivities();
   }, []);
+  
 
   return (
     <ChildLayout>
@@ -130,7 +148,7 @@ export default function ChildDashboard() {
         ) : (
           <>
             {/* Lessons Section */}
-            <Box sx={{ width: "100%", mt: 6, p: 3, borderRadius: 3, background: "linear-gradient(135deg, rgb(95, 180, 92) 0%)", boxShadow: 2 }}>
+            <Box sx={{ width: "100%", mt: 6, p: 3, borderRadius: 3, background: "linear-gradient(135deg, rgb(60, 110, 108) 0%)", boxShadow: 2 }}>
               <Typography variant="h5" align="center" sx={{ fontWeight: "bold", mb: 4 }}>
                 Complete a Lesson
               </Typography>

@@ -8,7 +8,7 @@ export default function ChildLayout({ children, maxWidth = "xl" }) {
       {/*<Header />*/}
       <Box
         sx={{
-          background: "linear-gradient(to bottom,  rgb(95, 180, 92),rgb(14, 73, 122))",
+          background: "linear-gradient(to bottom,  rgb(51, 138, 109),rgb(14, 73, 122))",
           minHeight: "100vh",
           pt: 4,
           pb: 4,
