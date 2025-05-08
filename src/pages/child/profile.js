@@ -6,48 +6,60 @@ import {
   Button,
   Box,
   LinearProgress,
-  AppBar,
-  Toolbar,
-  Divider,
   CircularProgress,
   Grid,
+  Divider,
 } from "@mui/material";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Header from "../../components/Header";
 import DynamicCard from "../../components/DynamicCard";
 import ChildLayout from "../../components/Layouts/ChildLayout";
 
+// Grouping helper: group items by courseId
+function groupBy(arr, key) {
+  return arr.reduce((acc, item) => {
+    const group = item[key] || "unknown";
+    acc[group] = acc[group] || [];
+    acc[group].push(item);
+    return acc;
+  }, {});
+}
 
 export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Local state for progress data from lessons and quizzes.
   const [progress, setProgress] = useState({ lessons: [], quizzes: [] });
   const [loading, setLoading] = useState(true);
 
-  // Redirect to login if not authenticated.
+  // Toggle visibility per courseId
+  const [lessonToggles, setLessonToggles] = useState({});
+  const [quizToggles, setQuizToggles] = useState({});
+
+  const toggleLessonSection = (courseId) => {
+    setLessonToggles((prev) => ({ ...prev, [courseId]: !prev[courseId] }));
+  };
+
+  const toggleQuizSection = (courseId) => {
+    setQuizToggles((prev) => ({ ...prev, [courseId]: !prev[courseId] }));
+  };
+
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
+    if (status === "unauthenticated") router.push("/login");
   }, [status, router]);
 
-  // Fetch progress data from the backend.
   useEffect(() => {
-    if (!session || !session.user) return;
+    if (!session?.user) return;
 
     const fetchProgress = async () => {
       try {
-        // Make sure your API endpoint returns an object with `lessons` and `quizzes` arrays.
-        const res = await fetch(
-          `/api/progress/getChildProgress?childId=${session.user.id}`
-        );
+        const res = await fetch(`/api/progress/getChildProgress?childId=${session.user.id}`);
         if (!res.ok) {
           console.error("Failed to fetch progress");
           return;
         }
+
         const data = await res.json();
         setProgress({
           lessons: data.lessons || [],
@@ -76,108 +88,130 @@ export default function Profile() {
 
   return (
     <ChildLayout>
-    <Box sx={{ background: "linear-gradient(135deg, rgb(61, 78, 61) rgb(14, 73, 122))", minHeight: "100vh" }}>
-      <Header />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        {/* Account Header */}
-        <Box sx={{ textAlign: "center", mb: 4, p: 2, borderRadius: 2, backgroundColor: "theme.primary", boxShadow: 5 }}>
-          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-            Welcome, {session?.user?.name || "Guest"}!
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" fontSize="1.5rem">
-            {session?.user?.email || "N/A"}
-          </Typography>
-        </Box>
+      <Box sx={{ background: "linear-gradient(135deg, rgb(61, 78, 61), rgb(14, 73, 122))", minHeight: "100vh" }}>
+        <Header />
+        <Container sx={{ mt: 4, mb: 6 }}>
+          <Box sx={{ textAlign: "center", mb: 4, p: 2, borderRadius: 2, backgroundColor: "theme.primary", boxShadow: 5 }}>
+            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
+              Welcome, {session?.user?.name || "Guest"}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" fontSize="1.5rem">
+              {session?.user?.email || "N/A"}
+            </Typography>
+          </Box>
 
-        {/* Progress Sections */}
-        <Grid container spacing={3}>
-          {/* Lesson Progress Card */}
-          <Grid item xs={12} md={6}>
-            <DynamicCard
-              title="Lesson Progress"
-              sx={{ borderRadius: 2, boxShadow: 5 }}
-            >
-              
-                <Divider sx={{ mb: 2 }} />
-                {progress.lessons.length > 0 ? (
-                  progress.lessons.map((lesson, index) => (
-                    <Box key={index} sx={{ mb: 2 }}>
-                      <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                        {lesson.title}
-                      </Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={lesson.progress}
-                        sx={{
-                          height: 10,
-                          borderRadius: 5,
-                          backgroundColor: "#e0f7fa",
-                          "& .MuiLinearProgress-bar": {
-                            backgroundColor: "#00acc1",
-                          },
-                        }}
-                      />
-                    </Box>
-                  ))
-                ) : (
-                  <Typography variant="body2" align="center" color="text.secondary">
-                    No lesson progress available.
-                  </Typography>
-                )}
-              
-            </DynamicCard>
+          <Grid container spacing={3}>
+            {/* Lessons */}
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>Lesson Progress</Typography>
+              {Object.entries(groupBy(progress.lessons, "courseId")).map(([courseId, lessons], idx) => {
+                const courseTitle = lessons[0]?.courseTitle || `Course ${idx + 1}`;
+                const isOpen = lessonToggles[courseId] || false;
+
+                return (
+                  <DynamicCard
+                    key={courseId}
+                    title={courseTitle}
+                    sx={{ borderRadius: 2, boxShadow: 4, mb: 3 }}
+                  >
+                    <Button onClick={() => toggleLessonSection(courseId)} sx={{ mb: 2 }}>
+                      {isOpen ? "Hide Lessons" : "Show Lessons"}
+                    </Button>
+                    {isOpen && (
+                      <>
+                        <Divider sx={{ mb: 2 }} />
+                        {lessons.map((lesson, index) => (
+                          <Box key={index} sx={{ mb: 3 }}>
+                            <Typography variant="body1" sx={{ fontWeight: "medium" }}>
+                              {lesson.title}
+                              {lesson.progress === 100 && (
+                                <Typography
+                                  variant="caption"
+                                  sx={{ ml: 1, color: "green", fontWeight: "bold" }}
+                                >
+                                  ✓ Completed
+                                </Typography>
+                              )}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {lesson.completedAt
+                                ? `Completed on ${new Date(lesson.completedAt).toLocaleDateString()}`
+                                : "Not yet completed"}
+                            </Typography>
+                            <LinearProgress
+                              variant="determinate"
+                              value={lesson.progress}
+                              sx={{
+                                height: 10,
+                                borderRadius: 5,
+                                backgroundColor: "#e0f7fa",
+                                "& .MuiLinearProgress-bar": {
+                                  backgroundColor: "#00acc1",
+                                },
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </>
+                    )}
+                  </DynamicCard>
+                );
+              })}
+            </Grid>
+
+            {/* Quizzes */}
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>Quiz Progress</Typography>
+              {Object.entries(groupBy(progress.quizzes, "courseId")).map(([courseId, quizzes], idx) => {
+                const courseTitle = quizzes[0]?.courseTitle || `Course ${idx + 1}`;
+                const isOpen = quizToggles[courseId] || false;
+
+                return (
+                  <DynamicCard
+                    key={courseId}
+                    title={courseTitle}
+                    sx={{ borderRadius: 2, boxShadow: 4, mb: 3 }}
+                  >
+                    <Button onClick={() => toggleQuizSection(courseId)} sx={{ mb: 2 }}>
+                      {isOpen ? "Hide Quizzes" : "Show Quizzes"}
+                    </Button>
+                    {isOpen && (
+                      <>
+                        <Divider sx={{ mb: 2 }} />
+                        {quizzes.map((quiz, index) => (
+                          <Box key={index} sx={{ mb: 2 }}>
+                            <Typography variant="body1" sx={{ fontWeight: "medium" }}>
+                              {quiz.title} — Score: {quiz.score}/{quiz.totalScore}
+                            </Typography>
+                            <LinearProgress
+                              variant="determinate"
+                              value={(quiz.score / quiz.totalScore) * 100}
+                              sx={{
+                                height: 10,
+                                borderRadius: 5,
+                                backgroundColor: "#ffebee",
+                                "& .MuiLinearProgress-bar": {
+                                  backgroundColor: "#c62828",
+                                },
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </>
+                    )}
+                  </DynamicCard>
+                );
+              })}
+            </Grid>
           </Grid>
 
-          {/* Quiz Progress Card */}
-          <Grid item xs={12} md={6}>
-            <DynamicCard
-              title="Quiz Progress"
-              sx={{ borderRadius: 2, boxShadow: 3 }}
-            >
-              
-                <Divider sx={{ mb: 2 }} />
-                {progress.quizzes.length > 0 ? (
-                  progress.quizzes.map((quiz, index) => (
-                    <Box key={index} sx={{ mb: 2 }}>
-                      <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                        {quiz.title} — Score: {quiz.score || "N/A"}
-                      </Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={
-                          quiz.totalScore
-                            ? (quiz.score / quiz.totalScore) * 100
-                            : 0
-                        }
-                        sx={{
-                          height: 10,
-                          borderRadius: 5,
-                          backgroundColor: "#ffebee",
-                          "& .MuiLinearProgress-bar": {
-                            backgroundColor: "#c62828",
-                          },
-                        }}
-                      />
-                    </Box>
-                  ))
-                ) : (
-                  <Typography variant="body2" align="center" color="text.secondary">
-                    No quiz progress available.
-                  </Typography>
-                )}
-              
-            </DynamicCard>
-          </Grid>
-        </Grid>
-
-        {/* Log Out Button */}
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="contained" color="secondary" onClick={() => open("dashboard", "_self")}>
-            Dashboard
-          </Button>
-        </Box>
-      </Container>
-    </Box>
+          <Box sx={{ textAlign: "center", mt: 6 }}>
+            <Button variant="contained" color="secondary" onClick={() => router.push("/child/dashboard")}>
+              Dashboard
+            </Button>
+          </Box>
+        </Container>
+      </Box>
     </ChildLayout>
   );
 }

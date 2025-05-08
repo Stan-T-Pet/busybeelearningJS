@@ -1,47 +1,69 @@
 // File: src/pages/api/progress/getChildProgress.js
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
 import connectDB from "../../../server/config/database";
 import Progress from "../../../server/models/Progress";
-import Child from "../../../server/models/Child";
+import Lesson from "../../../server/models/Lesson";
+import Quiz from "../../../server/models/Quiz";
+import Enrollment from "../../../server/models/Enrollment";
+import Course from "../../../server/models/Course";
 
 export default async function handler(req, res) {
   await connectDB();
 
-  // Allow only GET requests.
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
-  // Validate the session.
-  const session = await getServerSession(req, res, authOptions);
-  if (!session || !session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
   const { childId } = req.query;
-  if (!childId) {
-    return res.status(400).json({ error: "Missing childId parameter." });
-  }
+  if (!childId) return res.status(400).json({ error: "Missing childId" });
 
   try {
-    // If the requester is a parent, ensure the child belongs to them.
-    if (session.user.role === "parent") {
-      const child = await Child.findById(childId).lean();
-      if (!child) {
-        return res.status(404).json({ error: "Child not found." });
-      }
-      if (child.parentEmail !== session.user.email) {
-        return res.status(403).json({ error: "Unauthorized: You do not have access to this child's progress." });
-      }
-    }
-    
-    // Fetch the progress data for the specified child.
-    const progressData = await Progress.find({ childId }).lean();
+    const enrollments = await Enrollment.find({ childId }).lean();
+    const enrolledCourseIds = enrollments.map((e) => e.courseId.toString());
 
-    return res.status(200).json({ progress: progressData });
-  } catch (error) {
-    console.error("Error fetching child progress:", error);
-    return res.status(500).json({ error: error.message });
+    const courses = await Course.find({ _id: { $in: enrolledCourseIds } }).lean();
+    const courseTitleMap = {};
+    courses.forEach((c) => courseTitleMap[c._id.toString()] = c.title);
+
+    const progressRecords = await Progress.find({ childId }).lean();
+
+    const completedLessons = new Map();
+    const completedQuizzes = new Map();
+
+    progressRecords.forEach((p) => {
+      if (p.contentType === "lesson") completedLessons.set(p.contentId.toString(), p);
+      if (p.contentType === "quiz") completedQuizzes.set(p.contentId.toString(), p);
+    });
+
+    // Lessons
+    const allLessons = await Lesson.find({ courseId: { $in: enrolledCourseIds } }).lean();
+    const lessonProgress = allLessons.map((l) => {
+      const p = completedLessons.get(l._id.toString());
+      return {
+        title: l.title,
+        courseId: l.courseId,
+        courseTitle: courseTitleMap[l.courseId.toString()] || "Unknown",
+        progress: p ? 100 : 0,
+        completedAt: p?.completedAt || null,
+      };
+    });
+
+    // Quizzes
+    const allQuizzes = await Quiz.find({ courseId: { $in: enrolledCourseIds } }).lean();
+    const quizProgress = allQuizzes.map((q) => {
+      const p = completedQuizzes.get(q._id.toString());
+      return {
+        title: q.title,
+        courseId: q.courseId,
+        courseTitle: courseTitleMap[q.courseId.toString()] || "Unknown",
+        score: p?.score || 0,
+        totalScore: q.steps?.length || 1,
+        completedAt: p?.completedAt || null,
+      };
+    });
+
+    // Sort by recent
+    lessonProgress.sort((a, b) => new Date(b.completedAt || 0) - new Date(a.completedAt || 0));
+    quizProgress.sort((a, b) => new Date(b.completedAt || 0) - new Date(a.completedAt || 0));
+
+    return res.status(200).json({ lessons: lessonProgress, quizzes: quizProgress });
+  } catch (err) {
+    console.error("Progress fetch error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 }

@@ -1,19 +1,18 @@
 // File: src/pages/admin/metrics.js
+
 import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
   Grid,
-  Box,
   CircularProgress,
-  Button,
+  Box,
 } from "@mui/material";
-import Header from "../../components/Header";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import AdminLayout from "../../components/Layouts/AdminLayout";
+import { useRouter } from "next/router";
+import Header from "@/components/Header";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import DynamicCard from "@/components/DynamicCard";
 
 export default function AdminMetrics() {
   const { data: session, status } = useSession();
@@ -21,102 +20,123 @@ export default function AdminMetrics() {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Redirect if not authenticated or not an admin.
   useEffect(() => {
     if (status === "loading") return;
+
     if (!session || session.user.role !== "admin") {
       router.replace("/unauthorized");
     }
   }, [session, status, router]);
 
-  // Fetch metrics data from backend.
   useEffect(() => {
     async function fetchMetrics() {
       try {
         const res = await fetch("/api/admin/metrics");
-        if (!res.ok) {
-          console.error("Failed to fetch metrics");
-          return;
-        }
         const data = await res.json();
-        setMetrics(data.metrics);
-      } catch (error) {
-        console.error("Error fetching metrics:", error);
+        setMetrics(data?.metrics || {});
+      } catch (err) {
+        console.error("Failed to fetch metrics:", err);
+        setMetrics({});
       } finally {
         setLoading(false);
       }
     }
-    if (session && session.user.role === "admin") {
-      fetchMetrics();
-    }
+
+    if (session?.user?.role === "admin") fetchMetrics();
   }, [session]);
 
-  if (loading) {
+  if (status === "loading" || loading || !metrics || Object.keys(metrics).length === 0) {
     return (
-      <Container sx={{ textAlign: "center", mt: 4 }}>
-        <CircularProgress />
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Loading metrics...
-        </Typography>
-      </Container>
+      <AdminLayout>
+        <Header />
+        <Container sx={{ mt: 4, textAlign: "center" }}>
+          <CircularProgress />
+          <Typography variant="h6">Loading metrics...</Typography>
+        </Container>
+      </AdminLayout>
     );
   }
 
   return (
     <AdminLayout>
-    <>
       <Header />
-      <Container maxWidth="lg" sx={{ mt: 4, pb: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Dashboard Metrics
-        </Typography>
-        {metrics ? (
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={4}>
-              <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Total Users
-                  </Typography>
-                  <Typography variant="h4">{metrics.totalUsers}</Typography>
-                </CardContent>
-              </DynamicCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Total Children
-                  </Typography>
-                  <Typography variant="h4">{metrics.totalChildren}</Typography>
-                </CardContent>
-              </DynamicCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Average Quiz Score
-                  </Typography>
-                  <Typography variant="h4">{metrics.averageQuizScore}%</Typography>
-                </CardContent>
-              </DynamicCard>
-            </Grid>
-            {/* Add more metric cards as needed */}
-          </Grid>
-        ) : (
-          <Typography variant="body1" align="center">
-            No metrics available.
+      <Box
+        sx={{
+          background: "linear-gradient(to bottom right, #001f3f, #0074D9)",
+          minHeight: "100vh",
+          pt: 6,
+          pb: 6,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Typography
+            variant="h3"
+            align="center"
+            sx={{ fontWeight: "bold", color: "#fff", mb: 4 }}
+          >
+            Platform Metrics
           </Typography>
-        )}
 
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="contained" color="primary" onClick={() => router.push("/admin/dashboard")}>
-            Back to Dashboard
-          </Button>
-        </Box>
-      </Container>
-    </>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Total Users">
+                <Typography variant="h4" align="center">
+                  {metrics.totalUsers ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Total Parents">
+                <Typography variant="h4" align="center">
+                  {metrics.totalParents ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Total Children">
+                <Typography variant="h4" align="center">
+                  {metrics.totalChildren ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Courses">
+                <Typography variant="h4" align="center">
+                  {metrics.totalCourses ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Lessons">
+                <Typography variant="h4" align="center">
+                  {metrics.totalLessons ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Quizzes">
+                <Typography variant="h4" align="center">
+                  {metrics.totalQuizzes ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Enrolled Children">
+                <Typography variant="h4" align="center">
+                  {metrics.totalEnrolled ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DynamicCard title="Total Activity Logs">
+                <Typography variant="h4" align="center">
+                  {metrics.totalActivityLogs ?? 0}
+                </Typography>
+              </DynamicCard>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </AdminLayout>
   );
 }

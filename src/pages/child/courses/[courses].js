@@ -28,7 +28,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
   const [enrolled, setEnrolled] = useState(false);
   const [loadingEnroll, setLoadingEnroll] = useState(true);
 
-  // Fetch child progress to mark completed lessons
+  // Fetch child progress
   useEffect(() => {
     if (!session?.user?.id || !courseId) return;
 
@@ -62,8 +62,12 @@ export default function CourseLessonsPage({ initialLessons, course }) {
       if (!session?.user?.id || !courseId) return;
 
       try {
-        const res = await axios.get(`/api/enrollments?courseId=${courseId}`);
-        setEnrolled(res.data.enrolled);
+        const res = await axios.get("/api/enrollments");
+        const enrollments = res.data.enrollments || [];
+        const isEnrolled = enrollments.some(
+          (entry) => String(entry.courseId) === String(courseId)
+        );
+        setEnrolled(isEnrolled);
       } catch (err) {
         console.error("Failed to check enrollment:", err);
       } finally {
@@ -156,7 +160,7 @@ export default function CourseLessonsPage({ initialLessons, course }) {
   );
 }
 
-// Server-side fetch for course and its lessons
+// Server-side props
 export async function getServerSideProps(context) {
   const { courseId } = context.query;
   const connectDB = (await import("../../../server/config/database")).default;

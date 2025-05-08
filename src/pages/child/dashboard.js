@@ -35,40 +35,45 @@ export default function ChildDashboard() {
   useEffect(() => {
     async function fetchActivities() {
       try {
-        const lessonsRes = await fetch("/api/lessons/Lesson");
-        const quizzesRes = await fetch("/api/quizzes/get");
+        // 1. Fetch enrolled course IDs
+        const enrollmentsRes = await fetch("/api/enrollments");
+        if (!enrollmentsRes.ok) throw new Error("Failed to fetch enrollments");
+        const enrollmentData = await enrollmentsRes.json();
+        const enrolledCourseIds = new Set(enrollmentData.enrollments.map(e => e.courseId));
   
-        if (!lessonsRes.ok || !quizzesRes.ok) {
-          console.error("Failed to fetch lessons or quizzes");
-          return;
-        }
+        // 2. Fetch lessons and quizzes
+        const [lessonsRes, quizzesRes] = await Promise.all([
+          fetch("/api/lessons/Lesson"),
+          fetch("/api/quizzes/get")
+        ]);
+  
+        if (!lessonsRes.ok || !quizzesRes.ok) throw new Error("Failed to fetch lessons or quizzes");
   
         const lessonsData = await lessonsRes.json();
         const quizzesData = await quizzesRes.json();
   
-        // Helper function to get unique items by courseId
+        // 3. Filter only those from enrolled courses
+        const filteredLessons = (lessonsData.lessons || []).filter(l => enrolledCourseIds.has(l.courseId));
+        const filteredQuizzes = (quizzesData.quizzes || []).filter(q => enrolledCourseIds.has(q.courseId));
+  
+        // 4. Deduplicate by courseId (limit to 6 unique ones)
         const getUniqueByCourse = (items, limit) => {
           const seenCourses = new Set();
-          const uniqueItems = [];
-  
+          const unique = [];
           for (const item of items) {
             if (!seenCourses.has(item.courseId)) {
               seenCourses.add(item.courseId);
-              uniqueItems.push(item);
+              unique.push(item);
             }
-            if (uniqueItems.length === limit) break;
+            if (unique.length === limit) break;
           }
-  
-          return uniqueItems;
+          return unique;
         };
   
-        const uniqueLessons = getUniqueByCourse(lessonsData.lessons || [], 6);
-        const uniqueQuizzes = getUniqueByCourse(quizzesData.quizzes || [], 6);
-  
-        setLessons(uniqueLessons);
-        setQuizzes(uniqueQuizzes);
+        setLessons(getUniqueByCourse(filteredLessons, 6));
+        setQuizzes(getUniqueByCourse(filteredQuizzes, 6));
       } catch (error) {
-        console.error("Error fetching activities:", error);
+        console.error("Error loading activities:", error);
       } finally {
         setLoading(false);
       }
@@ -76,6 +81,7 @@ export default function ChildDashboard() {
   
     fetchActivities();
   }, []);
+  
   
 
   return (
