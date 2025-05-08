@@ -1,6 +1,6 @@
 // File: src/pages/api/enrollments/index.js
-import connectDB from "@/server/config/database";
-import Enrollment from "@/server/models/Enrollment";
+import connectDB from "../../../server/config/database";
+import Enrollment from "../../../server/models/Enrollment";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 
