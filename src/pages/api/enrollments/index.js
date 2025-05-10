@@ -1,40 +1,71 @@
-// File: src/pages/api/enrollments/index.js
 import connectDB from "../../../server/config/database";
-import Enrollment from "../../../server/models/Enrollment";
-import { getServerSession } from "next-auth";
+import Enrolment from "../../../server/models/Enrollment";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
   await connectDB();
   const session = await getServerSession(req, res, authOptions);
-  if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+  if (!session?.user?.id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   const userId = session.user.id;
 
+  // GET all enrollments for this user
+  if (req.method === "GET") {
+    try {
+      const enrollments = await Enrolment.find({ userId }).lean();
+      return res.status(200).json({ enrollments });
+    } catch (error) {
+      console.error("Error fetching enrollments:", error);
+      return res.status(500).json({ error: "Failed to fetch enrollments." });
+    }
+  }
+
+  // POST enroll in a course
   if (req.method === "POST") {
     const { courseId } = req.body;
+
+    if (!courseId) {
+      return res.status(400).json({ error: "Missing courseId" });
+    }
+
     try {
-      const enrollment = await Enrollment.findOneAndUpdate(
-        { userId, courseId },
-        { $setOnInsert: { userId, courseId, enrolledAt: new Date() } },
-        { upsert: true, new: true }
-      );
-      return res.status(201).json({ enrollment });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+      const existing = await Enrolment.findOne({ userId, courseId });
+      if (existing) {
+        return res.status(409).json({ error: "Already enrolled" });
+      }
+
+      await Enrolment.create({ userId, courseId });
+      return res.status(201).json({ message: "Enrolled successfully" });
+    } catch (error) {
+      console.error("Enrollment failed:", error);
+      return res.status(500).json({ error: "Failed to enroll." });
     }
   }
 
-  if (req.method === "GET") {
+  // DELETE un-enroll
+  if (req.method === "DELETE") {
     const { courseId } = req.query;
+
+    if (!courseId) {
+      return res.status(400).json({ error: "Missing courseId" });
+    }
+
     try {
-      const enrolled = await Enrollment.exists({ userId, courseId });
-      return res.status(200).json({ enrolled: !!enrolled });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+      const removed = await Enrolment.findOneAndDelete({ userId, courseId });
+      if (!removed) {
+        return res.status(404).json({ error: "Enrollment not found" });
+      }
+
+      return res.status(200).json({ message: "Unenrolled successfully" });
+    } catch (error) {
+      console.error("Unenrollment failed:", error);
+      return res.status(500).json({ error: "Failed to un-enroll." });
     }
   }
 
-  res.setHeader("Allow", ["POST", "GET"]);
   return res.status(405).json({ error: "Method Not Allowed" });
 }

@@ -1,52 +1,43 @@
-import { Parent } from "../models/User.js";
-import bcryptjs from "bcryptjs";
+// File: server/services/parentServices.js
 
-export async function addParent({ fullName, email, password }) {
-  const hashedPassword = await bcryptjs.hash(password, 10);
-  const newParent = new Parent({ fullName, email, password: hashedPassword });
-  return newParent.save();
-}
+import Progress from "../models/Progress.js";
+import Child from "../models/Child.js";
+import Lesson from "../models/Lesson.js";
+import Quiz from "../models/Quiz.js";
 
-export async function getParentDetails({ parentId, requesterRole, requesterEmail }) {
-  if (requesterRole === "parent") {
-    const parent = await Parent.findOne({ _id: parentId, email: requesterEmail });
-    if (!parent) throw new Error("Parent not found or unauthorized.");
-    return parent;
+export const getProgressByParentEmail = async (email) => {
+  if (!email) return [];
+
+  try {
+    // Find children of the parent
+    const children = await Child.find({ parentEmail: email }).lean();
+
+    const summaries = [];
+
+    for (const child of children) {
+      const progressRecords = await Progress.find({ childId: child._id }).lean();
+
+      const completedLessons = progressRecords.filter((p) => p.contentType === "lesson").length;
+      const completedQuizzes = progressRecords.filter((p) => p.contentType === "quiz");
+
+      const totalQuizScore = completedQuizzes.reduce((sum, p) => sum + (p.score || 0), 0);
+      const avgQuizScore = completedQuizzes.length
+        ? (totalQuizScore / completedQuizzes.length).toFixed(1)
+        : 0;
+
+      summaries.push({
+        childId: child._id.toString(),
+        name: child.fullName || "Unnamed",
+        age: child.age || null,
+        email: child.loginEmail || "",
+        lessonProgress: completedLessons,
+        quizProgress: avgQuizScore,
+      });
+    }
+
+    return summaries;
+  } catch (error) {
+    console.error("getProgressByParentEmail error:", error);
+    return [];
   }
-  if (requesterRole === "admin") {
-    return await Parent.findById(parentId);
-  }
-  throw new Error("Unauthorized role.");
-}
-
-export async function updateParent({ parentId, fullName, email, password, requesterRole, requesterEmail }) {
-  let parent;
-  if (requesterRole === "parent") {
-    parent = await Parent.findOne({ _id: parentId, email: requesterEmail });
-    if (!parent) throw new Error("Parent not found or unauthorized.");
-  } else if (requesterRole === "admin") {
-    parent = await Parent.findById(parentId);
-    if (!parent) throw new Error("Parent not found.");
-  } else {
-    throw new Error("Unauthorized role.");
-  }
-
-  const hashedPassword = await bcryptjs.hash(password, 10);
-  parent.fullName = fullName;
-  parent.email = email;
-  parent.password = hashedPassword;
-
-  return parent.save();
-}
-
-export async function removeParent({ parentId, requesterRole, requesterEmail }) {
-  if (requesterRole === "parent") {
-    const parent = await Parent.findOne({ _id: parentId, email: requesterEmail });
-    if (!parent) throw new Error("Parent not found or unauthorized.");
-    return Parent.deleteOne({ _id: parentId });
-  }
-  if (requesterRole === "admin") {
-    return await Parent.deleteOne({ _id: parentId });
-  }
-  throw new Error("Unauthorized role.");
-}
+};
