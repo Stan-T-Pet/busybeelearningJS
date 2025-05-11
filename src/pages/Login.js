@@ -31,7 +31,7 @@ export default function Login() {
       setErrorMessage(res.error);
     } else {
       console.log("Login successful, redirecting...");
-      router.push("/dashboard");
+      router.push("/dashboard" || "/Dashboard");
     }
   };  
 

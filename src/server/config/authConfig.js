@@ -1,4 +1,4 @@
-import CredentialsProvider from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials.js";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "database"; // Ensure MongoDB connection
 import User from "../models/User";

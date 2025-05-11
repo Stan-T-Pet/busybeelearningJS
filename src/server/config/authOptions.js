@@ -1,5 +1,5 @@
 // server/authOptions.js
-import CredentialsProvider from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials.js";
 import connectDB from "./config/database";
 import { Parent, Admin } from "./models/User";
 import Child from "./models/Child";
