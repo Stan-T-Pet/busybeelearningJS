@@ -1,3 +1,5 @@
+// File: src/server/models/Progress.js
+
 import mongoose from "mongoose";
 
 const ProgressSchema = new mongoose.Schema(
@@ -50,12 +52,14 @@ const ProgressSchema = new mongoose.Schema(
   }
 );
 
+// Ensure uniqueness for each child-content pair
 ProgressSchema.index(
   { childId: 1, contentId: 1 },
   { unique: true, partialFilterExpression: { contentId: { $exists: true } } }
 );
 
+// Force Mongoose to use "progresses" collection in MongoDB
 const Progress =
-  mongoose.models.Progress || mongoose.model("Progress", ProgressSchema);
+  mongoose.models.Progress || mongoose.model("Progress", ProgressSchema, "progresses");
 
 export default Progress;

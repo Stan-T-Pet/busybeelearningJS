@@ -32,9 +32,12 @@ export default function ChildProfile() {
     async function fetchProgress() {
       if (!user?.id || user.role !== "child") return;
       try {
-        const res = await fetch(`/api/progress/getChildProgress?childId=${user.id}`);
+        const res = await fetch(`/api/progress/getChildProgress?childId=${user.id}`, {
+        headers: { "Cache-Control": "no-store" },
+      });
         const data = await res.json();
         setProgress(data);
+        console.log("Progress data:", data);
       } catch (err) {
         console.error("Failed to fetch child progress:", err);
       } finally {
@@ -65,7 +68,6 @@ export default function ChildProfile() {
     );
   }
 
-  // Aggregate progress by course
   const courseMap = {};
   progress.lessons?.forEach((l) => {
     if (!courseMap[l.courseTitle]) courseMap[l.courseTitle] = { lessons: [], quizzes: [] };
@@ -80,6 +82,7 @@ export default function ChildProfile() {
     <>
       <Header />
       <Container maxWidth="md" sx={{ mt: 4 }}>
+        {/* Child Info */}
         <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} sm={4}>
@@ -105,10 +108,10 @@ export default function ChildProfile() {
 
         <Divider sx={{ my: 4 }} />
 
-        {/* Course Summary */}
+        {/* Course Progress Overview */}
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Course Progress</Typography>
+            <Typography variant="h6">Course Progress Overview</Typography>
           </AccordionSummary>
           <AccordionDetails>
             {Object.entries(courseMap).map(([title, items], i) => {
@@ -132,10 +135,10 @@ export default function ChildProfile() {
           </AccordionDetails>
         </Accordion>
 
-        {/* Lessons Section */}
+        {/* Lessons */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Lessons</Typography>
+            <Typography variant="h6">Completed Lessons</Typography>
           </AccordionSummary>
           <AccordionDetails>
             {progress.lessons?.length ? (
@@ -158,15 +161,15 @@ export default function ChildProfile() {
                 ))}
               </List>
             ) : (
-              <Typography>No lesson activity yet.</Typography>
+              <Typography>No lesson activity recorded yet.</Typography>
             )}
           </AccordionDetails>
         </Accordion>
 
-        {/* Quizzes Section */}
+        {/* Quizzes */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Quizzes</Typography>
+            <Typography variant="h6">Completed Quizzes</Typography>
           </AccordionSummary>
           <AccordionDetails>
             {progress.quizzes?.length ? (
@@ -194,7 +197,7 @@ export default function ChildProfile() {
                 })}
               </List>
             ) : (
-              <Typography>No quiz activity yet.</Typography>
+              <Typography>No quiz activity recorded yet.</Typography>
             )}
           </AccordionDetails>
         </Accordion>
