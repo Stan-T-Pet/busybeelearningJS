@@ -75,7 +75,6 @@ export default function QuizPage({ initialQuizzes, courseTitles }) {
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                   {courseTitles[cid] || "Unlinked Course"}
                 </Typography>
-
                 <Box
                   sx={{
                     display: "grid",

@@ -1,49 +1,65 @@
-// File: src/pages/api/progress/update.js
-import connectDB from "../../../server/config/database";
-import Progress from "../../../server/models/Progress";
+import connectDB from "@/server/config/database";
+import Progress from "@/server/models/Progress";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { Types } from "mongoose";
 
 export default async function handler(req, res) {
   await connectDB();
+
   const session = await getServerSession(req, res, authOptions);
-
-  if (!session?.user?.id) {
-    return res.status(401).json({ error: "Unauthorized" });
+  if (!session || session.user.role !== "child") {
+    return res.status(403).json({ error: "Forbidden" });
   }
 
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
+  const { contentId, contentType, action, score = 0 } = req.body;
+  const childId = session.user.id;
 
-  const { contentType, contentId, courseId, score = 0, action = "complete" } = req.body;
-
-  if (!contentType || !contentId || !courseId) {
-    return res.status(400).json({ error: "Missing required fields" });
+  if (!contentId || !contentType || !["lesson", "quiz"].includes(contentType)) {
+    return res.status(400).json({ error: "Invalid payload" });
   }
 
   try {
-    const existing = await Progress.findOne({ childId: session.user.id, contentId, contentType });
+    const normalizedContentId = new Types.ObjectId(contentId);
+    const existing = await Progress.findOne({ childId, contentId: normalizedContentId });
 
-    if (existing) {
-      existing.completed = true;
-      existing.score = score;
-      existing.completedAt = new Date();
-      await existing.save();
-    } else {
-      await Progress.create({
-        childId: session.user.id,
-        contentId,
-        contentType,
-        courseId,
-        score,
-        completed: true
-      });
+    if (action === "start") {
+      if (!existing) {
+        await Progress.create({
+          childId,
+          contentId: normalizedContentId,
+          contentType,
+          completed: false,
+        });
+      }
+      return res.status(200).json({ message: "Started" });
     }
 
-    return res.status(200).json({ message: "Progress saved" });
-  } catch (err) {
-    console.error("Progress update error:", err);
-    return res.status(500).json({ error: "Failed to save progress" });
+    if (action === "complete") {
+      if (existing) {
+        existing.completed = true;
+        existing.completedAt = new Date();
+        if (contentType === "quiz") {
+          existing.score = score;
+        }
+        await existing.save();
+        return res.status(200).json({ message: "Updated" });
+      } else {
+        await Progress.create({
+          childId,
+          contentId: normalizedContentId,
+          contentType,
+          completed: true,
+          completedAt: new Date(),
+          ...(contentType === "quiz" ? { score } : {}),
+        });
+        return res.status(200).json({ message: "Created and completed" });
+      }
+    }
+
+    return res.status(400).json({ error: "Invalid action" });
+  } catch (error) {
+    console.error("Update error:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 }

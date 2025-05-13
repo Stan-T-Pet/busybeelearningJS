@@ -88,7 +88,11 @@ export default function Lessons({ lessons, subject, courseTitles }) {
                 gap: 2
               }}>
                 {group.map((lesson) => (
-                  <Link key={lesson._id} href={`/child/lessons/${lesson._id}`} passHref legacyBehavior>
+                  <Link
+                    key={lesson._id}
+                    href={`/child/lessons/${lesson._id}`}
+                    passHref
+                    legacyBehavior>
                     <Button variant="contained" color="primary" sx={{ fontSize: "1.1rem", textTransform: "none" }}>
                       {lesson.title}
                     </Button>

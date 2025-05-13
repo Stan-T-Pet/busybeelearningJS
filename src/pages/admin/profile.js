@@ -1,111 +1,81 @@
 // File: src/pages/admin/profile.js
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import {
+  Box,
   Container,
   Typography,
-  Card,
-  CardContent,
-  Box,
-  Button,
+  Paper,
   Avatar,
+  Grid,
+  Divider,
 } from "@mui/material";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
-import Header from "../../components/Header";
-import AdminLayout from "../../components/Layouts/AdminLayout";
+import { useSession } from "next-auth/react";
+import Header from "@/components/Header";
+
 export default function AdminProfile() {
   const { data: session, status } = useSession();
-  const router = useRouter();
-  const [adminDetails, setAdminDetails] = useState(null);
 
-  // Redirect if not authenticated or not an admin.
-  useEffect(() => {
-    if (status === "loading") return;
-    if (!session || session.user.role !== "admin") {
-      router.replace("/unauthorized");
-    }
-  }, [session, status, router]);
-
-  // Fetch admin profile details from the backend.
-  useEffect(() => {
-    if (session) {
-      async function fetchAdminProfile() {
-        try {
-          const res = await fetch(`/api/admin/profile?adminId=${session.user.id}`);
-          if (!res.ok) {
-            console.error("Failed to fetch admin profile");
-            return;
-          }
-          const data = await res.json();
-          setAdminDetails(data.admin);
-        } catch (error) {
-          console.error("Error fetching admin profile:", error);
-        }
-      }
-      fetchAdminProfile();
-    }
-  }, [session]);
-
-  if (status === "loading" || !adminDetails) {
+  if (status === "loading") {
     return (
-      <Container maxWidth="sm" sx={{ textAlign: "center", mt: 4 }}>
-        <Typography variant="h5">Loading Profile...</Typography>
+      <Container>
+        <Typography>Loading...</Typography>
       </Container>
     );
   }
 
+  if (!session || session.user.role !== "admin") {
+    return (
+      <Container>
+        <Typography>You are not authorized to view this page.</Typography>
+      </Container>
+    );
+  }
+
+  const user = session.user;
+
   return (
-    <AdminLayout>
     <>
       <Header />
-      <Container maxWidth="md" sx={{ mt: 4, pb: 4 }}>
-        <DynamicCard sx={{ boxShadow: 3, borderRadius: 2, p: 2 }}>
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Avatar
-                sx={{ width: 80, height: 80, mr: 2 }}
-                src={adminDetails.image || "/assets/images/avatar-placeholder.png"}
-                alt={adminDetails.name}
-              />
-              <Box>
-                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                  {adminDetails.name}
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                  {adminDetails.email}
-                </Typography>
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Avatar
+                  sx={{ width: 120, height: 120, fontSize: 40 }}
+                  alt={user.name}
+                >
+                  {user.name?.charAt(0).toUpperCase()}
+                </Avatar>
               </Box>
-            </Box>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              Welcome to your admin profile! Use the buttons below to manage users, review
-              metrics, and control other administrative functions.
+            </Grid>
+
+            <Grid item xs={12} sm={8}>
+              <Typography variant="h5" fontWeight="bold">
+                {user.name || "Admin User"}
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                {user.email}
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Role: <strong>{user.role}</strong>
+              </Typography>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Admin Tools (Coming Soon)
             </Typography>
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => router.push("/admin/users")}
-              >
-                Manage Users
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => router.push("/admin/metrics")}
-              >
-                View Metrics
-              </Button>
-              {/* Add any additional admin navigation buttons here */}
-            </Box>
-          </CardContent>
-        </DynamicCard>
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="outlined" color="error" onClick={() => signOut()}>
-            Log Out
-          </Button>
-        </Box>
+            <Typography color="text.secondary">
+              This section will include admin shortcuts, system stats, and quick links.
+            </Typography>
+          </Box>
+        </Paper>
       </Container>
     </>
-    </AdminLayout>
   );
 }

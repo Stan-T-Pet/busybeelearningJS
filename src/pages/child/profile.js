@@ -1,217 +1,204 @@
-// File: src/pages/child/profile.js
-import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import {
   Container,
   Typography,
-  Button,
-  Box,
-  LinearProgress,
-  CircularProgress,
+  Paper,
+  Avatar,
   Grid,
   Divider,
+  Box,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  LinearProgress,
+  ListItemSecondaryAction,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import Header from "../../components/Header";
-import DynamicCard from "../../components/DynamicCard";
-import ChildLayout from "../../components/Layouts/ChildLayout";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Header from "@/components/Header";
+import { useEffect, useState } from "react";
 
-// Grouping helper: group items by courseId
-function groupBy(arr, key) {
-  return arr.reduce((acc, item) => {
-    const group = item[key] || "unknown";
-    acc[group] = acc[group] || [];
-    acc[group].push(item);
-    return acc;
-  }, {});
-}
-
-export default function Profile() {
+export default function ChildProfile() {
   const { data: session, status } = useSession();
-  const router = useRouter();
-
-  const [progress, setProgress] = useState({ lessons: [], quizzes: [] });
+  const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Toggle visibility per courseId
-  const [lessonToggles, setLessonToggles] = useState({});
-  const [quizToggles, setQuizToggles] = useState({});
-
-  const toggleLessonSection = (courseId) => {
-    setLessonToggles((prev) => ({ ...prev, [courseId]: !prev[courseId] }));
-  };
-
-  const toggleQuizSection = (courseId) => {
-    setQuizToggles((prev) => ({ ...prev, [courseId]: !prev[courseId] }));
-  };
+  const user = session?.user;
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
-  }, [status, router]);
-
-  useEffect(() => {
-    if (!session?.user) return;
-
-    const fetchProgress = async () => {
+    async function fetchProgress() {
+      if (!user?.id || user.role !== "child") return;
       try {
-        const res = await fetch(`/api/progress/getChildProgress?childId=${session.user.id}`);
-        if (!res.ok) {
-          console.error("Failed to fetch progress");
-          return;
-        }
-
+        const res = await fetch(`/api/progress/getChildProgress?childId=${user.id}`);
         const data = await res.json();
-        setProgress({
-          lessons: data.lessons || [],
-          quizzes: data.quizzes || [],
-        });
-      } catch (error) {
-        console.error("Error fetching progress:", error);
+        setProgress(data);
+      } catch (err) {
+        console.error("Failed to fetch child progress:", err);
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    fetchProgress();
-  }, [session]);
+    if (user?.id) fetchProgress();
+  }, [user]);
 
   if (status === "loading" || loading) {
     return (
-      <Box sx={{ textAlign: "center", mt: 4 }}>
-        <CircularProgress />
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Loading...
+      <Container>
+        <Header />
+        <Typography sx={{ mt: 4 }}>
+          <CircularProgress /> Loading profile...
         </Typography>
-      </Box>
+      </Container>
     );
   }
 
-  return (
-    <ChildLayout>
-      <Box sx={{ background: "linear-gradient(135deg, rgb(61, 78, 61), rgb(14, 73, 122))", minHeight: "100vh" }}>
+  if (!session || session.user.role !== "child") {
+    return (
+      <Container>
         <Header />
-        <Container sx={{ mt: 4, mb: 6 }}>
-          <Box sx={{ textAlign: "center", mb: 4, p: 2, borderRadius: 2, backgroundColor: "theme.primary", boxShadow: 5 }}>
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-              Welcome, {session?.user?.name || "Guest"}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary" fontSize="1.5rem">
-              {session?.user?.email || "N/A"}
-            </Typography>
-          </Box>
+        <Typography>You are not authorized to view this page.</Typography>
+      </Container>
+    );
+  }
 
-          <Grid container spacing={3}>
-            {/* Lessons */}
-            <Grid item xs={12}>
-              <Typography variant="h5" gutterBottom>Lesson Progress</Typography>
-              {Object.entries(groupBy(progress.lessons, "courseId")).map(([courseId, lessons], idx) => {
-                const courseTitle = lessons[0]?.courseTitle || `Course ${idx + 1}`;
-                const isOpen = lessonToggles[courseId] || false;
+  // Aggregate progress by course
+  const courseMap = {};
+  progress.lessons?.forEach((l) => {
+    if (!courseMap[l.courseTitle]) courseMap[l.courseTitle] = { lessons: [], quizzes: [] };
+    courseMap[l.courseTitle].lessons.push(l);
+  });
+  progress.quizzes?.forEach((q) => {
+    if (!courseMap[q.courseTitle]) courseMap[q.courseTitle] = { lessons: [], quizzes: [] };
+    courseMap[q.courseTitle].quizzes.push(q);
+  });
 
-                return (
-                  <DynamicCard
-                    key={courseId}
-                    title={courseTitle}
-                    sx={{ borderRadius: 2, boxShadow: 4, mb: 3 }}
-                  >
-                    <Button onClick={() => toggleLessonSection(courseId)} sx={{ mb: 2 }}>
-                      {isOpen ? "Hide Lessons" : "Show Lessons"}
-                    </Button>
-                    {isOpen && (
-                      <>
-                        <Divider sx={{ mb: 2 }} />
-                        {lessons.map((lesson, index) => (
-                          <Box key={index} sx={{ mb: 3 }}>
-                            <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                              {lesson.title}
-                              {lesson.progress === 100 && (
-                                <Typography
-                                  variant="caption"
-                                  sx={{ ml: 1, color: "green", fontWeight: "bold" }}
-                                >
-                                  ✓ Completed
-                                </Typography>
-                              )}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {lesson.completedAt
-                                ? `Completed on ${new Date(lesson.completedAt).toLocaleDateString()}`
-                                : "Not yet completed"}
-                            </Typography>
-                            <LinearProgress
-                              variant="determinate"
-                              value={lesson.progress}
-                              sx={{
-                                height: 10,
-                                borderRadius: 5,
-                                backgroundColor: "#e0f7fa",
-                                "& .MuiLinearProgress-bar": {
-                                  backgroundColor: "#00acc1",
-                                },
-                              }}
-                            />
-                          </Box>
-                        ))}
-                      </>
-                    )}
-                  </DynamicCard>
-                );
-              })}
+  return (
+    <>
+      <Header />
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Avatar sx={{ width: 100, height: 100, fontSize: 40 }}>
+                  {user.name?.charAt(0).toUpperCase()}
+                </Avatar>
+              </Box>
             </Grid>
-
-            {/* Quizzes */}
-            <Grid item xs={12}>
-              <Typography variant="h5" gutterBottom>Quiz Progress</Typography>
-              {Object.entries(groupBy(progress.quizzes, "courseId")).map(([courseId, quizzes], idx) => {
-                const courseTitle = quizzes[0]?.courseTitle || `Course ${idx + 1}`;
-                const isOpen = quizToggles[courseId] || false;
-
-                return (
-                  <DynamicCard
-                    key={courseId}
-                    title={courseTitle}
-                    sx={{ borderRadius: 2, boxShadow: 4, mb: 3 }}
-                  >
-                    <Button onClick={() => toggleQuizSection(courseId)} sx={{ mb: 2 }}>
-                      {isOpen ? "Hide Quizzes" : "Show Quizzes"}
-                    </Button>
-                    {isOpen && (
-                      <>
-                        <Divider sx={{ mb: 2 }} />
-                        {quizzes.map((quiz, index) => (
-                          <Box key={index} sx={{ mb: 2 }}>
-                            <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                              {quiz.title} — Score: {quiz.score}/{quiz.totalScore}
-                            </Typography>
-                            <LinearProgress
-                              variant="determinate"
-                              value={(quiz.score / quiz.totalScore) * 100}
-                              sx={{
-                                height: 10,
-                                borderRadius: 5,
-                                backgroundColor: "#ffebee",
-                                "& .MuiLinearProgress-bar": {
-                                  backgroundColor: "#c62828",
-                                },
-                              }}
-                            />
-                          </Box>
-                        ))}
-                      </>
-                    )}
-                  </DynamicCard>
-                );
-              })}
+            <Grid item xs={12} sm={8}>
+              <Typography variant="h5" fontWeight="bold">
+                {user.name}
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                {user.email}
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Role: <strong>{user.role}</strong>
+              </Typography>
             </Grid>
           </Grid>
+        </Paper>
 
-          <Box sx={{ textAlign: "center", mt: 6 }}>
-            <Button variant="contained" color="secondary" onClick={() => router.push("/child/dashboard")}>
-              Dashboard
-            </Button>
-          </Box>
-        </Container>
-      </Box>
-    </ChildLayout>
+        <Divider sx={{ my: 4 }} />
+
+        {/* Course Summary */}
+        <Accordion defaultExpanded>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Course Progress</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {Object.entries(courseMap).map(([title, items], i) => {
+              const total = items.lessons.length + items.quizzes.length;
+              const completedLessons = items.lessons.filter((l) => l.progress === 100).length;
+              const completedQuizzes = items.quizzes.filter((q) => q.completedAt).length;
+              const percent = total > 0 ? Math.round(((completedLessons + completedQuizzes) / total) * 100) : 0;
+
+              return (
+                <Box key={i} sx={{ mb: 3 }}>
+                  <Typography fontWeight="bold">{title}</Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={percent}
+                    sx={{ height: 8, borderRadius: 5, my: 1 }}
+                  />
+                  <Typography variant="caption">{percent}% completed</Typography>
+                </Box>
+              );
+            })}
+          </AccordionDetails>
+        </Accordion>
+
+        {/* Lessons Section */}
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Lessons</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {progress.lessons?.length ? (
+              <List dense>
+                {progress.lessons.map((lesson, i) => (
+                  <ListItem key={i} divider>
+                    <ListItemText
+                      primary={lesson.title}
+                      secondary={`Course: ${lesson.courseTitle}`}
+                    />
+                    <ListItemSecondaryAction sx={{ width: "40%" }}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={lesson.progress}
+                        sx={{ height: 8, borderRadius: 5 }}
+                      />
+                      <Typography variant="caption">{lesson.progress}%</Typography>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography>No lesson activity yet.</Typography>
+            )}
+          </AccordionDetails>
+        </Accordion>
+
+        {/* Quizzes Section */}
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Quizzes</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {progress.quizzes?.length ? (
+              <List dense>
+                {progress.quizzes.map((quiz, i) => {
+                  const percent = quiz.totalScore
+                    ? Math.round((quiz.score / quiz.totalScore) * 100)
+                    : 0;
+                  return (
+                    <ListItem key={i} divider>
+                      <ListItemText
+                        primary={quiz.title}
+                        secondary={`Course: ${quiz.courseTitle}`}
+                      />
+                      <ListItemSecondaryAction sx={{ width: "40%" }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={percent}
+                          sx={{ height: 8, borderRadius: 5 }}
+                        />
+                        <Typography variant="caption">{percent}%</Typography>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            ) : (
+              <Typography>No quiz activity yet.</Typography>
+            )}
+          </AccordionDetails>
+        </Accordion>
+      </Container>
+    </>
   );
 }
