@@ -116,10 +116,10 @@ export default function Header() {
           variant="h6"
           sx={{ flexGrow: 1, fontWeight: "bold", color: "inherit" }}
         >
-          <Link href="/" passHref legacyBehavior>
-            <a style={{ textDecoration: "none", color: "inherit" }}>
+          <Link href="/" passHref style={{ textDecoration: "none", color: "inherit" }}>
+            
               Busy Bee Learning
-            </a>
+            
           </Link>
         </Typography>
 
@@ -163,7 +163,6 @@ export default function Header() {
           </IconButton>
         </Box>
       </Toolbar>
-
       {/* Mobile Drawer */}
       <Drawer
         anchor="left"

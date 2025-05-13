@@ -1,3 +1,4 @@
+// file: src\pages\child\quiz\[quizId].js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
@@ -210,11 +211,11 @@ export default function QuizDetails({ quiz }) {
             <Button
               onClick={() => {
                 setOpenDialog(false);
-                router.push("/child/lessons");
+                router.push(`/child/quiz?courseId=${quiz.courseId}`);
               }}
               variant="contained"
             >
-              Continue to Next Lesson
+              Return to Course Quizzes
             </Button>
           </DialogActions>
         </Dialog>

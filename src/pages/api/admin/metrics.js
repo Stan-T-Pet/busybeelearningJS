@@ -1,34 +1,52 @@
 // File: src/pages/api/admin/metrics.js
+
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
-import connectDB from "../../../server/config/database";
-import {Child} from "../../../server/models/User";
-import Progress from "../../../server/models/Progress";
+import { authOptions } from "../../api/auth/[...nextauth]";
+import connectDB from "@/server/config/database";
+import { Admin, Parent, Child } from "@/server/models/User";
+import Course from "@/server/models/Course";
+import Lesson from "@/server/models/Lesson";
+import Quiz from "@/server/models/Quiz";
+import Progress from "@/server/models/Progress";
 
 export default async function handler(req, res) {
   await connectDB();
   const session = await getServerSession(req, res, authOptions);
 
   if (!session || session.user.role !== "admin") {
-    return res.status(403).json({ error: "Forbidden: Admins only." });
+    return res.status(403).json({ error: "Forbidden" });
   }
 
   try {
-    const totalUsers = await User.countDocuments();
-    const totalChildren = await Child.countDocuments();
+    const totalUsers =
+      (await Admin.countDocuments()) +
+      (await Parent.countDocuments()) +
+      (await Child.countDocuments());
 
-    // Example: calculate average quiz score from Progress documents where contentType is 'quiz'
-    const quizProgress = await Progress.find({ contentType: "quiz" });
-    let averageQuizScore = 0;
-    if (quizProgress.length > 0) {
-      const totalScore = quizProgress.reduce((acc, curr) => acc + (curr.score || 0), 0);
-      averageQuizScore = Math.round(totalScore / quizProgress.length);
-    }
+    const totalChildren = await Child.countDocuments();
+    const totalParents = await Parent.countDocuments();
+    const totalCourses = await Course.countDocuments();
+    const totalLessons = await Lesson.countDocuments();
+    const totalQuizzes = await Quiz.countDocuments();
+
+    const quizAttempts = await Progress.find({ type: "quiz" });
+    const avgQuizScore =
+      quizAttempts.length > 0
+        ? quizAttempts.reduce((acc, p) => acc + (p.score || 0), 0) /
+          quizAttempts.length
+        : 0;
 
     return res.status(200).json({
-      metrics: { totalUsers, totalChildren, averageQuizScore },
+      totalUsers,
+      totalChildren,
+      totalParents,
+      totalCourses,
+      totalLessons,
+      totalQuizzes,
+      avgQuizScore: Number(avgQuizScore.toFixed(2)),
     });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error("Metrics API error:", err);
+    return res.status(500).json({ error: "Failed to load metrics." });
   }
 }
